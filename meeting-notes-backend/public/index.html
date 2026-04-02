@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Meeting Notes & Action Items</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: rgba(13, 20, 39, 0.82);
+      --line: rgba(255,255,255,0.08);
+      --line-strong: rgba(148,163,184,0.22);
+      --text: #e5ecf6;
+      --muted: #9aa8bf;
+      --primary: #64a3ff;
+      --primary-2: #7c5cff;
+      --success: #3ddc97;
+      --danger: #ff6b81;
+      --shadow: 0 24px 60px rgba(0,0,0,0.38);
+      --radius-xl: 24px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+      color: var(--text);
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top left, rgba(124, 92, 255, 0.20), transparent 28%),
+        radial-gradient(circle at top right, rgba(100, 163, 255, 0.18), transparent 24%),
+        linear-gradient(180deg, #0b1020 0%, #0b1224 40%, #0a1020 100%);
+    }
+    .wrap { max-width: 1220px; margin: 0 auto; padding: 32px 20px 56px; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 28px; }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-mark {
+      width: 42px; height: 42px; border-radius: 14px; display: grid; place-items: center; font-weight: 800; color: white;
+      background: linear-gradient(135deg, var(--primary), var(--primary-2)); box-shadow: 0 14px 34px rgba(100,163,255,0.28);
+    }
+    .brand-meta strong { display: block; font-size: 14px; }
+    .brand-meta span, .version-chip, .hero-copy, .card-head p, .helper-note, .security-note, .mini-stat span, .side-footer ul { color: var(--muted); }
+    .version-chip { padding: 10px 14px; border: 1px solid var(--line); border-radius: 999px; background: rgba(255,255,255,0.03); font-size: 12px; }
+    .hero, .layout { display: grid; gap: 24px; }
+    .hero { grid-template-columns: 1.2fr 0.8fr; margin-bottom: 24px; }
+    .layout { grid-template-columns: 1.02fr 0.98fr; }
+    .hero-card, .stats-card, .main-card, .side-card {
+      background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius-xl); box-shadow: var(--shadow); backdrop-filter: blur(14px);
+    }
+    .hero-card { padding: 28px; }
+    .eyebrow { display: inline-flex; padding: 8px 12px; border-radius: 999px; background: rgba(100,163,255,0.10); color: #bcd3ff; font-size: 12px; font-weight: 700; margin-bottom: 16px; text-transform: uppercase; }
+    h1 { margin: 0 0 14px; font-size: clamp(34px, 5vw, 58px); line-height: 1.02; letter-spacing: -0.03em; }
+    .hero-copy { margin: 0; font-size: 17px; line-height: 1.75; }
+    .hero-points { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 22px; }
+    .hero-points span { padding: 10px 12px; border-radius: 12px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); color: #cbd7e9; font-size: 13px; }
+    .stats-card { padding: 22px; display: grid; gap: 14px; }
+    .mini-stat { padding: 16px; border-radius: 18px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); }
+    .mini-stat strong { display: block; font-size: 24px; margin-bottom: 6px; }
+    .card-head { padding: 22px 24px 0; }
+    .card-head h2 { margin: 0; font-size: 22px; }
+    .card-body { padding: 22px 24px 24px; }
+    .field { margin-bottom: 16px; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 700; color: #dce6f7; }
+    input, select, textarea {
+      width: 100%; border: 1px solid var(--line-strong); background: rgba(255,255,255,0.04); color: var(--text);
+      border-radius: 14px; padding: 14px 15px; font: inherit;
+    }
+    textarea { min-height: 280px; resize: vertical; line-height: 1.7; }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: rgba(100,163,255,0.8); box-shadow: 0 0 0 4px rgba(100,163,255,0.12); }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 10px; }
+    button {
+      border: 0; border-radius: 14px; padding: 14px 18px; font: inherit; font-weight: 700; cursor: pointer;
+      transition: transform 0.18s ease, opacity 0.18s ease;
+    }
+    button:hover { transform: translateY(-1px); }
+    .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-2)); color: #fff; box-shadow: 0 16px 34px rgba(72,110,255,0.28); }
+    .btn-secondary { background: rgba(255,255,255,0.05); color: var(--text); border: 1px solid var(--line); }
+    .status { margin-bottom: 16px; padding: 12px 14px; border-radius: 14px; font-size: 13px; display: none; line-height: 1.6; border: 1px solid transparent; }
+    .status.show { display: block; }
+    .status.info { background: rgba(100,163,255,0.10); color: #bcd3ff; border-color: rgba(100,163,255,0.16); }
+    .status.error { background: rgba(255,107,129,0.10); color: #ffc6d1; border-color: rgba(255,107,129,0.18); }
+    .status.success { background: rgba(61,220,151,0.10); color: #bff5da; border-color: rgba(61,220,151,0.16); }
+    .output-stack { display: grid; gap: 14px; }
+    .output-box { border: 1px solid var(--line); background: rgba(255,255,255,0.035); border-radius: 18px; padding: 16px; }
+    .output-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .output-box h3 { margin: 0; font-size: 16px; }
+    .copy-btn { padding: 8px 10px; font-size: 12px; border-radius: 10px; }
+    .output-content { white-space: pre-wrap; line-height: 1.8; color: #dbe7fb; min-height: 88px; font-size: 14px; }
+    .placeholder { color: #7b89a2; }
+    .security-note { margin-top: 12px; padding: 12px 14px; border-radius: 14px; background: rgba(255,255,255,0.03); border: 1px solid var(--line); font-size: 12px; line-height: 1.7; }
+    .side-footer { margin-top: 16px; padding: 16px; border-top: 1px solid var(--line); background: rgba(255,255,255,0.02); }
+    @media (max-width: 980px) { .hero, .layout, .row { grid-template-columns: 1fr; } .wrap { padding: 20px 14px 34px; } textarea { min-height: 220px; } .topbar { flex-direction: column; align-items: flex-start; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <div class="brand-mark">AI</div>
+        <div class="brand-meta">
+          <strong>Meeting Intelligence</strong>
+          <span>Netlify Functions version with server-side Poe API access</span>
+        </div>
+      </div>
+      <div class="version-chip">Netlify Functions · Poe API</div>
+    </div>
+
+    <section class="hero">
+      <div class="hero-card">
+        <div class="eyebrow">AI productivity tool</div>
+        <h1>Turn messy meeting notes into clear next steps.</h1>
+        <p class="hero-copy">This version is designed for Netlify deployment. The frontend stays static, while the API request runs through a Netlify Function so your Poe API key remains on the server side.</p>
+        <div class="hero-points">
+          <span>Summary generation</span>
+          <span>Action-item extraction</span>
+          <span>Follow-up email draft</span>
+        </div>
+      </div>
+      <div class="stats-card">
+        <div class="mini-stat"><strong>Static frontend</strong><span>Deploy the UI as a normal Netlify site.</span></div>
+        <div class="mini-stat"><strong>Serverless backend</strong><span>The AI request runs in a Netlify Function.</span></div>
+        <div class="mini-stat"><strong>Private key</strong><span>Store the Poe API key in Netlify environment variables.</span></div>
+      </div>
+    </section>
+
+    <section class="layout">
+      <div class="main-card">
+        <div class="card-head">
+          <div>
+            <h2>Meeting input</h2>
+            <p>Paste transcript text, choose the meeting type and output language, then generate your result through the serverless API route.</p>
+          </div>
+        </div>
+        <div class="card-body">
+          <div id="status" class="status info">Paste your notes and click Generate output.</div>
+
+          <div class="row">
+            <div class="field">
+              <label for="language">Output language</label>
+              <select id="language">
+                <option value="English">English</option>
+                <option value="Traditional Chinese">Traditional Chinese</option>
+                <option value="Simplified Chinese">Simplified Chinese</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="meetingType">Meeting type</label>
+              <select id="meetingType">
+                <option value="General">General</option>
+                <option value="Client call">Client call</option>
+                <option value="Internal sync">Internal sync</option>
+                <option value="Project review">Project review</option>
+                <option value="Sales call">Sales call</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="meetingTitle">Meeting title</label>
+            <input id="meetingTitle" type="text" placeholder="Example: Weekly product sync" />
+          </div>
+
+          <div class="field">
+            <label for="notes">Transcript or notes</label>
+            <textarea id="notes" placeholder="Paste your meeting transcript or rough notes here..."></textarea>
+          </div>
+
+          <div class="btn-row">
+            <button class="btn-primary" id="generateBtn">Generate output</button>
+            <button class="btn-secondary" id="demoBtn" type="button">Load sample</button>
+            <button class="btn-secondary" id="clearBtn" type="button">Clear</button>
+          </div>
+
+          <p class="helper-note">The frontend calls <code>/.netlify/functions/generate</code>, and the function sends the request to Poe.</p>
+          <div class="security-note">Set your Poe API key and model in Netlify site environment variables, not in the browser.</div>
+        </div>
+      </div>
+
+      <div class="side-card">
+        <div class="card-head">
+          <div>
+            <h2>Generated output</h2>
+            <p>The function asks the model for structured JSON, then the page displays the result below.</p>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="output-stack">
+            <div class="output-box">
+              <div class="output-head"><h3>Summary</h3><button class="btn-secondary copy-btn" data-copy-target="summaryOutput">Copy</button></div>
+              <div id="summaryOutput" class="output-content placeholder">Your AI summary will appear here.</div>
+            </div>
+            <div class="output-box">
+              <div class="output-head"><h3>Action items</h3><button class="btn-secondary copy-btn" data-copy-target="actionsOutput">Copy</button></div>
+              <div id="actionsOutput" class="output-content placeholder">Your action items will appear here.</div>
+            </div>
+            <div class="output-box">
+              <div class="output-head"><h3>Follow-up email</h3><button class="btn-secondary copy-btn" data-copy-target="emailOutput">Copy</button></div>
+              <div id="emailOutput" class="output-content placeholder">Your follow-up draft will appear here.</div>
+            </div>
+          </div>
+        </div>
+        <div class="side-footer">
+          <strong>Deploy checklist</strong>
+          <ul>
+            <li>Upload this project to Netlify.</li>
+            <li>Set <code>POE_API_KEY</code> in Netlify environment variables.</li>
+            <li>Set <code>POE_MODEL</code> to a model your Poe account can access.</li>
+            <li>Redeploy after updating environment variables.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const meetingTitle = document.getElementById('meetingTitle');
+    const language = document.getElementById('language');
+    const meetingType = document.getElementById('meetingType');
+    const notes = document.getElementById('notes');
+    const summaryOutput = document.getElementById('summaryOutput');
+    const actionsOutput = document.getElementById('actionsOutput');
+    const emailOutput = document.getElementById('emailOutput');
+    const statusBox = document.getElementById('status');
+    const generateBtn = document.getElementById('generateBtn');
+
+    function setStatus(message, type = 'info') {
+      statusBox.className = `status show ${type}`;
+      statusBox.textContent = message;
+    }
+
+    function setOutput(el, value) {
+      el.textContent = value;
+      el.classList.remove('placeholder');
+    }
+
+    function resetOutput() {
+      summaryOutput.textContent = 'Your AI summary will appear here.';
+      actionsOutput.textContent = 'Your action items will appear here.';
+      emailOutput.textContent = 'Your follow-up draft will appear here.';
+      summaryOutput.classList.add('placeholder');
+      actionsOutput.classList.add('placeholder');
+      emailOutput.classList.add('placeholder');
+    }
+
+    async function generateOutput() {
+      const payload = {
+        meetingTitle: meetingTitle.value.trim(),
+        language: language.value,
+        meetingType: meetingType.value,
+        notes: notes.value.trim()
+      };
+
+      if (!payload.notes) {
+        setStatus('Please paste some meeting notes first.', 'error');
+        return;
+      }
+
+      generateBtn.disabled = true;
+      generateBtn.textContent = 'Generating...';
+      setStatus('Sending request to Netlify Function...', 'info');
+
+      try {
+        const response = await fetch('/.netlify/functions/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.error || 'Request failed.');
+        }
+
+        setOutput(summaryOutput, data.summary || 'No summary returned.');
+        setOutput(actionsOutput, Array.isArray(data.action_items) ? data.action_items.join('\n') : (data.action_items || 'No action items returned.'));
+        setOutput(emailOutput, data.follow_up_email || 'No follow-up email returned.');
+        setStatus('Output generated successfully.', 'success');
+      } catch (error) {
+        setStatus(`Generation failed: ${error.message}`, 'error');
+      } finally {
+        generateBtn.disabled = false;
+        generateBtn.textContent = 'Generate output';
+      }
+    }
+
+    document.getElementById('generateBtn').addEventListener('click', generateOutput);
+    document.getElementById('clearBtn').addEventListener('click', () => {
+      meetingTitle.value = '';
+      notes.value = '';
+      meetingType.value = 'General';
+      language.value = 'English';
+      resetOutput();
+      setStatus('Cleared. Ready for a new test.', 'info');
+    });
+    document.getElementById('demoBtn').addEventListener('click', () => {
+      meetingTitle.value = 'Weekly product sync';
+      meetingType.value = 'Internal sync';
+      language.value = 'English';
+      notes.value = `Alice: We need a faster way to summarize weekly meetings and send follow-up emails.\nBen: The first version should focus on transcript input and three outputs only: summary, action items, and follow-up email.\nCindy: We should avoid login and billing for the MVP to keep the build simple.\nDavid: Let's also keep the interface to a single page and test whether users find the output useful.\nAlice: Agreed. Ben will prepare the first prompt draft. Cindy will review the UI copy. David should test three sample transcripts before Friday.`;
+      resetOutput();
+      setStatus('Sample data loaded. Click Generate output.', 'info');
+    });
+
+    document.querySelectorAll('[data-copy-target]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const target = document.getElementById(btn.dataset.copyTarget);
+        const text = target.textContent.trim();
+        if (!text || target.classList.contains('placeholder')) {
+          setStatus('Nothing to copy yet.', 'error');
+          return;
+        }
+        await navigator.clipboard.writeText(text);
+        setStatus('Copied to clipboard.', 'success');
+      });
+    });
+
+    setStatus('Paste your notes and click Generate output.', 'info');
+  </script>
+</body>
+</html>
