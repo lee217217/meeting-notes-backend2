@@ -16,6 +16,7 @@
       --primary-2: #7c5cff;
       --success: #3ddc97;
       --danger: #ff6b81;
+      --warning: #ffcc66;
       --shadow: 0 24px 60px rgba(0,0,0,0.38);
       --radius-xl: 24px;
     }
@@ -30,7 +31,7 @@
         radial-gradient(circle at top right, rgba(100, 163, 255, 0.18), transparent 24%),
         linear-gradient(180deg, #0b1020 0%, #0b1224 40%, #0a1020 100%);
     }
-    .wrap { max-width: 1220px; margin: 0 auto; padding: 32px 20px 56px; }
+    .wrap { max-width: 1240px; margin: 0 auto; padding: 32px 20px 56px; }
     .topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 28px; }
     .brand { display: flex; align-items: center; gap: 12px; }
     .brand-mark {
@@ -38,7 +39,9 @@
       background: linear-gradient(135deg, var(--primary), var(--primary-2)); box-shadow: 0 14px 34px rgba(100,163,255,0.28);
     }
     .brand-meta strong { display: block; font-size: 14px; }
-    .brand-meta span, .version-chip, .hero-copy, .card-head p, .helper-note, .security-note, .mini-stat span, .side-footer ul { color: var(--muted); }
+    .brand-meta span, .version-chip, .hero-copy, .card-head p, .helper-note, .security-note, .mini-stat span, .side-footer ul, .markdown-note {
+      color: var(--muted);
+    }
     .version-chip { padding: 10px 14px; border: 1px solid var(--line); border-radius: 999px; background: rgba(255,255,255,0.03); font-size: 12px; }
     .hero, .layout { display: grid; gap: 24px; }
     .hero { grid-template-columns: 1.2fr 0.8fr; margin-bottom: 24px; }
@@ -82,14 +85,56 @@
     .status.success { background: rgba(61,220,151,0.10); color: #bff5da; border-color: rgba(61,220,151,0.16); }
     .output-stack { display: grid; gap: 14px; }
     .output-box { border: 1px solid var(--line); background: rgba(255,255,255,0.035); border-radius: 18px; padding: 16px; }
-    .output-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .output-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; gap: 10px; }
     .output-box h3 { margin: 0; font-size: 16px; }
     .copy-btn { padding: 8px 10px; font-size: 12px; border-radius: 10px; }
     .output-content { white-space: pre-wrap; line-height: 1.8; color: #dbe7fb; min-height: 88px; font-size: 14px; }
     .placeholder { color: #7b89a2; }
     .security-note { margin-top: 12px; padding: 12px 14px; border-radius: 14px; background: rgba(255,255,255,0.03); border: 1px solid var(--line); font-size: 12px; line-height: 1.7; }
     .side-footer { margin-top: 16px; padding: 16px; border-top: 1px solid var(--line); background: rgba(255,255,255,0.02); }
-    @media (max-width: 980px) { .hero, .layout, .row { grid-template-columns: 1fr; } .wrap { padding: 20px 14px 34px; } textarea { min-height: 220px; } .topbar { flex-direction: column; align-items: flex-start; } }
+    .side-footer ul { margin: 10px 0 0 18px; padding: 0; line-height: 1.7; }
+    .helper-note { margin-top: 14px; font-size: 13px; }
+    .actions-list { display: grid; gap: 10px; }
+    .action-card {
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px;
+      padding: 12px 14px;
+      background: rgba(255,255,255,0.03);
+    }
+    .action-task { font-weight: 700; color: #eaf1ff; margin-bottom: 8px; }
+    .action-meta { display: flex; flex-wrap: wrap; gap: 8px; }
+    .meta-pill {
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.05);
+      color: #cfdaf1;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .priority-high { color: #ffd0d7; border-color: rgba(255,107,129,0.25); }
+    .priority-medium { color: #ffe7b0; border-color: rgba(255,204,102,0.24); }
+    .priority-low { color: #c8f5df; border-color: rgba(61,220,151,0.24); }
+    .markdown-box {
+      margin-top: 14px;
+      border: 1px dashed rgba(255,255,255,0.12);
+      border-radius: 16px;
+      padding: 14px;
+      background: rgba(255,255,255,0.02);
+    }
+    .markdown-preview {
+      white-space: pre-wrap;
+      font-size: 13px;
+      line-height: 1.7;
+      color: #d7e2f7;
+      max-height: 260px;
+      overflow: auto;
+    }
+    @media (max-width: 980px) {
+      .hero, .layout, .row { grid-template-columns: 1fr; }
+      .wrap { padding: 20px 14px 34px; }
+      textarea { min-height: 220px; }
+      .topbar { flex-direction: column; align-items: flex-start; }
+    }
   </style>
 </head>
 <body>
@@ -99,27 +144,29 @@
         <div class="brand-mark">AI</div>
         <div class="brand-meta">
           <strong>Meeting Intelligence</strong>
-          <span>Netlify Functions version with server-side AI access</span>
+          <span>Static frontend with secure server-side AI processing on Netlify Functions</span>
         </div>
       </div>
-      <div class="version-chip">Netlify Functions · Server-side</div>
+      <div class="version-chip">v1.1 · Structured Action Items</div>
     </div>
 
     <section class="hero">
       <div class="hero-card">
         <div class="eyebrow">AI productivity tool</div>
         <h1>Turn messy meeting notes into clear next steps.</h1>
-        <p class="hero-copy">  This version is designed for Netlify deployment. The frontend stays static </p>
+        <p class="hero-copy">
+          Paste a transcript or rough notes, then generate a structured summary, action items with owners and due dates, and a ready-to-send follow-up email.
+        </p>
         <div class="hero-points">
           <span>Summary generation</span>
-          <span>Action-item extraction</span>
-          <span>Follow-up email draft</span>
+          <span>Structured action tracking</span>
+          <span>Markdown export</span>
         </div>
       </div>
       <div class="stats-card">
-        <div class="mini-stat"><strong>Static frontend</strong><span>Deploy the UI as a normal Netlify site.</span></div>
-        <div class="mini-stat"><strong>Serverless backend</strong><span>The AI request runs in a Netlify Function.</span></div>
-        <div class="mini-stat"><strong>Private key</strong><span>Store the Poe API key in Netlify environment variables.</span></div>
+        <div class="mini-stat"><strong>Static frontend</strong><span>Deploy the interface as a normal Netlify site.</span></div>
+        <div class="mini-stat"><strong>Serverless backend</strong><span>The AI request runs inside a Netlify Function.</span></div>
+        <div class="mini-stat"><strong>Private key</strong><span>Keep your API key in Netlify environment variables only.</span></div>
       </div>
     </section>
 
@@ -128,7 +175,7 @@
         <div class="card-head">
           <div>
             <h2>Meeting input</h2>
-            <p>Paste transcript text, choose the meeting type and output language, then generate your result through the serverless API route.</p>
+            <p>Paste transcript text, choose the meeting type and output language, then generate structured notes through the serverless API route.</p>
           </div>
         </div>
         <div class="card-body">
@@ -166,13 +213,14 @@
           </div>
 
           <div class="btn-row">
-            <button class="btn-primary" id="generateBtn">Generate output</button>
+            <button class="btn-primary" id="generateBtn" type="button">Generate output</button>
+            <button class="btn-secondary" id="copyMarkdownBtn" type="button">Copy Markdown</button>
             <button class="btn-secondary" id="demoBtn" type="button">Load sample</button>
             <button class="btn-secondary" id="clearBtn" type="button">Clear</button>
           </div>
 
-          <p class="helper-note"></p>
-          <div class="security-note"></div>
+          <p class="helper-note">The frontend calls <code>/.netlify/functions/generate</code>, and the function sends the request to the AI API.</p>
+          <div class="security-note">Set <code>PERPLEXITY_API_KEY</code> in Netlify environment variables. Never place the key in browser-side code.</div>
         </div>
       </div>
 
@@ -180,32 +228,53 @@
         <div class="card-head">
           <div>
             <h2>Generated output</h2>
-            <p>The function asks the model for structured JSON, then the page displays the result below.</p>
+            <p>The function returns structured JSON so the page can render a summary, action list, follow-up email, and Markdown export.</p>
           </div>
         </div>
         <div class="card-body">
           <div class="output-stack">
             <div class="output-box">
-              <div class="output-head"><h3>Summary</h3><button class="btn-secondary copy-btn" data-copy-target="summaryOutput">Copy</button></div>
+              <div class="output-head">
+                <h3>Summary</h3>
+                <button class="btn-secondary copy-btn" data-copy-target="summaryOutput">Copy</button>
+              </div>
               <div id="summaryOutput" class="output-content placeholder">Your AI summary will appear here.</div>
             </div>
+
             <div class="output-box">
-              <div class="output-head"><h3>Action items</h3><button class="btn-secondary copy-btn" data-copy-target="actionsOutput">Copy</button></div>
-              <div id="actionsOutput" class="output-content placeholder">Your action items will appear here.</div>
+              <div class="output-head">
+                <h3>Action items</h3>
+                <button class="btn-secondary copy-btn" id="copyActionsBtn" type="button">Copy</button>
+              </div>
+              <div id="actionsOutput" class="output-content placeholder">Your structured action items will appear here.</div>
             </div>
+
             <div class="output-box">
-              <div class="output-head"><h3>Follow-up email</h3><button class="btn-secondary copy-btn" data-copy-target="emailOutput">Copy</button></div>
+              <div class="output-head">
+                <h3>Follow-up email</h3>
+                <button class="btn-secondary copy-btn" data-copy-target="emailOutput">Copy</button>
+              </div>
               <div id="emailOutput" class="output-content placeholder">Your follow-up draft will appear here.</div>
             </div>
           </div>
+
+          <div class="markdown-box">
+            <div class="output-head">
+              <h3>Markdown preview</h3>
+              <button class="btn-secondary copy-btn" id="copyMarkdownBtn2" type="button">Copy</button>
+            </div>
+            <div class="markdown-note">Use this for Notion, Confluence, docs, or manual task import.</div>
+            <div id="markdownPreview" class="markdown-preview placeholder" style="margin-top:10px;">Your Markdown export will appear here.</div>
+          </div>
         </div>
+
         <div class="side-footer">
           <strong>Deploy checklist</strong>
           <ul>
-            <li></li>
-            <li></li>
-            <li></li>
-            <li></li>
+            <li>Upload this project to Netlify.</li>
+            <li>Set <code>PERPLEXITY_API_KEY</code> in Netlify environment variables.</li>
+            <li>Redeploy after updating environment variables.</li>
+            <li>Test each meeting type with sample transcripts.</li>
           </ul>
         </div>
       </div>
@@ -220,8 +289,15 @@
     const summaryOutput = document.getElementById('summaryOutput');
     const actionsOutput = document.getElementById('actionsOutput');
     const emailOutput = document.getElementById('emailOutput');
+    const markdownPreview = document.getElementById('markdownPreview');
     const statusBox = document.getElementById('status');
     const generateBtn = document.getElementById('generateBtn');
+    const copyMarkdownBtn = document.getElementById('copyMarkdownBtn');
+    const copyMarkdownBtn2 = document.getElementById('copyMarkdownBtn2');
+    const copyActionsBtn = document.getElementById('copyActionsBtn');
+
+    let latestMarkdown = '';
+    let latestActionItems = [];
 
     function setStatus(message, type = 'info') {
       statusBox.className = `status show ${type}`;
@@ -235,11 +311,70 @@
 
     function resetOutput() {
       summaryOutput.textContent = 'Your AI summary will appear here.';
-      actionsOutput.textContent = 'Your action items will appear here.';
+      actionsOutput.textContent = 'Your structured action items will appear here.';
       emailOutput.textContent = 'Your follow-up draft will appear here.';
+      markdownPreview.textContent = 'Your Markdown export will appear here.';
+
       summaryOutput.classList.add('placeholder');
       actionsOutput.classList.add('placeholder');
       emailOutput.classList.add('placeholder');
+      markdownPreview.classList.add('placeholder');
+
+      latestMarkdown = '';
+      latestActionItems = [];
+    }
+
+    function escapeHtml(text) {
+      return String(text || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function renderActionItems(items) {
+      latestActionItems = Array.isArray(items) ? items : [];
+
+      if (!latestActionItems.length) {
+        actionsOutput.innerHTML = 'No action items returned.';
+        actionsOutput.classList.remove('placeholder');
+        return;
+      }
+
+      const html = `
+        <div class="actions-list">
+          ${latestActionItems.map(item => `
+            <div class="action-card">
+              <div class="action-task">${escapeHtml(item.task || 'TBD')}</div>
+              <div class="action-meta">
+                <span class="meta-pill">Owner: ${escapeHtml(item.owner || 'TBD')}</span>
+                <span class="meta-pill">Due: ${escapeHtml(item.due_date || 'TBD')}</span>
+                <span class="meta-pill priority-${String(item.priority || 'Medium').toLowerCase()}">Priority: ${escapeHtml(item.priority || 'Medium')}</span>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+
+      actionsOutput.innerHTML = html;
+      actionsOutput.classList.remove('placeholder');
+    }
+
+    function actionsToPlainText(items) {
+      if (!Array.isArray(items) || !items.length) return 'No action items returned.';
+      return items.map((item, index) =>
+        `${index + 1}. ${item.task} | Owner: ${item.owner} | Due: ${item.due_date} | Priority: ${item.priority}`
+      ).join('\n');
+    }
+
+    async function copyText(text, successMessage) {
+      if (!text || !text.trim()) {
+        setStatus('Nothing to copy yet.', 'error');
+        return;
+      }
+      await navigator.clipboard.writeText(text);
+      setStatus(successMessage, 'success');
     }
 
     async function generateOutput() {
@@ -267,13 +402,22 @@
         });
 
         const data = await response.json();
+
         if (!response.ok) {
-          throw new Error(data.error || 'Request failed.');
+          throw new Error(
+            data.error ||
+            data.message ||
+            JSON.stringify(data) ||
+            'Request failed.'
+          );
         }
 
         setOutput(summaryOutput, data.summary || 'No summary returned.');
-        setOutput(actionsOutput, Array.isArray(data.action_items) ? data.action_items.join('\n') : (data.action_items || 'No action items returned.'));
+        renderActionItems(data.action_items || []);
         setOutput(emailOutput, data.follow_up_email || 'No follow-up email returned.');
+        setOutput(markdownPreview, data.markdown || 'No Markdown returned.');
+
+        latestMarkdown = data.markdown || '';
         setStatus('Output generated successfully.', 'success');
       } catch (error) {
         setStatus(`Generation failed: ${error.message}`, 'error');
@@ -284,6 +428,7 @@
     }
 
     document.getElementById('generateBtn').addEventListener('click', generateOutput);
+
     document.getElementById('clearBtn').addEventListener('click', () => {
       meetingTitle.value = '';
       notes.value = '';
@@ -292,11 +437,16 @@
       resetOutput();
       setStatus('Cleared. Ready for a new test.', 'info');
     });
+
     document.getElementById('demoBtn').addEventListener('click', () => {
       meetingTitle.value = 'Weekly product sync';
       meetingType.value = 'Internal sync';
       language.value = 'English';
-      notes.value = `Alice: We need a faster way to summarize weekly meetings and send follow-up emails.\nBen: The first version should focus on transcript input and three outputs only: summary, action items, and follow-up email.\nCindy: We should avoid login and billing for the MVP to keep the build simple.\nDavid: Let's also keep the interface to a single page and test whether users find the output useful.\nAlice: Agreed. Ben will prepare the first prompt draft. Cindy will review the UI copy. David should test three sample transcripts before Friday.`;
+      notes.value = `Alice: We need a faster way to summarize weekly meetings and send follow-up emails.
+Ben: The first version should focus on transcript input and three outputs only: summary, action items, and follow-up email.
+Cindy: We should avoid login and billing for the MVP to keep the build simple.
+David: Let's also keep the interface to a single page and test whether users find the output useful.
+Alice: Agreed. Ben will prepare the first prompt draft. Cindy will review the UI copy. David should test three sample transcripts before Friday.`;
       resetOutput();
       setStatus('Sample data loaded. Click Generate output.', 'info');
     });
@@ -309,11 +459,23 @@
           setStatus('Nothing to copy yet.', 'error');
           return;
         }
-        await navigator.clipboard.writeText(text);
-        setStatus('Copied to clipboard.', 'success');
+        await copyText(text, 'Copied to clipboard.');
       });
     });
 
+    copyActionsBtn.addEventListener('click', async () => {
+      await copyText(actionsToPlainText(latestActionItems), 'Action items copied.');
+    });
+
+    copyMarkdownBtn.addEventListener('click', async () => {
+      await copyText(latestMarkdown, 'Markdown copied.');
+    });
+
+    copyMarkdownBtn2.addEventListener('click', async () => {
+      await copyText(latestMarkdown, 'Markdown copied.');
+    });
+
+    resetOutput();
     setStatus('Paste your notes and click Generate output.', 'info');
   </script>
 </body>
