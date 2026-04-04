@@ -33,6 +33,30 @@ export async function handler(event) {
       .trim();
   }
 
+  function normalizeActionItems(items) {
+    if (!Array.isArray(items)) return [];
+
+    return items.map((item) => {
+      if (typeof item === "string") {
+        return {
+          task: item.trim(),
+          owner: "TBD",
+          due_date: "TBD",
+          priority: "Medium"
+        };
+      }
+
+      return {
+        task: String(item?.task || "").trim() || "TBD",
+        owner: String(item?.owner || "").trim() || "TBD",
+        due_date: String(item?.due_date || "").trim() || "TBD",
+        priority: ["High", "Medium", "Low"].includes(String(item?.priority || "").trim())
+          ? String(item.priority).trim()
+          : "Medium"
+      };
+    }).filter(item => item.task);
+  }
+
   try {
     const body = JSON.parse(event.body || "{}");
     const meetingTitle = String(body.meetingTitle || "").trim();
@@ -48,6 +72,17 @@ export async function handler(event) {
       };
     }
 
+    const meetingTypeInstructions = {
+      "General": "Focus on the overall summary, practical action items, and a clear follow-up email.",
+      "Client call": "Emphasize client requests, promises made, deadlines, and next follow-up actions.",
+      "Internal sync": "Emphasize decisions, blockers, responsibilities, and immediate next steps.",
+      "Project review": "Emphasize progress updates, risks, issues, owners, and project milestones.",
+      "Sales call": "Emphasize customer needs, objections, commercial follow-ups, and next sales actions."
+    };
+
+    const extraInstruction =
+      meetingTypeInstructions[meetingType] || meetingTypeInstructions["General"];
+
     const prompt = `
 You are an AI assistant that turns meeting transcripts into structured notes.
 
@@ -55,16 +90,28 @@ Meeting title: ${meetingTitle || "(not provided)"}
 Meeting type: ${meetingType}
 Output language: ${language}
 
-Return ONLY valid JSON.
-Do not include markdown.
-Do not use code fences.
-Do not add any explanation before or after the JSON.
+Instructions:
+- ${extraInstruction}
+- Return ONLY valid JSON.
+- Do not include markdown.
+- Do not use code fences.
+- Do not add explanations before or after the JSON.
+- If an owner or due date is unclear, use "TBD".
+- Priority must be one of: High, Medium, Low.
 
 Use exactly this schema:
 {
   "summary": "one-paragraph high level summary in the requested language",
-  "action_items": ["list of action items, each as one sentence"],
-  "follow_up_email": "a short follow-up email draft in the requested language"
+  "action_items": [
+    {
+      "task": "clear action item sentence",
+      "owner": "person responsible or TBD",
+      "due_date": "deadline/date or TBD",
+      "priority": "High or Medium or Low"
+    }
+  ],
+  "follow_up_email": "a short follow-up email draft in the requested language",
+  "markdown": "full markdown version of the meeting notes in the requested language"
 }
 
 Transcript:
@@ -83,7 +130,8 @@ ${notes}
         messages: [
           {
             role: "system",
-            content: "You output strict JSON only. No markdown. No code fences. No commentary."
+            content:
+              "You output strict JSON only. No markdown code fences. No commentary. Start with { and end with }."
           },
           {
             role: "user",
@@ -106,11 +154,14 @@ ${notes}
       return {
         statusCode: pplxResponse.status,
         headers,
-        body: JSON.stringify({ error: message, details: data })
+        body: JSON.stringify({
+          error: message,
+          details: data
+        })
       };
     }
 
-    const rawContent = data?.choices?.[0]?.message?.content || "";
+    const rawContent = data?.choices?.?.message?.content || "";
     const cleanedContent = cleanJsonString(rawContent);
 
     let parsed;
@@ -122,20 +173,46 @@ ${notes}
         headers,
         body: JSON.stringify({
           error: "Model returned non-JSON output.",
-          rawContent: rawContent
+          rawContent
         })
       };
+    }
+
+    const summary = String(parsed?.summary || "").trim();
+    const actionItems = normalizeActionItems(parsed?.action_items);
+    const followUpEmail = String(parsed?.follow_up_email || "").trim();
+    let markdown = String(parsed?.markdown || "").trim();
+
+    if (!markdown) {
+      const actionLines = actionItems.length
+        ? actionItems
+            .map(
+              (item) =>
+                `- [ ] ${item.task} — Owner: ${item.owner}; Due: ${item.due_date}; Priority: ${item.priority}`
+            )
+            .join("\n")
+        : "- No action items identified.";
+
+      markdown = `# ${meetingTitle || "Meeting Notes"}
+
+## Summary
+${summary || "No summary generated."}
+
+## Action Items
+${actionLines}
+
+## Follow-up Email
+${followUpEmail || "No follow-up email generated."}`;
     }
 
     return {
       statusCode: 200,
       headers,
       body: JSON.stringify({
-        summary: String(parsed.summary || "").trim(),
-        action_items: Array.isArray(parsed.action_items)
-          ? parsed.action_items.map(item => String(item).trim()).filter(Boolean)
-          : [],
-        follow_up_email: String(parsed.follow_up_email || "").trim()
+        summary,
+        action_items: actionItems,
+        follow_up_email: followUpEmail,
+        markdown
       })
     };
   } catch (error) {
