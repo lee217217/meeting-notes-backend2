@@ -20,7 +20,9 @@
       --shadow: 0 24px 60px rgba(0,0,0,0.38);
       --radius-xl: 24px;
     }
+
     * { box-sizing: border-box; }
+
     body {
       margin: 0;
       font-family: Inter, ui-sans-serif, system-ui, sans-serif;
@@ -31,179 +33,463 @@
         radial-gradient(circle at top right, rgba(100, 163, 255, 0.18), transparent 24%),
         linear-gradient(180deg, #0b1020 0%, #0b1224 40%, #0a1020 100%);
     }
-    .wrap { max-width: 1240px; margin: 0 auto; padding: 32px 20px 56px; }
-    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 28px; }
-    .brand { display: flex; align-items: center; gap: 12px; }
-    .brand-mark {
-      width: 42px; height: 42px; border-radius: 14px; display: grid; place-items: center; font-weight: 800; color: white;
-      background: linear-gradient(135deg, var(--primary), var(--primary-2)); box-shadow: 0 14px 34px rgba(100,163,255,0.28);
+
+    .wrap {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 32px 20px 56px;
     }
-    .brand-meta strong { display: block; font-size: 14px; }
-    .brand-meta span, .version-chip, .hero-copy, .card-head p, .helper-note, .security-note, .mini-stat span, .side-footer ul, .markdown-note {
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      color: white;
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      box-shadow: 0 14px 34px rgba(100,163,255,0.28);
+    }
+
+    .brand-meta strong {
+      display: block;
+      font-size: 14px;
+    }
+
+    .brand-meta span,
+    .version-chip,
+    .hero-copy,
+    .card-head p,
+    .helper-note,
+    .security-note,
+    .mini-stat span,
+    .side-footer ul,
+    .markdown-note {
       color: var(--muted);
     }
-    .version-chip { padding: 10px 14px; border: 1px solid var(--line); border-radius: 999px; background: rgba(255,255,255,0.03); font-size: 12px; }
-    .hero, .layout { display: grid; gap: 24px; }
-    .hero { grid-template-columns: 1.2fr 0.8fr; margin-bottom: 24px; }
-    .layout { grid-template-columns: 1.02fr 0.98fr; }
-    .hero-card, .stats-card, .main-card, .side-card {
-      background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius-xl); box-shadow: var(--shadow); backdrop-filter: blur(14px);
+
+    .version-chip {
+      padding: 10px 14px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.03);
+      font-size: 12px;
     }
-    .hero-card { padding: 28px; }
-    .eyebrow { display: inline-flex; padding: 8px 12px; border-radius: 999px; background: rgba(100,163,255,0.10); color: #bcd3ff; font-size: 12px; font-weight: 700; margin-bottom: 16px; text-transform: uppercase; }
-    h1 { margin: 0 0 14px; font-size: clamp(34px, 5vw, 58px); line-height: 1.02; letter-spacing: -0.03em; }
-    .hero-copy { margin: 0; font-size: 17px; line-height: 1.75; }
-    .hero-points { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 22px; }
-    .hero-points span { padding: 10px 12px; border-radius: 12px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); color: #cbd7e9; font-size: 13px; }
-    .stats-card { padding: 22px; display: grid; gap: 14px; }
-    .mini-stat { padding: 16px; border-radius: 18px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); }
-    .mini-stat strong { display: block; font-size: 24px; margin-bottom: 6px; }
-    .card-head { padding: 22px 24px 0; }
-    .card-head h2 { margin: 0; font-size: 22px; }
-    .card-body { padding: 22px 24px 24px; }
-    .field { margin-bottom: 16px; }
-    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-    label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 700; color: #dce6f7; }
-    input, select, textarea {
-      width: 100%; border: 1px solid var(--line-strong); background: rgba(255,255,255,0.04); color: var(--text);
-      border-radius: 14px; padding: 14px 15px; font: inherit;
+
+    .hero,
+    .layout {
+      display: grid;
+      gap: 24px;
     }
-    textarea { min-height: 280px; resize: vertical; line-height: 1.7; }
-    input:focus, select:focus, textarea:focus { outline: none; border-color: rgba(100,163,255,0.8); box-shadow: 0 0 0 4px rgba(100,163,255,0.12); }
-    .btn-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 10px; }
+
+    .hero {
+      grid-template-columns: 1.2fr 0.8fr;
+      margin-bottom: 24px;
+    }
+
+    .layout {
+      grid-template-columns: 1.02fr 0.98fr;
+    }
+
+    .hero-card,
+    .stats-card,
+    .main-card,
+    .side-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+    }
+
+    .hero-card {
+      padding: 28px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(100,163,255,0.10);
+      color: #bcd3ff;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0 0 14px;
+      font-size: clamp(34px, 5vw, 58px);
+      line-height: 1.02;
+      letter-spacing: -0.03em;
+    }
+
+    .hero-copy {
+      margin: 0;
+      font-size: 17px;
+      line-height: 1.75;
+    }
+
+    .hero-points {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 22px;
+    }
+
+    .hero-points span {
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+      color: #cbd7e9;
+      font-size: 13px;
+    }
+
+    .stats-card {
+      padding: 22px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .mini-stat {
+      padding: 16px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .mini-stat strong {
+      display: block;
+      font-size: 24px;
+      margin-bottom: 6px;
+    }
+
+    .card-head {
+      padding: 22px 24px 0;
+    }
+
+    .card-head h2 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    .card-body {
+      padding: 22px 24px 24px;
+    }
+
+    .field {
+      margin-bottom: 16px;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #dce6f7;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid var(--line-strong);
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 14px 15px;
+      font: inherit;
+    }
+
+    textarea {
+      min-height: 280px;
+      resize: vertical;
+      line-height: 1.7;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: rgba(100,163,255,0.8);
+      box-shadow: 0 0 0 4px rgba(100,163,255,0.12);
+    }
+
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
     button {
-      border: 0; border-radius: 14px; padding: 14px 18px; font: inherit; font-weight: 700; cursor: pointer;
+      border: 0;
+      border-radius: 14px;
+      padding: 14px 18px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
       transition: transform 0.18s ease, opacity 0.18s ease;
     }
-    button:hover { transform: translateY(-1px); }
-    .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-2)); color: #fff; box-shadow: 0 16px 34px rgba(72,110,255,0.28); }
-    .btn-secondary { background: rgba(255,255,255,0.05); color: var(--text); border: 1px solid var(--line); }
-    .status { margin-bottom: 16px; padding: 12px 14px; border-radius: 14px; font-size: 13px; display: none; line-height: 1.6; border: 1px solid transparent; }
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      color: #fff;
+      box-shadow: 0 16px 34px rgba(72,110,255,0.28);
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+      border: 1px solid var(--line);
+    }
+
+    .status {
+      margin-bottom: 16px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      font-size: 13px;
+      display: none;
+      line-height: 1.6;
+      border: 1px solid transparent;
+    }
+
     .status.show { display: block; }
-    .status.info { background: rgba(100,163,255,0.10); color: #bcd3ff; border-color: rgba(100,163,255,0.16); }
-    .status.error { background: rgba(255,107,129,0.10); color: #ffc6d1; border-color: rgba(255,107,129,0.18); }
-    .status.success { background: rgba(61,220,151,0.10); color: #bff5da; border-color: rgba(61,220,151,0.16); }
-    .output-stack { display: grid; gap: 14px; }
-    .output-box { border: 1px solid var(--line); background: rgba(255,255,255,0.035); border-radius: 18px; padding: 16px; }
-    .output-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; gap: 10px; }
-    .output-box h3 { margin: 0; font-size: 16px; }
-    .copy-btn { padding: 8px 10px; font-size: 12px; border-radius: 10px; }
-    .output-content { white-space: pre-wrap; line-height: 1.8; color: #dbe7fb; min-height: 88px; font-size: 14px; }
-    .placeholder { color: #7b89a2; }
-    .security-note { margin-top: 12px; padding: 12px 14px; border-radius: 14px; background: rgba(255,255,255,0.03); border: 1px solid var(--line); font-size: 12px; line-height: 1.7; }
-    .side-footer { margin-top: 16px; padding: 16px; border-top: 1px solid var(--line); background: rgba(255,255,255,0.02); }
-    .side-footer ul { margin: 10px 0 0 18px; padding: 0; line-height: 1.7; }
-    .helper-note { margin-top: 14px; font-size: 13px; }
+    .status.info {
+      background: rgba(100,163,255,0.10);
+      color: #bcd3ff;
+      border-color: rgba(100,163,255,0.16);
+    }
+    .status.error {
+      background: rgba(255,107,129,0.10);
+      color: #ffc6d1;
+      border-color: rgba(255,107,129,0.18);
+    }
+    .status.success {
+      background: rgba(61,220,151,0.10);
+      color: #bff5da;
+      border-color: rgba(61,220,151,0.16);
+    }
+
+    .output-stack {
+      display: grid;
+      gap: 14px;
+    }
+
+    .output-box {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.035);
+      border-radius: 18px;
+      padding: 16px;
+    }
+
+    .output-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      gap: 10px;
+    }
+
+    .output-box h3 {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .copy-btn {
+      padding: 8px 10px;
+      font-size: 12px;
+      border-radius: 10px;
+    }
+
+    .output-content {
+      white-space: pre-wrap;
+      line-height: 1.8;
+      color: #dbe7fb;
+      min-height: 88px;
+      font-size: 14px;
+    }
+
+    .placeholder {
+      color: #7b89a2;
+    }
+
+    .security-note {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--line);
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    .side-footer {
+      margin-top: 16px;
+      padding: 16px;
+      border-top: 1px solid var(--line);
+      background: rgba(255,255,255,0.02);
+    }
+
+    .side-footer ul {
+      margin: 10px 0 0 18px;
+      padding: 0;
+      line-height: 1.7;
+    }
+
+    .helper-note {
+      margin-top: 14px;
+      font-size: 13px;
+    }
+
     .actions-list {
-  display: grid;
-  gap: 12px;
-}
+      display: grid;
+      gap: 12px;
+    }
 
-.action-card {
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 16px;
-  padding: 14px 16px;
-  background: rgba(255,255,255,0.03);
-  display: grid;
-  gap: 10px;
-}
+    .action-card {
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 14px 16px;
+      background: rgba(255,255,255,0.03);
+      display: grid;
+      gap: 10px;
+    }
 
-.action-top {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-}
+    .action-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
 
-.action-index {
-  flex: 0 0 auto;
-  width: 28px;
-  height: 28px;
-  border-radius: 999px;
-  display: grid;
-  place-items: center;
-  font-size: 12px;
-  font-weight: 800;
-  color: #dbe8ff;
-  background: rgba(100,163,255,0.12);
-  border: 1px solid rgba(100,163,255,0.18);
-}
+    .action-left {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      flex: 1;
+      min-width: 0;
+    }
 
-.action-main {
-  flex: 1;
-  min-width: 0;
-}
+    .action-index {
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      font-size: 12px;
+      font-weight: 800;
+      color: #dbe8ff;
+      background: rgba(100,163,255,0.12);
+      border: 1px solid rgba(100,163,255,0.18);
+      flex: 0 0 auto;
+    }
 
-.action-task {
-  font-weight: 800;
-  font-size: 15px;
-  line-height: 1.55;
-  color: #eef4ff;
-  margin-bottom: 6px;
-}
+    .action-main {
+      min-width: 0;
+      flex: 1;
+    }
 
-.action-subline {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  font-size: 13px;
-  color: #b8c6dc;
-}
+    .action-task {
+      font-weight: 800;
+      font-size: 15px;
+      line-height: 1.55;
+      color: #eef4ff;
+      margin-bottom: 6px;
+    }
 
-.action-subline strong {
-  color: #dce7f8;
-  font-weight: 700;
-}
+    .action-subline {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      font-size: 13px;
+      color: #b8c6dc;
+    }
 
-.action-priority {
-  flex: 0 0 auto;
-  font-size: 12px;
-  font-weight: 700;
-  padding: 7px 10px;
-  border-radius: 999px;
-  border: 1px solid rgba(255,255,255,0.08);
-  background: rgba(255,255,255,0.04);
-}
+    .action-subline strong {
+      color: #dce7f8;
+      font-weight: 700;
+    }
 
-.priority-high {
-  color: #ffd2d8;
-  background: rgba(255,107,129,0.10);
-  border-color: rgba(255,107,129,0.22);
-}
+    .action-priority {
+      flex: 0 0 auto;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 7px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.04);
+      white-space: nowrap;
+    }
 
-.priority-medium {
-  color: #ffe6ad;
-  background: rgba(255,204,102,0.10);
-  border-color: rgba(255,204,102,0.22);
-}
+    .priority-high {
+      color: #ffd2d8;
+      background: rgba(255,107,129,0.10);
+      border-color: rgba(255,107,129,0.22);
+    }
 
-.priority-low {
-  color: #c9f7e0;
-  background: rgba(61,220,151,0.10);
-  border-color: rgba(61,220,151,0.22);
-}
+    .priority-medium {
+      color: #ffe6ad;
+      background: rgba(255,204,102,0.10);
+      border-color: rgba(255,204,102,0.22);
+    }
 
-.action-bottom {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding-top: 2px;
-}
+    .priority-low {
+      color: #c9f7e0;
+      background: rgba(61,220,151,0.10);
+      border-color: rgba(61,220,151,0.22);
+    }
 
-.action-status {
-  font-size: 12px;
-  color: #91a2bd;
-}
+    .action-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding-top: 2px;
+    }
 
-.action-deadline {
-  font-size: 12px;
-  color: #c8d4e8;
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.06);
-}
+    .action-status {
+      font-size: 12px;
+      color: #91a2bd;
+    }
+
+    .action-deadline {
+      font-size: 12px;
+      color: #c8d4e8;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+      white-space: nowrap;
+    }
+
     .markdown-box {
       margin-top: 14px;
       border: 1px dashed rgba(255,255,255,0.12);
@@ -211,6 +497,7 @@
       padding: 14px;
       background: rgba(255,255,255,0.02);
     }
+
     .markdown-preview {
       white-space: pre-wrap;
       font-size: 13px;
@@ -219,11 +506,37 @@
       max-height: 260px;
       overflow: auto;
     }
+
     @media (max-width: 980px) {
-      .hero, .layout, .row { grid-template-columns: 1fr; }
-      .wrap { padding: 20px 14px 34px; }
-      textarea { min-height: 220px; }
-      .topbar { flex-direction: column; align-items: flex-start; }
+      .hero,
+      .layout,
+      .row {
+        grid-template-columns: 1fr;
+      }
+
+      .wrap {
+        padding: 20px 14px 34px;
+      }
+
+      textarea {
+        min-height: 220px;
+      }
+
+      .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .action-top,
+      .action-bottom {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .action-priority,
+      .action-deadline {
+        white-space: normal;
+      }
     }
   </style>
 </head>
@@ -253,6 +566,7 @@
           <span>Markdown export</span>
         </div>
       </div>
+
       <div class="stats-card">
         <div class="mini-stat"><strong>Static frontend</strong><span>Deploy the interface as a normal Netlify site.</span></div>
         <div class="mini-stat"><strong>Serverless backend</strong><span>The AI request runs inside a Netlify Function.</span></div>
@@ -268,6 +582,7 @@
             <p>Paste transcript text, choose the meeting type and output language, then generate structured notes through the serverless API route.</p>
           </div>
         </div>
+
         <div class="card-body">
           <div id="status" class="status info">Paste your notes and click Generate output.</div>
 
@@ -280,6 +595,7 @@
                 <option value="Simplified Chinese">Simplified Chinese</option>
               </select>
             </div>
+
             <div class="field">
               <label for="meetingType">Meeting type</label>
               <select id="meetingType">
@@ -309,8 +625,13 @@
             <button class="btn-secondary" id="clearBtn" type="button">Clear</button>
           </div>
 
-          <p class="helper-note">The frontend calls <code>/.netlify/functions/generate</code>, and the function sends the request to the AI API.</p>
-          <div class="security-note">Set <code>PERPLEXITY_API_KEY</code> in Netlify environment variables. Never place the key in browser-side code.</div>
+          <p class="helper-note">
+            The frontend calls <code>/.netlify/functions/generate</code>, and the function sends the request to the AI API.
+          </p>
+
+          <div class="security-note">
+            Set <code>PERPLEXITY_API_KEY</code> in Netlify environment variables. Never place the key in browser-side code.
+          </div>
         </div>
       </div>
 
@@ -321,6 +642,7 @@
             <p>The function returns structured JSON so the page can render a summary, action list, follow-up email, and Markdown export.</p>
           </div>
         </div>
+
         <div class="card-body">
           <div class="output-stack">
             <div class="output-box">
@@ -376,21 +698,26 @@
     const language = document.getElementById('language');
     const meetingType = document.getElementById('meetingType');
     const notes = document.getElementById('notes');
+
     const summaryOutput = document.getElementById('summaryOutput');
     const actionsOutput = document.getElementById('actionsOutput');
     const emailOutput = document.getElementById('emailOutput');
     const markdownPreview = document.getElementById('markdownPreview');
     const statusBox = document.getElementById('status');
+
     const generateBtn = document.getElementById('generateBtn');
     const copyMarkdownBtn = document.getElementById('copyMarkdownBtn');
     const copyMarkdownBtn2 = document.getElementById('copyMarkdownBtn2');
     const copyActionsBtn = document.getElementById('copyActionsBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const demoBtn = document.getElementById('demoBtn');
 
     let latestMarkdown = '';
     let latestActionItems = [];
 
-    function setStatus(message, type = 'info') {
-      statusBox.className = `status show ${type}`;
+    function setStatus(message, type) {
+      const finalType = type || 'info';
+      statusBox.className = 'status show ' + finalType;
       statusBox.textContent = message;
     }
 
@@ -424,65 +751,61 @@
     }
 
     function renderActionItems(items) {
-  latestActionItems = Array.isArray(items) ? items : [];
+      latestActionItems = Array.isArray(items) ? items : [];
 
-  if (!latestActionItems.length) {
-    actionsOutput.innerHTML = 'No action items returned.';
-    actionsOutput.classList.remove('placeholder');
-    return;
-  }
+      if (!latestActionItems.length) {
+        actionsOutput.innerHTML = 'No action items returned.';
+        actionsOutput.classList.remove('placeholder');
+        return;
+      }
 
-  const html = `
-    <div class="actions-list">
-      ${latestActionItems.map((item, index) => {
+      const cards = latestActionItems.map(function(item, index) {
         const task = escapeHtml(item.task || 'TBD');
         const owner = escapeHtml(item.owner || 'TBD');
         const dueDate = escapeHtml(item.due_date || 'TBD');
         const priorityRaw = String(item.priority || 'Medium');
-        const priority = escapeHtml(priorityRaw);
-        const priorityClass = \`priority-\${priorityRaw.toLowerCase()}\`;
+        const prioritySafe = escapeHtml(priorityRaw);
+        const priorityClass = 'priority-' + priorityRaw.toLowerCase();
 
-        return `
-          <div class="action-card">
-            <div class="action-top">
-              <div class="action-index">${index + 1}</div>
+        return [
+          '<div class="action-card">',
+            '<div class="action-top">',
+              '<div class="action-left">',
+                '<div class="action-index">' + (index + 1) + '</div>',
+                '<div class="action-main">',
+                  '<div class="action-task">' + task + '</div>',
+                  '<div class="action-subline">',
+                    '<span><strong>Owner:</strong> ' + owner + '</span>',
+                    '<span><strong>Due:</strong> ' + dueDate + '</span>',
+                  '</div>',
+                '</div>',
+              '</div>',
+              '<div class="action-priority ' + priorityClass + '">' + prioritySafe + '</div>',
+            '</div>',
+            '<div class="action-bottom">',
+              '<div class="action-status">Next step item</div>',
+              '<div class="action-deadline">Due ' + dueDate + '</div>',
+            '</div>',
+          '</div>'
+        ].join('');
+      });
 
-              <div class="action-main">
-                <div class="action-task">${task}</div>
-                <div class="action-subline">
-                  <span><strong>Owner:</strong> ${owner}</span>
-                  <span><strong>Due:</strong> ${dueDate}</span>
-                </div>
-              </div>
-
-              <div class="action-priority ${priorityClass}">
-                ${priority}
-              </div>
-            </div>
-
-            <div class="action-bottom">
-              <div class="action-status">Next step item</div>
-              <div class="action-deadline">Due ${dueDate}</div>
-            </div>
-          </div>
-        `;
-      }).join('')}
-    </div>
-  `;
-
-  actionsOutput.innerHTML = html;
-  actionsOutput.classList.remove('placeholder');
-}
-
-      actionsOutput.innerHTML = html;
+      actionsOutput.innerHTML = '<div class="actions-list">' + cards.join('') + '</div>';
       actionsOutput.classList.remove('placeholder');
     }
 
     function actionsToPlainText(items) {
-      if (!Array.isArray(items) || !items.length) return 'No action items returned.';
-      return items.map((item, index) =>
-        `${index + 1}. ${item.task} | Owner: ${item.owner} | Due: ${item.due_date} | Priority: ${item.priority}`
-      ).join('\n');
+      if (!Array.isArray(items) || !items.length) {
+        return 'No action items returned.';
+      }
+
+      return items.map(function(item, index) {
+        return (index + 1) + '. ' +
+          (item.task || 'TBD') +
+          ' | Owner: ' + (item.owner || 'TBD') +
+          ' | Due: ' + (item.due_date || 'TBD') +
+          ' | Priority: ' + (item.priority || 'Medium');
+      }).join('\n');
     }
 
     async function copyText(text, successMessage) {
@@ -490,8 +813,13 @@
         setStatus('Nothing to copy yet.', 'error');
         return;
       }
-      await navigator.clipboard.writeText(text);
-      setStatus(successMessage, 'success');
+
+      try {
+        await navigator.clipboard.writeText(text);
+        setStatus(successMessage, 'success');
+      } catch (err) {
+        setStatus('Copy failed. Your browser may block clipboard access.', 'error');
+      }
     }
 
     async function generateOutput() {
@@ -535,18 +863,23 @@
         setOutput(markdownPreview, data.markdown || 'No Markdown returned.');
 
         latestMarkdown = data.markdown || '';
-        setStatus('Output generated successfully.', 'success');
+
+        if (data.warning) {
+          setStatus('Generated with fallback: ' + data.warning, 'info');
+        } else {
+          setStatus('Output generated successfully.', 'success');
+        }
       } catch (error) {
-        setStatus(`Generation failed: ${error.message}`, 'error');
+        setStatus('Generation failed: ' + error.message, 'error');
       } finally {
         generateBtn.disabled = false;
         generateBtn.textContent = 'Generate output';
       }
     }
 
-    document.getElementById('generateBtn').addEventListener('click', generateOutput);
+    generateBtn.addEventListener('click', generateOutput);
 
-    document.getElementById('clearBtn').addEventListener('click', () => {
+    clearBtn.addEventListener('click', function() {
       meetingTitle.value = '';
       notes.value = '';
       meetingType.value = 'General';
@@ -555,11 +888,12 @@
       setStatus('Cleared. Ready for a new test.', 'info');
     });
 
-    document.getElementById('demoBtn').addEventListener('click', () => {
+    demoBtn.addEventListener('click', function() {
       meetingTitle.value = 'Weekly product sync';
       meetingType.value = 'Internal sync';
       language.value = 'English';
-      notes.value = `Alice: We need a faster way to summarize weekly meetings and send follow-up emails.
+      notes.value =
+`Alice: We need a faster way to summarize weekly meetings and send follow-up emails.
 Ben: The first version should focus on transcript input and three outputs only: summary, action items, and follow-up email.
 Cindy: We should avoid login and billing for the MVP to keep the build simple.
 David: Let's also keep the interface to a single page and test whether users find the output useful.
@@ -568,27 +902,29 @@ Alice: Agreed. Ben will prepare the first prompt draft. Cindy will review the UI
       setStatus('Sample data loaded. Click Generate output.', 'info');
     });
 
-    document.querySelectorAll('[data-copy-target]').forEach(btn => {
-      btn.addEventListener('click', async () => {
+    document.querySelectorAll('[data-copy-target]').forEach(function(btn) {
+      btn.addEventListener('click', async function() {
         const target = document.getElementById(btn.dataset.copyTarget);
         const text = target.textContent.trim();
+
         if (!text || target.classList.contains('placeholder')) {
           setStatus('Nothing to copy yet.', 'error');
           return;
         }
+
         await copyText(text, 'Copied to clipboard.');
       });
     });
 
-    copyActionsBtn.addEventListener('click', async () => {
+    copyActionsBtn.addEventListener('click', async function() {
       await copyText(actionsToPlainText(latestActionItems), 'Action items copied.');
     });
 
-    copyMarkdownBtn.addEventListener('click', async () => {
+    copyMarkdownBtn.addEventListener('click', async function() {
       await copyText(latestMarkdown, 'Markdown copied.');
     });
 
-    copyMarkdownBtn2.addEventListener('click', async () => {
+    copyMarkdownBtn2.addEventListener('click', async function() {
       await copyText(latestMarkdown, 'Markdown copied.');
     });
 
