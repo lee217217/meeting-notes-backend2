@@ -94,26 +94,116 @@
     .side-footer { margin-top: 16px; padding: 16px; border-top: 1px solid var(--line); background: rgba(255,255,255,0.02); }
     .side-footer ul { margin: 10px 0 0 18px; padding: 0; line-height: 1.7; }
     .helper-note { margin-top: 14px; font-size: 13px; }
-    .actions-list { display: grid; gap: 10px; }
-    .action-card {
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 14px;
-      padding: 12px 14px;
-      background: rgba(255,255,255,0.03);
-    }
-    .action-task { font-weight: 700; color: #eaf1ff; margin-bottom: 8px; }
-    .action-meta { display: flex; flex-wrap: wrap; gap: 8px; }
-    .meta-pill {
-      font-size: 12px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.05);
-      color: #cfdaf1;
-      border: 1px solid rgba(255,255,255,0.06);
-    }
-    .priority-high { color: #ffd0d7; border-color: rgba(255,107,129,0.25); }
-    .priority-medium { color: #ffe7b0; border-color: rgba(255,204,102,0.24); }
-    .priority-low { color: #c8f5df; border-color: rgba(61,220,151,0.24); }
+    .actions-list {
+  display: grid;
+  gap: 12px;
+}
+
+.action-card {
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 14px 16px;
+  background: rgba(255,255,255,0.03);
+  display: grid;
+  gap: 10px;
+}
+
+.action-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.action-index {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  font-weight: 800;
+  color: #dbe8ff;
+  background: rgba(100,163,255,0.12);
+  border: 1px solid rgba(100,163,255,0.18);
+}
+
+.action-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.action-task {
+  font-weight: 800;
+  font-size: 15px;
+  line-height: 1.55;
+  color: #eef4ff;
+  margin-bottom: 6px;
+}
+
+.action-subline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 13px;
+  color: #b8c6dc;
+}
+
+.action-subline strong {
+  color: #dce7f8;
+  font-weight: 700;
+}
+
+.action-priority {
+  flex: 0 0 auto;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 7px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.04);
+}
+
+.priority-high {
+  color: #ffd2d8;
+  background: rgba(255,107,129,0.10);
+  border-color: rgba(255,107,129,0.22);
+}
+
+.priority-medium {
+  color: #ffe6ad;
+  background: rgba(255,204,102,0.10);
+  border-color: rgba(255,204,102,0.22);
+}
+
+.priority-low {
+  color: #c9f7e0;
+  background: rgba(61,220,151,0.10);
+  border-color: rgba(61,220,151,0.22);
+}
+
+.action-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-top: 2px;
+}
+
+.action-status {
+  font-size: 12px;
+  color: #91a2bd;
+}
+
+.action-deadline {
+  font-size: 12px;
+  color: #c8d4e8;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+}
     .markdown-box {
       margin-top: 14px;
       border: 1px dashed rgba(255,255,255,0.12);
@@ -243,7 +333,7 @@
 
             <div class="output-box">
               <div class="output-head">
-                <h3>Action items</h3>
+                <h3>Action items · who does what next</h3>
                 <button class="btn-secondary copy-btn" id="copyActionsBtn" type="button">Copy</button>
               </div>
               <div id="actionsOutput" class="output-content placeholder">Your structured action items will appear here.</div>
@@ -334,28 +424,55 @@
     }
 
     function renderActionItems(items) {
-      latestActionItems = Array.isArray(items) ? items : [];
+  latestActionItems = Array.isArray(items) ? items : [];
 
-      if (!latestActionItems.length) {
-        actionsOutput.innerHTML = 'No action items returned.';
-        actionsOutput.classList.remove('placeholder');
-        return;
-      }
+  if (!latestActionItems.length) {
+    actionsOutput.innerHTML = 'No action items returned.';
+    actionsOutput.classList.remove('placeholder');
+    return;
+  }
 
-      const html = `
-        <div class="actions-list">
-          ${latestActionItems.map(item => `
-            <div class="action-card">
-              <div class="action-task">${escapeHtml(item.task || 'TBD')}</div>
-              <div class="action-meta">
-                <span class="meta-pill">Owner: ${escapeHtml(item.owner || 'TBD')}</span>
-                <span class="meta-pill">Due: ${escapeHtml(item.due_date || 'TBD')}</span>
-                <span class="meta-pill priority-${String(item.priority || 'Medium').toLowerCase()}">Priority: ${escapeHtml(item.priority || 'Medium')}</span>
+  const html = `
+    <div class="actions-list">
+      ${latestActionItems.map((item, index) => {
+        const task = escapeHtml(item.task || 'TBD');
+        const owner = escapeHtml(item.owner || 'TBD');
+        const dueDate = escapeHtml(item.due_date || 'TBD');
+        const priorityRaw = String(item.priority || 'Medium');
+        const priority = escapeHtml(priorityRaw);
+        const priorityClass = `priority-${priorityRaw.toLowerCase()}`;
+
+        return `
+          <div class="action-card">
+            <div class="action-top">
+              <div class="action-index">${index + 1}</div>
+
+              <div class="action-main">
+                <div class="action-task">${task}</div>
+                <div class="action-subline">
+                  <span><strong>Owner:</strong> ${owner}</span>
+                  <span><strong>Due:</strong> ${dueDate}</span>
+                </div>
+              </div>
+
+              <div class="action-priority ${priorityClass}">
+                ${priority}
               </div>
             </div>
-          `).join('')}
-        </div>
-      `;
+
+            <div class="action-bottom">
+              <div class="action-status">Next step item</div>
+              <div class="action-deadline">Due ${dueDate}</div>
+            </div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+
+  actionsOutput.innerHTML = html;
+  actionsOutput.classList.remove('placeholder');
+}
 
       actionsOutput.innerHTML = html;
       actionsOutput.classList.remove('placeholder');
