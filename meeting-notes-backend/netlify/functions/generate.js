@@ -47,10 +47,10 @@ exports.handler = async (event) => {
       }
 
       return {
-        task: String(item?.task || "").trim() || "TBD",
-        owner: String(item?.owner || "").trim() || "TBD",
-        due_date: String(item?.due_date || "").trim() || "TBD",
-        priority: ["High", "Medium", "Low"].includes(String(item?.priority || "").trim())
+        task: String(item && item.task || "").trim() || "TBD",
+        owner: String(item && item.owner || "").trim() || "TBD",
+        due_date: String(item && item.due_date || "").trim() || "TBD",
+        priority: ["High", "Medium", "Low"].includes(String(item && item.priority || "").trim())
           ? String(item.priority).trim()
           : "Medium"
       };
@@ -146,9 +146,9 @@ ${notes}
 
     if (!pplxResponse.ok) {
       const message =
-        data?.error?.message ||
-        data?.error ||
-        data?.message ||
+        (data && data.error && data.error.message) ||
+        data.error ||
+        data.message ||
         "Perplexity API request failed.";
 
       return {
@@ -161,7 +161,10 @@ ${notes}
       };
     }
 
-    const rawContent = data?.choices?.?.message?.content || "";
+    const rawContent = data && data.choices && data.choices && data.choices.message
+      ? data.choices.message.content
+      : "";
+
     const cleanedContent = cleanJsonString(rawContent);
 
     let parsed;
@@ -173,23 +176,22 @@ ${notes}
         headers,
         body: JSON.stringify({
           error: "Model returned non-JSON output.",
-          rawContent
+          rawContent: rawContent
         })
       };
     }
 
-    const summary = String(parsed?.summary || "").trim();
-    const actionItems = normalizeActionItems(parsed?.action_items);
-    const followUpEmail = String(parsed?.follow_up_email || "").trim();
-    let markdown = String(parsed?.markdown || "").trim();
+    const summary = String(parsed && parsed.summary || "").trim();
+    const actionItems = normalizeActionItems(parsed && parsed.action_items);
+    const followUpEmail = String(parsed && parsed.follow_up_email || "").trim();
+    let markdown = String(parsed && parsed.markdown || "").trim();
 
     if (!markdown) {
       const actionLines = actionItems.length
         ? actionItems
-            .map(
-              (item) =>
-                `- [ ] ${item.task} — Owner: ${item.owner}; Due: ${item.due_date}; Priority: ${item.priority}`
-            )
+            .map(function(item) {
+              return `- [ ] ${item.task} — Owner: ${item.owner}; Due: ${item.due_date}; Priority: ${item.priority}`;
+            })
             .join("\n")
         : "- No action items identified.";
 
@@ -209,10 +211,10 @@ ${followUpEmail || "No follow-up email generated."}`;
       statusCode: 200,
       headers,
       body: JSON.stringify({
-        summary,
+        summary: summary,
         action_items: actionItems,
         follow_up_email: followUpEmail,
-        markdown
+        markdown: markdown
       })
     };
   } catch (error) {
@@ -224,4 +226,4 @@ ${followUpEmail || "No follow-up email generated."}`;
       })
     };
   }
-}
+};
