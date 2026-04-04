@@ -50,7 +50,8 @@ Meeting title: ${meetingTitle || "(not provided)"}
 Meeting type: ${meetingType}
 Output language: ${language}
 
-Based on the transcript below, return ONLY valid JSON in this exact schema, no extra text:
+Based on the transcript below, return ONLY valid JSON in this exact schema, no extra text, Do not wrap the JSON in markdown or code fences.
+Return raw JSON only.:
 
 {
   "summary": "one-paragraph high level summary in the requested language",
@@ -95,19 +96,29 @@ ${notes}
       };
     }
 
-    const rawContent = data?.choices?.[0]?.message?.content || "";
+    const rawContent = data?.choices?.?.message?.content || "";
 
-    let parsed;
-    try {
-      parsed = JSON.parse(rawContent);
-    } catch (e) {
-      // 如果模型沒有回純 JSON，就當成整段 summary 來顯示
-      parsed = {
-        summary: rawContent || "No summary generated.",
-        action_items: [],
-        follow_up_email: ""
-      };
-    }
+function cleanJsonString(text) {
+  return text
+    .trim()
+    .replace(/^```json\s*/i, "")
+    .replace(/^```\s*/i, "")
+    .replace(/\s*```$/, "")
+    .trim();
+}
+
+const cleanedContent = cleanJsonString(rawContent);
+
+let parsed;
+try {
+  parsed = JSON.parse(cleanedContent);
+} catch (e) {
+  parsed = {
+    summary: cleanedContent || "No summary generated.",
+    action_items: [],
+    follow_up_email: ""
+  };
+}
 
     return {
       statusCode: 200,
