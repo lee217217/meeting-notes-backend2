@@ -24,13 +24,74 @@ exports.handler = async (event) => {
     };
   }
 
-  function cleanJsonString(text) {
+  function cleanText(text) {
     return String(text || "")
-      .trim()
       .replace(/^```json\s*/i, "")
       .replace(/^```\s*/i, "")
       .replace(/\s*```$/i, "")
       .trim();
+  }
+
+  function extractFirstJsonObject(text) {
+    const str = cleanText(text);
+    const firstBrace = str.indexOf("{");
+    if (firstBrace === -1) return null;
+
+    let inString = false;
+    let escape = false;
+    let depth = 0;
+
+    for (let i = firstBrace; i < str.length; i++) {
+      const ch = str[i];
+
+      if (escape) {
+        escape = false;
+        continue;
+      }
+
+      if (ch === "\\") {
+        escape = true;
+        continue;
+      }
+
+      if (ch === '"') {
+        inString = !inString;
+        continue;
+      }
+
+      if (!inString) {
+        if (ch === "{") depth++;
+        if (ch === "}") depth--;
+
+        if (depth === 0) {
+          return str.slice(firstBrace, i + 1);
+        }
+      }
+    }
+
+    return null;
+  }
+
+  function safeJsonParse(text) {
+    const attempts = [
+      cleanText(text),
+      extractFirstJsonObject(text)
+    ].filter(Boolean);
+
+    for (const candidate of attempts) {
+      try {
+        return JSON.parse(candidate);
+      } catch (e) {}
+    }
+
+    return null;
+  }
+
+  function normalizePriority(value) {
+    const v = String(value || "").trim().toLowerCase();
+    if (v === "high") return "High";
+    if (v === "low") return "Low";
+    return "Medium";
   }
 
   function normalizeActionItems(items) {
@@ -39,7 +100,7 @@ exports.handler = async (event) => {
     return items.map((item) => {
       if (typeof item === "string") {
         return {
-          task: item.trim(),
+          task: item.trim() || "TBD",
           owner: "TBD",
           due_date: "TBD",
           priority: "Medium"
@@ -47,14 +108,87 @@ exports.handler = async (event) => {
       }
 
       return {
-        task: String(item && item.task || "").trim() || "TBD",
-        owner: String(item && item.owner || "").trim() || "TBD",
-        due_date: String(item && item.due_date || "").trim() || "TBD",
-        priority: ["High", "Medium", "Low"].includes(String(item && item.priority || "").trim())
-          ? String(item.priority).trim()
-          : "Medium"
+        task: String(item?.task || "").trim() || "TBD",
+        owner: String(item?.owner || "").trim() || "TBD",
+        due_date: String(item?.due_date || "").trim() || "TBD",
+        priority: normalizePriority(item?.priority)
       };
     }).filter(item => item.task);
+  }
+
+  function buildMarkdown(title, summary, actionItems, followUpEmail) {
+    const actionLines = actionItems.length
+      ? actionItems
+          .map((item) =>
+            `- [ ] ${item.task} — Owner: ${item.owner}; Due: ${item.due_date}; Priority: ${item.priority}`
+          )
+          .join("\n")
+      : "- No action items identified.";
+
+    return `# ${title || "Meeting Notes"}
+
+## Summary
+${summary || "No summary generated."}
+
+## Action Items
+${actionLines}
+
+## Follow-up Email
+${followUpEmail || "No follow-up email generated."}`;
+  }
+
+  async function callPerplexity(messages, useSchema = false) {
+    const payload = {
+      model: "sonar",
+      messages,
+      temperature: 0.2
+    };
+
+    if (useSchema) {
+      payload.response_format = {
+        type: "json_schema",
+        json_schema: {
+          name: "meeting_notes_response",
+          schema: {
+            type: "object",
+            additionalProperties: false,
+            properties: {
+              summary: { type: "string" },
+              action_items: {
+                type: "array",
+                items: {
+                  type: "object",
+                  additionalProperties: false,
+                  properties: {
+                    task: { type: "string" },
+                    owner: { type: "string" },
+                    due_date: { type: "string" },
+                    priority: { type: "string" }
+                  },
+                  required: ["task", "owner", "due_date", "priority"]
+                }
+              },
+              follow_up_email: { type: "string" },
+              markdown: { type: "string" }
+            },
+            required: ["summary", "action_items", "follow_up_email", "markdown"]
+          }
+        }
+      };
+    }
+
+    const response = await fetch("https://api.perplexity.ai/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await response.json();
+    return { response, data };
   }
 
   try {
@@ -83,138 +217,142 @@ exports.handler = async (event) => {
     const extraInstruction =
       meetingTypeInstructions[meetingType] || meetingTypeInstructions["General"];
 
-    const prompt = `
+    const mainPrompt = `
 You are an AI assistant that turns meeting transcripts into structured notes.
 
 Meeting title: ${meetingTitle || "(not provided)"}
 Meeting type: ${meetingType}
 Output language: ${language}
 
-Instructions:
+Rules:
 - ${extraInstruction}
-- Return ONLY valid JSON.
-- Do not include markdown.
-- Do not use code fences.
-- Do not add explanations before or after the JSON.
 - If an owner or due date is unclear, use "TBD".
-- Priority must be one of: High, Medium, Low.
-
-Use exactly this schema:
-{
-  "summary": "one-paragraph high level summary in the requested language",
-  "action_items": [
-    {
-      "task": "clear action item sentence",
-      "owner": "person responsible or TBD",
-      "due_date": "deadline/date or TBD",
-      "priority": "High or Medium or Low"
-    }
-  ],
-  "follow_up_email": "a short follow-up email draft in the requested language",
-  "markdown": "full markdown version of the meeting notes in the requested language"
-}
+- Priority must be High, Medium, or Low.
+- Keep the summary concise and useful.
+- Write the follow-up email in a professional tone.
+- Markdown must include title, summary, action items, and follow-up email.
 
 Transcript:
 ${notes}
     `.trim();
 
-    const pplxResponse = await fetch("https://api.perplexity.ai/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-        "Accept": "application/json"
-      },
-      body: JSON.stringify({
-        model: "sonar",
-        messages: [
-          {
-            role: "system",
-            content:
-              "You output strict JSON only. No markdown code fences. No commentary. Start with { and end with }."
-          },
-          {
-            role: "user",
-            content: prompt
-          }
-        ],
-        temperature: 0.2
-      })
-    });
+    let rawContent = "";
+    let parsed = null;
 
-    const data = await pplxResponse.json();
+    const firstAttempt = await callPerplexity(
+      [
+        {
+          role: "system",
+          content: "Return structured meeting notes."
+        },
+        {
+          role: "user",
+          content: mainPrompt
+        }
+      ],
+      true
+    );
 
-    if (!pplxResponse.ok) {
+    if (!firstAttempt.response.ok) {
       const message =
-        (data && data.error && data.error.message) ||
-        data.error ||
-        data.message ||
+        firstAttempt.data?.error?.message ||
+        firstAttempt.data?.error ||
+        firstAttempt.data?.message ||
         "Perplexity API request failed.";
 
       return {
-        statusCode: pplxResponse.status,
+        statusCode: firstAttempt.response.status,
         headers,
         body: JSON.stringify({
           error: message,
-          details: data
+          details: firstAttempt.data
         })
       };
     }
 
-    const rawContent = data && data.choices && data.choices && data.choices.message
-      ? data.choices.message.content
-      : "";
+    rawContent = firstAttempt.data?.choices?.[0]?.message?.content || "";
+    parsed = safeJsonParse(rawContent);
 
-    const cleanedContent = cleanJsonString(rawContent);
+    if (!parsed) {
+      const secondAttempt = await callPerplexity(
+        [
+          {
+            role: "system",
+            content: "Convert the input into valid JSON only."
+          },
+          {
+            role: "user",
+            content: `
+Convert the following content into valid JSON with exactly this schema:
+{
+  "summary": "string",
+  "action_items": [
+    {
+      "task": "string",
+      "owner": "string",
+      "due_date": "string",
+      "priority": "High | Medium | Low"
+    }
+  ],
+  "follow_up_email": "string",
+  "markdown": "string"
+}
 
-    let parsed;
-    try {
-      parsed = JSON.parse(cleanedContent);
-    } catch (parseError) {
+If a field is missing, fill with a reasonable fallback.
+If owner or due date is unknown, use "TBD".
+Return JSON only.
+
+Content to convert:
+${rawContent}
+            `.trim()
+          }
+        ],
+        false
+      );
+
+      if (secondAttempt.response.ok) {
+        const retryRaw = secondAttempt.data?.choices?.[0]?.message?.content || "";
+        parsed = safeJsonParse(retryRaw);
+        if (!parsed) rawContent = retryRaw;
+      }
+    }
+
+    if (!parsed) {
+      const fallbackSummary = cleanText(rawContent).slice(0, 1200) || "No summary generated.";
+      const fallbackActionItems = [];
+      const fallbackEmail = "Thank you everyone for the meeting. Please find the summary and next steps above.";
+      const fallbackMarkdown = buildMarkdown(meetingTitle, fallbackSummary, fallbackActionItems, fallbackEmail);
+
       return {
-        statusCode: 500,
+        statusCode: 200,
         headers,
         body: JSON.stringify({
-          error: "Model returned non-JSON output.",
-          rawContent: rawContent
+          summary: fallbackSummary,
+          action_items: fallbackActionItems,
+          follow_up_email: fallbackEmail,
+          markdown: fallbackMarkdown,
+          warning: "Model output was not valid JSON. Fallback content was used."
         })
       };
     }
 
-    const summary = String(parsed && parsed.summary || "").trim();
-    const actionItems = normalizeActionItems(parsed && parsed.action_items);
-    const followUpEmail = String(parsed && parsed.follow_up_email || "").trim();
-    let markdown = String(parsed && parsed.markdown || "").trim();
-
-    if (!markdown) {
-      const actionLines = actionItems.length
-        ? actionItems
-            .map(function(item) {
-              return `- [ ] ${item.task} — Owner: ${item.owner}; Due: ${item.due_date}; Priority: ${item.priority}`;
-            })
-            .join("\n")
-        : "- No action items identified.";
-
-      markdown = `# ${meetingTitle || "Meeting Notes"}
-
-## Summary
-${summary || "No summary generated."}
-
-## Action Items
-${actionLines}
-
-## Follow-up Email
-${followUpEmail || "No follow-up email generated."}`;
-    }
+    const summary = String(parsed?.summary || "").trim() || "No summary generated.";
+    const actionItems = normalizeActionItems(parsed?.action_items);
+    const followUpEmail =
+      String(parsed?.follow_up_email || "").trim() ||
+      "Thank you everyone for the meeting. Please find the summary and next steps above.";
+    const markdown =
+      String(parsed?.markdown || "").trim() ||
+      buildMarkdown(meetingTitle, summary, actionItems, followUpEmail);
 
     return {
       statusCode: 200,
       headers,
       body: JSON.stringify({
-        summary: summary,
+        summary,
         action_items: actionItems,
         follow_up_email: followUpEmail,
-        markdown: markdown
+        markdown
       })
     };
   } catch (error) {
