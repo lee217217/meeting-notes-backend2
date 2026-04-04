@@ -26,18 +26,19 @@ export async function handler(event) {
   }
 
   try {
-    const { transcript } = JSON.parse(event.body || "{}");
+    const body = JSON.parse(event.body || "{}");
+const transcript = body.transcript || body.text || body.content || body.meetingText || "";
 
-    if (!transcript || !transcript.trim()) {
-      return {
-        statusCode: 400,
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*"
-        },
-        body: JSON.stringify({ error: "Transcript is required." })
-      };
-    }
+if (!transcript.trim()) {
+  return {
+    statusCode: 400,
+    headers: {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*"
+    },
+    body: JSON.stringify({ error: "Transcript is required." })
+  };
+}
 
     const prompt = `
 Please turn the following meeting transcript into clear meeting notes.
