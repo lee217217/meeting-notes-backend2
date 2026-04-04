@@ -440,7 +440,7 @@
         const dueDate = escapeHtml(item.due_date || 'TBD');
         const priorityRaw = String(item.priority || 'Medium');
         const priority = escapeHtml(priorityRaw);
-        const priorityClass = `priority-${priorityRaw.toLowerCase()}`;
+        const priorityClass = \`priority-\${priorityRaw.toLowerCase()}\`;
 
         return `
           <div class="action-card">
