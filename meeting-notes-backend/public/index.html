@@ -282,16 +282,19 @@
     }
 
     .status.show { display: block; }
+
     .status.info {
       background: rgba(100,163,255,0.10);
       color: #bcd3ff;
       border-color: rgba(100,163,255,0.16);
     }
+
     .status.error {
       background: rgba(255,107,129,0.10);
       color: #ffc6d1;
       border-color: rgba(255,107,129,0.18);
     }
+
     .status.success {
       background: rgba(61,220,151,0.10);
       color: #bff5da;
@@ -367,6 +370,52 @@
     .helper-note {
       margin-top: 14px;
       font-size: 13px;
+    }
+
+    .actions-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .action-count {
+      font-size: 13px;
+      color: #cfdaf1;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .actions-controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .mini-control {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: #b8c6dc;
+    }
+
+    .mini-control span {
+      color: #dbe6f8;
+      font-weight: 700;
+    }
+
+    .mini-control select {
+      width: auto;
+      min-width: 110px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      font-size: 12px;
+      background: rgba(255,255,255,0.05);
     }
 
     .actions-list {
@@ -550,7 +599,7 @@
           <span>Static frontend with secure server-side AI processing on Netlify Functions</span>
         </div>
       </div>
-      <div class="version-chip">v1.1 · Structured Action Items</div>
+      <div class="version-chip">v1.2 · Filter & Sort Action Items</div>
     </div>
 
     <section class="hero">
@@ -563,7 +612,7 @@
         <div class="hero-points">
           <span>Summary generation</span>
           <span>Structured action tracking</span>
-          <span>Markdown export</span>
+          <span>Filter and sort</span>
         </div>
       </div>
 
@@ -658,6 +707,30 @@
                 <h3>Action items · who does what next</h3>
                 <button class="btn-secondary copy-btn" id="copyActionsBtn" type="button">Copy</button>
               </div>
+
+              <div class="actions-toolbar">
+                <div id="actionCount" class="action-count">0 open action items</div>
+
+                <div class="actions-controls">
+                  <label class="mini-control">
+                    <span>Filter</span>
+                    <select id="actionFilter">
+                      <option value="all">All</option>
+                      <option value="high">High only</option>
+                    </select>
+                  </label>
+
+                  <label class="mini-control">
+                    <span>Sort</span>
+                    <select id="actionSort">
+                      <option value="original">Original</option>
+                      <option value="priority">Priority</option>
+                      <option value="due">Due</option>
+                    </select>
+                  </label>
+                </div>
+              </div>
+
               <div id="actionsOutput" class="output-content placeholder">Your structured action items will appear here.</div>
             </div>
 
@@ -711,9 +784,13 @@
     const copyActionsBtn = document.getElementById('copyActionsBtn');
     const clearBtn = document.getElementById('clearBtn');
     const demoBtn = document.getElementById('demoBtn');
+    const actionFilter = document.getElementById('actionFilter');
+    const actionSort = document.getElementById('actionSort');
+    const actionCount = document.getElementById('actionCount');
 
     let latestMarkdown = '';
     let latestActionItems = [];
+    let rawActionItems = [];
 
     function setStatus(message, type) {
       const finalType = type || 'info';
@@ -739,6 +816,11 @@
 
       latestMarkdown = '';
       latestActionItems = [];
+      rawActionItems = [];
+
+      actionFilter.value = 'all';
+      actionSort.value = 'original';
+      actionCount.textContent = '0 open action items';
     }
 
     function escapeHtml(text) {
@@ -750,22 +832,78 @@
         .replace(/'/g, '&#039;');
     }
 
-    function renderActionItems(items) {
-      latestActionItems = Array.isArray(items) ? items : [];
+    function normalizePriorityValue(priority) {
+      const value = String(priority || 'Medium').toLowerCase();
+      if (value === 'high') return 'High';
+      if (value === 'low') return 'Low';
+      return 'Medium';
+    }
 
-      if (!latestActionItems.length) {
-        actionsOutput.innerHTML = 'No action items returned.';
-        actionsOutput.classList.remove('placeholder');
-        return;
+    function priorityRank(priority) {
+      const value = normalizePriorityValue(priority);
+      if (value === 'High') return 1;
+      if (value === 'Medium') return 2;
+      return 3;
+    }
+
+    function dueRank(dueDate) {
+      const value = String(dueDate || '').trim().toLowerCase();
+
+      if (!value || value === 'tbd') return 999999;
+
+      const direct = Date.parse(dueDate);
+      if (!Number.isNaN(direct)) return direct;
+
+      if (value.indexOf('today') !== -1) return 1;
+      if (value.indexOf('tomorrow') !== -1) return 2;
+      if (value.indexOf('monday') !== -1) return 10;
+      if (value.indexOf('tuesday') !== -1) return 11;
+      if (value.indexOf('wednesday') !== -1) return 12;
+      if (value.indexOf('thursday') !== -1) return 13;
+      if (value.indexOf('friday') !== -1) return 14;
+      if (value.indexOf('saturday') !== -1) return 15;
+      if (value.indexOf('sunday') !== -1) return 16;
+      if (value.indexOf('this week') !== -1) return 20;
+      if (value.indexOf('next week') !== -1) return 30;
+
+      return 500000;
+    }
+
+    function updateActionCount(items) {
+      const count = Array.isArray(items) ? items.length : 0;
+      actionCount.textContent = count + (count === 1 ? ' open action item' : ' open action items');
+    }
+
+    function getVisibleActionItems() {
+      let list = rawActionItems.slice();
+
+      if (actionFilter.value === 'high') {
+        list = list.filter(function(item) {
+          return normalizePriorityValue(item.priority) === 'High';
+        });
       }
 
-      const cards = latestActionItems.map(function(item, index) {
+      if (actionSort.value === 'priority') {
+        list.sort(function(a, b) {
+          return priorityRank(a.priority) - priorityRank(b.priority);
+        });
+      } else if (actionSort.value === 'due') {
+        list.sort(function(a, b) {
+          return dueRank(a.due_date) - dueRank(b.due_date);
+        });
+      }
+
+      return list;
+    }
+
+    function buildActionCards(items) {
+      const cards = items.map(function(item, index) {
         const task = escapeHtml(item.task || 'TBD');
         const owner = escapeHtml(item.owner || 'TBD');
         const dueDate = escapeHtml(item.due_date || 'TBD');
-        const priorityRaw = String(item.priority || 'Medium');
-        const prioritySafe = escapeHtml(priorityRaw);
-        const priorityClass = 'priority-' + priorityRaw.toLowerCase();
+        const priority = normalizePriorityValue(item.priority);
+        const prioritySafe = escapeHtml(priority);
+        const priorityClass = 'priority-' + priority.toLowerCase();
 
         return [
           '<div class="action-card">',
@@ -790,8 +928,32 @@
         ].join('');
       });
 
-      actionsOutput.innerHTML = '<div class="actions-list">' + cards.join('') + '</div>';
+      return '<div class="actions-list">' + cards.join('') + '</div>';
+    }
+
+    function refreshActionItemsView() {
+      latestActionItems = getVisibleActionItems();
+      updateActionCount(latestActionItems);
+
+      if (!rawActionItems.length) {
+        actionsOutput.textContent = 'Your structured action items will appear here.';
+        actionsOutput.classList.add('placeholder');
+        return;
+      }
+
+      if (!latestActionItems.length) {
+        actionsOutput.textContent = 'No action items match the current filter.';
+        actionsOutput.classList.remove('placeholder');
+        return;
+      }
+
+      actionsOutput.innerHTML = buildActionCards(latestActionItems);
       actionsOutput.classList.remove('placeholder');
+    }
+
+    function renderActionItems(items) {
+      rawActionItems = Array.isArray(items) ? items.slice() : [];
+      refreshActionItemsView();
     }
 
     function actionsToPlainText(items) {
@@ -804,7 +966,7 @@
           (item.task || 'TBD') +
           ' | Owner: ' + (item.owner || 'TBD') +
           ' | Due: ' + (item.due_date || 'TBD') +
-          ' | Priority: ' + (item.priority || 'Medium');
+          ' | Priority: ' + normalizePriorityValue(item.priority);
       }).join('\n');
     }
 
@@ -926,6 +1088,14 @@ Alice: Agreed. Ben will prepare the first prompt draft. Cindy will review the UI
 
     copyMarkdownBtn2.addEventListener('click', async function() {
       await copyText(latestMarkdown, 'Markdown copied.');
+    });
+
+    actionFilter.addEventListener('change', function() {
+      refreshActionItemsView();
+    });
+
+    actionSort.addEventListener('change', function() {
+      refreshActionItemsView();
     });
 
     resetOutput();
