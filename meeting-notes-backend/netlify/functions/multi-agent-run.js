@@ -54,11 +54,8 @@ exports.handler = async function (event) {
     }
 
     const payload = {
-      mee);
-    }
-
-    const payload = {
-      meetingTitle: typeof body.meetingTitle === 'string' ? body.mee typeof body.meetingType === 'string' ? body.meetingType.trim() : 'General',
+      meetingTitle: typeof body.meetingTitle === 'string' ? body.meetingTitle.trim() : '',
+      meetingType: typeof body.meetingType === 'string' ? body.meetingType.trim() : 'General',
       language: typeof body.language === 'string' ? body.language.trim() : 'English',
       notes: typeof body.notes === 'string' ? body.notes.trim() : '',
       mode: typeof body.mode === 'string' ? body.mode.trim() : 'auto_workflow',
