@@ -1,10 +1,13 @@
 const { coordinatorSystemPrompt } = require('../prompts/coordinatorPrompt');
 
-async function runCoordin);
-    }
+async function runCoordinatorAgent(payload, context) {
+  const requestedMode =
+    payload.outputMode && typeof payload.outputMode === 'string'
+      ? payload.outputMode
+      : 'full_meeting_pack';
 
-    const payload = {
-      meetingTitle: typeof body.meetingTitle === 'string' ? body.mee   agent: 'coordinator',
+  return {
+    agent: 'coordinator',
     system_prompt_name: coordinatorSystemPrompt.name,
     task_type: requestedMode,
     selected_agents: [
@@ -13,7 +16,8 @@ async function runCoordin);
       'followup_email_agent',
       'qa_review_agent'
     ],
-    reason: 'Phase 1 default workflow: run summarizer, action extraction, email draft, then QA review.',
+    reason:
+      'Phase 1 default workflow: run summarizer, action extraction, email draft, then QA review.',
     requires_human_confirmation: false,
     input_snapshot: {
       meetingTitle: payload.meetingTitle,
