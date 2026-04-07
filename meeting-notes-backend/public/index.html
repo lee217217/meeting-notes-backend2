@@ -109,7 +109,8 @@
     .hero-card,
     .stats-card,
     .main-card,
-    .side-card {
+    .side-card,
+    .multi-panel {
       background: var(--panel);
       border: 1px solid var(--line);
       border-radius: var(--radius-xl);
@@ -556,6 +557,61 @@
       overflow: auto;
     }
 
+    /* Multi-Agent test panel */
+    .multi-panel {
+      margin-top: 24px;
+      padding: 20px 24px 24px;
+    }
+
+    .multi-panel h2 {
+      margin-top: 0;
+      margin-bottom: 4px;
+      font-size: 20px;
+    }
+
+    .multi-panel p {
+      margin-top: 0;
+      margin-bottom: 14px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .multi-result-grid {
+      display: grid;
+      gap: 14px;
+      margin-top: 12px;
+    }
+
+    .multi-result-box {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px 14px;
+      background: rgba(255,255,255,0.03);
+    }
+
+    .multi-result-box h3 {
+      margin: 0 0 6px;
+      font-size: 15px;
+    }
+
+    .multi-result-box pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-size: 12px;
+      line-height: 1.7;
+      color: #e5ecf6;
+    }
+
+    .multi-json {
+      background: #020617;
+      color: #e5ecf6;
+      border-radius: 12px;
+      padding: 10px 12px;
+      max-height: 260px;
+      overflow: auto;
+    }
+
     @media (max-width: 980px) {
       .hero,
       .layout,
@@ -764,6 +820,50 @@
         </div>
       </div>
     </section>
+
+    <!-- Multi-Agent test panel (new) -->
+    <section class="multi-panel">
+      <h2>Phase 1 Multi-Agent Test</h2>
+      <p>Use the same meeting input above, then run the new multi-agent workflow endpoint to inspect summary, actions, email and trace.</p>
+
+      <div class="btn-row">
+        <button class="btn-primary" id="multiRunBtn" type="button">Run Multi-Agent Workflow</button>
+        <button class="btn-secondary" id="multiClearBtn" type="button">Clear Multi-Agent Result</button>
+      </div>
+
+      <div id="multiStatus" class="status" style="margin-top:12px;"></div>
+
+      <div class="multi-result-grid" id="multiResultSection" style="display:none;">
+        <div class="multi-result-box">
+          <h3>Workflow status</h3>
+          <pre id="multiWorkflowStatus">-</pre>
+        </div>
+        <div class="multi-result-box">
+          <h3>Summary</h3>
+          <pre id="multiSummary">-</pre>
+        </div>
+        <div class="multi-result-box">
+          <h3>Action items</h3>
+          <pre id="multiActions">-</pre>
+        </div>
+        <div class="multi-result-box">
+          <h3>Follow-up email</h3>
+          <pre id="multiEmail">-</pre>
+        </div>
+        <div class="multi-result-box">
+          <h3>QA review</h3>
+          <pre id="multiReview">-</pre>
+        </div>
+        <div class="multi-result-box">
+          <h3>Trace (steps)</h3>
+          <pre id="multiTrace">-</pre>
+        </div>
+        <div class="multi-result-box">
+          <h3>Raw JSON</h3>
+          <pre id="multiRawJson" class="multi-json">-</pre>
+        </div>
+      </div>
+    </section>
   </div>
 
   <script>
@@ -788,6 +888,19 @@
     const actionSort = document.getElementById('actionSort');
     const actionCount = document.getElementById('actionCount');
 
+    // Multi-agent elements
+    const multiRunBtn = document.getElementById('multiRunBtn');
+    const multiClearBtn = document.getElementById('multiClearBtn');
+    const multiStatus = document.getElementById('multiStatus');
+    const multiResultSection = document.getElementById('multiResultSection');
+    const multiWorkflowStatus = document.getElementById('multiWorkflowStatus');
+    const multiSummary = document.getElementById('multiSummary');
+    const multiActions = document.getElementById('multiActions');
+    const multiEmail = document.getElementById('multiEmail');
+    const multiReview = document.getElementById('multiReview');
+    const multiTrace = document.getElementById('multiTrace');
+    const multiRawJson = document.getElementById('multiRawJson');
+
     let latestMarkdown = '';
     let latestActionItems = [];
     let rawActionItems = [];
@@ -796,6 +909,12 @@
       const finalType = type || 'info';
       statusBox.className = 'status show ' + finalType;
       statusBox.textContent = message;
+    }
+
+    function setMultiStatus(message, type) {
+      const finalType = type || 'info';
+      multiStatus.className = 'status show ' + finalType;
+      multiStatus.textContent = message;
     }
 
     function setOutput(el, value) {
@@ -1100,6 +1219,122 @@ Alice: Agreed. Ben will prepare the first prompt draft. Cindy will review the UI
 
     resetOutput();
     setStatus('Paste your notes and click Generate output.', 'info');
+
+    // ===== Multi-Agent test logic =====
+    function clearMultiResult() {
+      multiResultSection.style.display = 'none';
+      multiWorkflowStatus.textContent = '-';
+      multiSummary.textContent = '-';
+      multiActions.textContent = '-';
+      multiEmail.textContent = '-';
+      multiReview.textContent = '-';
+      multiTrace.textContent = '-';
+      multiRawJson.textContent = '-';
+      multiStatus.className = 'status';
+      multiStatus.textContent = '';
+    }
+
+    async function runMultiAgentTest() {
+      const title = meetingTitle.value.trim();
+      const type = meetingType.value;
+      const lang = language.value;
+      const text = notes.value.trim();
+
+      if (!text) {
+        setMultiStatus('Please paste some meeting notes first.', 'error');
+        return;
+      }
+
+      setMultiStatus('Running multi-agent workflow...', 'info');
+      multiResultSection.style.display = 'none';
+
+      try {
+        const resp = await fetch('/.netlify/functions/multi-agent-run', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            meetingTitle: title,
+            meetingType: type,
+            language: lang,
+            notes: text,
+            mode: 'auto_workflow',
+            userQuery: ''
+          })
+        });
+
+        const data = await resp.json();
+
+        if (!resp.ok) {
+          throw new Error(data && data.error ? data.error : 'Request failed');
+        }
+
+        const wf = data.data || data;
+
+        multiWorkflowStatus.textContent =
+          'Task: ' + (wf.task_id || '-') +
+          '\\nStatus: ' + (wf.status || '-') +
+          '\\nCurrent step: ' + (wf.workflow && wf.workflow.current_step || '-') +
+          '\\nSelected agents: ' + (
+            wf.workflow && Array.isArray(wf.workflow.selected_agents)
+              ? wf.workflow.selected_agents.join(', ')
+              : '-'
+          );
+
+        multiSummary.textContent = wf.artifacts && wf.artifacts.summary || '-';
+
+        const aitems = wf.artifacts && wf.artifacts.action_items || [];
+        if (Array.isArray(aitems) && aitems.length) {
+          multiActions.textContent = aitems.map(function(item, idx) {
+            return (idx + 1) + '. ' +
+              (item.task || 'TBD') +
+              ' | Owner: ' + (item.owner || 'TBD') +
+              ' | Due: ' + (item.due_date || 'TBD') +
+              ' | Priority: ' + (item.priority || 'TBD');
+          }).join('\\n');
+        } else {
+          multiActions.textContent = '-';
+        }
+
+        multiEmail.textContent = wf.artifacts && wf.artifacts.follow_up_email || '-';
+
+        if (wf.review) {
+          multiReview.textContent =
+            'Status: ' + (wf.review.status || '-') +
+            '\\nIssues: ' + (
+              Array.isArray(wf.review.issues) && wf.review.issues.length
+                ? wf.review.issues.join('; ')
+                : 'none'
+            );
+        } else {
+          multiReview.textContent = '-';
+        }
+
+        if (Array.isArray(wf.trace) && wf.trace.length) {
+          multiTrace.textContent = wf.trace.map(function(item) {
+            return '[' + (item.timestamp || '-') + '] ' +
+              (item.step || '-') +
+              ' - ' + (item.status || '-');
+          }).join('\\n');
+        } else {
+          multiTrace.textContent = '-';
+        }
+
+        multiRawJson.textContent = JSON.stringify(data, null, 2);
+        multiResultSection.style.display = 'grid';
+        setMultiStatus('Multi-agent workflow completed.', 'success');
+      } catch (error) {
+        multiRawJson.textContent = JSON.stringify(
+          { success: false, error: error.message },
+          null,
+          2
+        );
+        multiResultSection.style.display = 'grid';
+        setMultiStatus('Error: ' + error.message, 'error');
+      }
+    }
+
+    multiRunBtn.addEventListener('click', runMultiAgentTest);
+    multiClearBtn.addEventListener('click', clearMultiResult);
   </script>
 </body>
 </html>
