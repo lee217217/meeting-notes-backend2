@@ -8,6 +8,7 @@
     :root {
       --bg: #0b1020;
       --panel: rgba(13, 20, 39, 0.82);
+      --panel-soft: rgba(255, 255, 255, 0.035);
       --line: rgba(255,255,255,0.08);
       --line-strong: rgba(148,163,184,0.22);
       --text: #e5ecf6;
@@ -19,6 +20,8 @@
       --warning: #ffcc66;
       --shadow: 0 24px 60px rgba(0,0,0,0.38);
       --radius-xl: 24px;
+      --radius-lg: 18px;
+      --radius-md: 14px;
     }
 
     * { box-sizing: border-box; }
@@ -76,11 +79,14 @@
     .hero-copy,
     .card-head p,
     .helper-note,
-    .security-note,
     .mini-stat span,
     .side-footer ul,
     .markdown-note,
-    .subtle-note {
+    .subtle-note,
+    .trust-note,
+    .section-intro,
+    .empty-copy,
+    .tiny-note {
       color: var(--muted);
     }
 
@@ -99,7 +105,7 @@
     }
 
     .hero {
-      grid-template-columns: 1.2fr 0.8fr;
+      grid-template-columns: 1.15fr 0.85fr;
       margin-bottom: 24px;
     }
 
@@ -133,6 +139,7 @@
       font-weight: 700;
       margin-bottom: 16px;
       text-transform: uppercase;
+      letter-spacing: 0.04em;
     }
 
     h1 {
@@ -146,6 +153,7 @@
       margin: 0;
       font-size: 17px;
       line-height: 1.75;
+      max-width: 62ch;
     }
 
     .hero-points {
@@ -179,7 +187,7 @@
 
     .mini-stat strong {
       display: block;
-      font-size: 24px;
+      font-size: 20px;
       margin-bottom: 6px;
     }
 
@@ -329,9 +337,10 @@
     }
 
     .output-box,
-    .result-box {
+    .result-box,
+    .trust-box {
       border: 1px solid var(--line);
-      background: rgba(255,255,255,0.035);
+      background: var(--panel-soft);
       border-radius: 18px;
       padding: 16px;
     }
@@ -354,7 +363,8 @@
     }
 
     .output-box h3,
-    .result-box h3 {
+    .result-box h3,
+    .trust-box h3 {
       margin: 0;
       font-size: 16px;
     }
@@ -378,13 +388,21 @@
       color: #7b89a2;
     }
 
-    .security-note {
-      margin-top: 12px;
-      padding: 12px 14px;
-      border-radius: 14px;
-      background: rgba(255,255,255,0.03);
-      border: 1px solid var(--line);
-      font-size: 12px;
+    .helper-note {
+      margin-top: 14px;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .trust-box {
+      margin-top: 16px;
+      background: rgba(255, 204, 102, 0.06);
+      border-color: rgba(255, 204, 102, 0.16);
+    }
+
+    .trust-note {
+      margin-top: 8px;
+      font-size: 13px;
       line-height: 1.7;
     }
 
@@ -401,11 +419,6 @@
       line-height: 1.7;
     }
 
-    .helper-note {
-      margin-top: 14px;
-      font-size: 13px;
-    }
-
     .actions-toolbar {
       display: flex;
       align-items: center;
@@ -415,7 +428,8 @@
       flex-wrap: wrap;
     }
 
-    .action-count {
+    .action-count,
+    .priority-summary {
       font-size: 13px;
       color: #cfdaf1;
       padding: 8px 12px;
@@ -505,20 +519,37 @@
       font-size: 15px;
       line-height: 1.55;
       color: #eef4ff;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
     }
 
-    .action-subline {
-      display: flex;
-      flex-wrap: wrap;
+    .action-meta-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 10px;
-      font-size: 13px;
-      color: #b8c6dc;
     }
 
-    .action-subline strong {
-      color: #dce7f8;
-      font-weight: 700;
+    .meta-pill {
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.025);
+      padding: 10px 12px;
+    }
+
+    .meta-pill span {
+      display: block;
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 4px;
+    }
+
+    .meta-pill strong {
+      display: block;
+      font-size: 13px;
+      line-height: 1.5;
+      color: #e8f1ff;
+      word-break: break-word;
     }
 
     .action-priority {
@@ -616,9 +647,34 @@
       font-size: 13px;
     }
 
-    .subtle-note {
-      font-size: 12px;
-      line-height: 1.7;
+    .decision-box {
+      border-color: rgba(100,163,255,0.18);
+      background: rgba(100,163,255,0.06);
+    }
+
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: rgba(10, 17, 34, 0.94);
+      color: #eaf2ff;
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.35);
+      font-size: 13px;
+      line-height: 1.5;
+      opacity: 0;
+      transform: translateY(10px);
+      pointer-events: none;
+      transition: opacity 0.18s ease, transform 0.18s ease;
+      z-index: 1000;
+      max-width: 320px;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
     }
 
     code {
@@ -630,7 +686,8 @@
       .hero,
       .layout,
       .row,
-      .result-grid {
+      .result-grid,
+      .action-meta-grid {
         grid-template-columns: 1fr;
       }
 
@@ -667,31 +724,31 @@
         <div class="brand-mark">AI</div>
         <div class="brand-meta">
           <strong>Meeting Intelligence</strong>
-          <span>Static frontend with secure server-side AI processing on Netlify Functions</span>
+          <span>Turn meeting notes into clear summaries, decisions, action items, and follow-up email drafts.</span>
         </div>
       </div>
-      <div class="version-chip">v2.1 · User-facing simplified UI</div>
+      <div class="version-chip">v3 · Product-focused index</div>
     </div>
 
     <section class="hero">
       <div class="hero-card">
-        <div class="eyebrow">AI productivity tool</div>
-        <h1>Turn messy meeting notes into clear next steps.</h1>
+        <div class="eyebrow">Meeting productivity</div>
+        <h1>Paste your meeting notes. Get an action-ready result.</h1>
         <p class="hero-copy">
-          Paste a transcript or rough notes, then generate a structured summary, action items with owners and due dates, and a ready-to-send follow-up email.
+          Convert rough meeting notes into a structured summary, clear decisions, action items with owners and due dates, and a polished follow-up email you can review before sending.
         </p>
         <div class="hero-points">
-          <span>Summary generation</span>
-          <span>Structured action tracking</span>
-          <span>Follow-up email</span>
-          <span>Markdown export</span>
+          <span>Structured summary</span>
+          <span>Decision tracking</span>
+          <span>Action owners & due dates</span>
+          <span>Ready-to-review email draft</span>
         </div>
       </div>
 
       <div class="stats-card">
-        <div class="mini-stat"><strong>Simple input</strong><span>Paste notes and generate clean meeting output in one flow.</span></div>
-        <div class="mini-stat"><strong>Server-side AI</strong><span>The request runs through Netlify Functions, not in the browser.</span></div>
-        <div class="mini-stat"><strong>Ready to copy</strong><span>Copy email, markdown, or action items for your next step.</span></div>
+        <div class="mini-stat"><strong>1 paste</strong><span>Drop in your transcript or rough notes and generate a full meeting package.</span></div>
+        <div class="mini-stat"><strong>Clear ownership</strong><span>Highlight who owns the next step and when it should be done.</span></div>
+        <div class="mini-stat"><strong>Human review first</strong><span>Check owners, due dates, and tone before sending or sharing.</span></div>
       </div>
     </section>
 
@@ -700,7 +757,7 @@
         <div class="card-head">
           <div>
             <h2>Meeting input</h2>
-            <p>Paste transcript text, choose the meeting type and output language, then generate structured notes through the serverless API route.</p>
+            <p>Paste your transcript or notes, choose the language and meeting type, then generate a clean post-meeting output.</p>
           </div>
         </div>
 
@@ -747,11 +804,14 @@
           </div>
 
           <p class="helper-note">
-            This page uses <code>/.netlify/functions/multi-agent-run</code> to generate user-facing meeting outputs.
+            Best for review meetings, team syncs, project updates, client calls, and post-meeting follow-up drafting.
           </p>
 
-          <div class="security-note">
-            Keep <code>PERPLEXITY_API_KEY</code> in Netlify environment variables only. Never place the key in browser-side code.
+          <div class="trust-box">
+            <h3>Review before sharing</h3>
+            <div class="trust-note">
+              AI can speed up meeting follow-up, but owners, deadlines, and wording should still be checked by a person before sending or publishing.
+            </div>
           </div>
         </div>
       </div>
@@ -760,7 +820,7 @@
         <div class="card-head">
           <div>
             <h2>Quick output</h2>
-            <p>The generated results appear below in a user-friendly format for copying, reviewing, and sharing.</p>
+            <p>Use this area for quick copy-and-paste after generation. The detailed, execution-focused result appears below.</p>
           </div>
         </div>
 
@@ -820,18 +880,18 @@
               <h3>Markdown preview</h3>
               <button class="btn-secondary copy-btn" id="copyMarkdownBtn2" type="button">Copy</button>
             </div>
-            <div class="markdown-note">Use this for Notion, Confluence, docs, or manual task import.</div>
+            <div class="markdown-note">Useful for Notion, Confluence, docs, or a task management handoff.</div>
             <div id="markdownPreview" class="markdown-preview placeholder" style="margin-top:10px;">Your Markdown export will appear here.</div>
           </div>
         </div>
 
         <div class="side-footer">
-          <strong>Deploy checklist</strong>
+          <strong>Good meeting output should answer:</strong>
           <ul>
-            <li>Upload this project to Netlify.</li>
-            <li>Set <code>PERPLEXITY_API_KEY</code> in Netlify environment variables.</li>
-            <li>Redeploy after updating environment variables.</li>
-            <li>Test each meeting type with sample transcripts.</li>
+            <li>What happened?</li>
+            <li>What was decided?</li>
+            <li>Who is doing what next?</li>
+            <li>What still needs clarification?</li>
           </ul>
         </div>
       </div>
@@ -839,53 +899,67 @@
 
     <section class="result-panel">
       <h2>Meeting results</h2>
-      <p>These are the user-facing results generated from the workflow. Internal execution details are hidden.</p>
+      <p class="section-intro">Designed for execution: read the summary, confirm decisions, check action ownership, then send or share the follow-up draft.</p>
 
       <div id="resultStatus" class="status" style="margin-top:12px;"></div>
 
       <div class="result-grid" id="resultSection" style="display:none;">
-        <div class="result-box">
+        <div class="result-box result-wide">
           <h3>Summary</h3>
           <div id="resultSummary" class="result-content">-</div>
         </div>
 
-        <div class="result-box">
-          <h3>Follow-up email</h3>
-          <div class="output-head" style="margin-top:8px; margin-bottom:10px;">
-            <div class="subtle-note">Ready to copy into email.</div>
-            <button class="btn-secondary copy-btn" id="copyResultEmailBtn" type="button">Copy</button>
-          </div>
-          <div id="resultEmail" class="result-content">-</div>
-        </div>
-
-        <div class="result-box result-wide">
-          <h3>Key points, decisions, and open questions</h3>
-          <div class="insight-list" style="margin-top:12px;">
-            <div class="insight-block">
-              <h4>Key points</h4>
-              <ul id="resultKeyPoints"></ul>
-            </div>
-            <div class="insight-block">
-              <h4>Decisions</h4>
-              <ul id="resultDecisions"></ul>
-            </div>
-            <div class="insight-block">
-              <h4>Open questions / risks</h4>
-              <ul id="resultRisks"></ul>
-            </div>
+        <div class="result-box result-wide decision-box">
+          <h3>Decisions</h3>
+          <div class="tiny-note" style="margin-top:8px; margin-bottom:10px;">This section is highlighted because decisions drive follow-up and accountability.</div>
+          <div class="insight-block" style="margin-top:0; background: transparent; border: 0; padding: 0;">
+            <ul id="resultDecisions"></ul>
           </div>
         </div>
 
         <div class="result-box result-wide">
           <div class="output-head">
             <h3>Action items</h3>
-            <div id="workflowActionCount" class="subtle-note">0 workflow action items</div>
+            <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+              <div id="workflowActionCount" class="subtle-note">0 workflow action items</div>
+              <div id="prioritySummary" class="priority-summary">No priorities yet</div>
+            </div>
           </div>
           <div id="workflowActionsOutput" class="output-content placeholder">Workflow-generated action items will appear here.</div>
         </div>
+
+        <div class="result-box">
+          <h3>Open questions / risks</h3>
+          <div class="insight-block" style="margin-top:12px;">
+            <ul id="resultRisks"></ul>
+          </div>
+        </div>
+
+        <div class="result-box">
+          <h3>Follow-up email</h3>
+          <div class="output-head" style="margin-top:8px; margin-bottom:10px;">
+            <div class="subtle-note">Review before sending.</div>
+            <button class="btn-secondary copy-btn" id="copyResultEmailBtn" type="button">Copy</button>
+          </div>
+          <div id="resultEmail" class="result-content">-</div>
+        </div>
+
+        <div class="result-box result-wide">
+          <h3>Key points</h3>
+          <div class="insight-block" style="margin-top:12px;">
+            <ul id="resultKeyPoints"></ul>
+          </div>
+        </div>
+      </div>
+
+      <div id="emptyResultState" class="result-box" style="margin-top:14px;">
+        <h3>No results yet</h3>
+        <div class="empty-copy" style="margin-top:8px;">Generate a meeting result to see summary, decisions, action items, and a follow-up email draft here.</div>
       </div>
     </section>
   </div>
+
+  <div id="toast" class="toast"></div>
 
   <script>
     const meetingTitle = document.getElementById('meetingTitle');
@@ -901,6 +975,7 @@
 
     const resultStatus = document.getElementById('resultStatus');
     const resultSection = document.getElementById('resultSection');
+    const emptyResultState = document.getElementById('emptyResultState');
     const resultSummary = document.getElementById('resultSummary');
     const resultEmail = document.getElementById('resultEmail');
     const resultKeyPoints = document.getElementById('resultKeyPoints');
@@ -908,6 +983,7 @@
     const resultRisks = document.getElementById('resultRisks');
     const workflowActionsOutput = document.getElementById('workflowActionsOutput');
     const workflowActionCount = document.getElementById('workflowActionCount');
+    const prioritySummary = document.getElementById('prioritySummary');
 
     const multiRunBtn = document.getElementById('multiRunBtn');
     const copyMarkdownBtn = document.getElementById('copyMarkdownBtn');
@@ -920,6 +996,7 @@
     const actionFilter = document.getElementById('actionFilter');
     const actionSort = document.getElementById('actionSort');
     const actionCount = document.getElementById('actionCount');
+    const toast = document.getElementById('toast');
 
     let latestMarkdown = '';
     let latestActionItems = [];
@@ -927,6 +1004,16 @@
     let latestEmail = '';
     let latestWorkflowEmail = '';
     let latestWorkflowActionItems = [];
+    let toastTimer = null;
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(function() {
+        toast.classList.remove('show');
+      }, 1800);
+    }
 
     function setStatus(message, type) {
       const finalType = type || 'info';
@@ -940,9 +1027,16 @@
       resultStatus.textContent = message;
     }
 
-    function setOutput(el, value) {
-      el.textContent = value;
-      el.classList.remove('placeholder');
+    function updateCopyButtonState(button, nextLabel, resetLabel) {
+      if (!button) return;
+      const original = resetLabel || button.dataset.defaultLabel || button.textContent;
+      button.dataset.defaultLabel = original;
+      button.textContent = nextLabel;
+      button.disabled = true;
+      setTimeout(function() {
+        button.textContent = original;
+        button.disabled = false;
+      }, 1200);
     }
 
     function resetOutput() {
@@ -968,6 +1062,7 @@
 
     function resetResultSection() {
       resultSection.style.display = 'none';
+      emptyResultState.style.display = 'block';
       resultSummary.textContent = '-';
       resultEmail.textContent = '-';
       resultKeyPoints.innerHTML = '';
@@ -976,6 +1071,7 @@
       workflowActionsOutput.textContent = 'Workflow-generated action items will appear here.';
       workflowActionsOutput.classList.add('placeholder');
       workflowActionCount.textContent = '0 workflow action items';
+      prioritySummary.textContent = 'No priorities yet';
       latestWorkflowEmail = '';
       latestWorkflowActionItems = [];
       resultStatus.className = 'status';
@@ -1055,11 +1151,30 @@
       return list;
     }
 
+    function buildPrioritySummary(items) {
+      if (!Array.isArray(items) || !items.length) {
+        return 'No priorities yet';
+      }
+
+      let high = 0;
+      let medium = 0;
+      let low = 0;
+
+      items.forEach(function(item) {
+        const p = normalizePriorityValue(item.priority);
+        if (p === 'High') high += 1;
+        else if (p === 'Low') low += 1;
+        else medium += 1;
+      });
+
+      return 'High ' + high + ' · Medium ' + medium + ' · Low ' + low;
+    }
+
     function buildActionCards(items, statusLabel) {
       const cards = items.map(function(item, index) {
         const task = escapeHtml(item.task || 'TBD');
-        const owner = escapeHtml(item.owner || 'TBD');
-        const dueDate = escapeHtml(item.due_date || 'TBD');
+        const owner = escapeHtml(item.owner || 'Unassigned');
+        const dueDate = escapeHtml(item.due_date || 'Not specified');
         const priority = normalizePriorityValue(item.priority);
         const prioritySafe = escapeHtml(priority);
         const priorityClass = 'priority-' + priority.toLowerCase();
@@ -1071,9 +1186,10 @@
                 '<div class="action-index">' + (index + 1) + '</div>',
                 '<div class="action-main">',
                   '<div class="action-task">' + task + '</div>',
-                  '<div class="action-subline">',
-                    '<span><strong>Owner:</strong> ' + owner + '</span>',
-                    '<span><strong>Due:</strong> ' + dueDate + '</span>',
+                  '<div class="action-meta-grid">',
+                    '<div class="meta-pill"><span>Owner</span><strong>' + owner + '</strong></div>',
+                    '<div class="meta-pill"><span>Due date</span><strong>' + dueDate + '</strong></div>',
+                    '<div class="meta-pill"><span>Priority</span><strong>' + prioritySafe + '</strong></div>',
                   '</div>',
                 '</div>',
               '</div>',
@@ -1118,6 +1234,7 @@
     function renderWorkflowActionItems(items) {
       latestWorkflowActionItems = Array.isArray(items) ? items.slice() : [];
       workflowActionCount.textContent = latestWorkflowActionItems.length + (latestWorkflowActionItems.length === 1 ? ' workflow action item' : ' workflow action items');
+      prioritySummary.textContent = buildPrioritySummary(latestWorkflowActionItems);
 
       if (!latestWorkflowActionItems.length) {
         workflowActionsOutput.textContent = 'Workflow-generated action items will appear here.';
@@ -1125,7 +1242,7 @@
         return;
       }
 
-      workflowActionsOutput.innerHTML = buildActionCards(latestWorkflowActionItems, 'Workflow-generated action item');
+      workflowActionsOutput.innerHTML = buildActionCards(latestWorkflowActionItems, 'Review owner and due date before sharing');
       workflowActionsOutput.classList.remove('placeholder');
     }
 
@@ -1158,7 +1275,7 @@
       });
     }
 
-    async function copyText(text, successMessage, useResultStatus) {
+    async function copyText(text, successMessage, useResultStatus, button) {
       const setter = useResultStatus ? setResultStatus : setStatus;
 
       if (!text || !text.trim()) {
@@ -1169,6 +1286,8 @@
       try {
         await navigator.clipboard.writeText(text);
         setter(successMessage, 'success');
+        showToast(successMessage);
+        updateCopyButtonState(button, 'Copied');
       } catch (err) {
         setter('Copy failed. Your browser may block clipboard access.', 'error');
       }
@@ -1189,6 +1308,7 @@
       multiRunBtn.textContent = 'Generating...';
       setResultStatus('Generating meeting results...', 'info');
       resultSection.style.display = 'none';
+      emptyResultState.style.display = 'block';
 
       try {
         const resp = await fetch('/.netlify/functions/multi-agent-run', {
@@ -1217,9 +1337,9 @@
         latestWorkflowEmail = artifacts.follow_up_email || '';
         resultEmail.textContent = latestWorkflowEmail || '-';
 
-        renderList(resultKeyPoints, artifacts.key_points, 'No key points returned.');
         renderList(resultDecisions, artifacts.decisions, 'No decisions returned.');
         renderList(resultRisks, artifacts.risks_or_open_questions, 'No open questions returned.');
+        renderList(resultKeyPoints, artifacts.key_points, 'No key points returned.');
         renderWorkflowActionItems(artifacts.action_items || []);
 
         summaryOutput.textContent = artifacts.summary || 'No summary returned.';
@@ -1237,23 +1357,18 @@
           '## Summary',
           artifacts.summary || '',
           '',
-          '## Key points',
-          (Array.isArray(artifacts.key_points) && artifacts.key_points.length)
-            ? artifacts.key_points.map(function(item) { return '- ' + item; }).join('\n')
-            : '- None',
-          '',
           '## Decisions',
           (Array.isArray(artifacts.decisions) && artifacts.decisions.length)
             ? artifacts.decisions.map(function(item) { return '- ' + item; }).join('\n')
             : '- None',
           '',
+          '## Action items',
+          actionsToPlainText(artifacts.action_items || []),
+          '',
           '## Open questions / risks',
           (Array.isArray(artifacts.risks_or_open_questions) && artifacts.risks_or_open_questions.length)
             ? artifacts.risks_or_open_questions.map(function(item) { return '- ' + item; }).join('\n')
             : '- None',
-          '',
-          '## Action items',
-          actionsToPlainText(artifacts.action_items || []),
           '',
           '## Follow-up email',
           artifacts.follow_up_email || ''
@@ -1264,6 +1379,7 @@
         markdownPreview.classList.remove('placeholder');
 
         resultSection.style.display = 'grid';
+        emptyResultState.style.display = 'none';
         setResultStatus('Meeting results generated successfully.', 'success');
         setStatus('Quick output updated successfully.', 'success');
       } catch (error) {
@@ -1311,28 +1427,28 @@ Alice: Agreed. Ben will prepare the first prompt draft. Cindy will review the UI
           return;
         }
 
-        await copyText(text, 'Copied to clipboard.', false);
+        await copyText(text, 'Copied to clipboard.', false, btn);
       });
     });
 
     copyActionsBtn.addEventListener('click', async function() {
-      await copyText(actionsToPlainText(latestActionItems), 'Action items copied.', false);
+      await copyText(actionsToPlainText(latestActionItems), 'Action items copied.', false, copyActionsBtn);
     });
 
     copyEmailBtn.addEventListener('click', async function() {
-      await copyText(latestEmail, 'Email copied.', false);
+      await copyText(latestEmail, 'Follow-up email copied.', false, copyEmailBtn);
     });
 
     copyResultEmailBtn.addEventListener('click', async function() {
-      await copyText(latestWorkflowEmail, 'Meeting email copied.', true);
+      await copyText(latestWorkflowEmail, 'Meeting email copied.', true, copyResultEmailBtn);
     });
 
     copyMarkdownBtn.addEventListener('click', async function() {
-      await copyText(latestMarkdown, 'Markdown copied.', false);
+      await copyText(latestMarkdown, 'Markdown copied.', false, copyMarkdownBtn);
     });
 
     copyMarkdownBtn2.addEventListener('click', async function() {
-      await copyText(latestMarkdown, 'Markdown copied.', false);
+      await copyText(latestMarkdown, 'Markdown copied.', false, copyMarkdownBtn2);
     });
 
     actionFilter.addEventListener('change', function() {
