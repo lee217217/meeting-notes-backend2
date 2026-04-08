@@ -1,366 +1,175 @@
-exports.handler = async (event) => {
-  const headers = {
-    "Content-Type": "application/json",
-    "Access-Control-Allow-Origin": "*"
-  };
+const { runWorkflow } = require('../../src/services/workflowService');
 
-  if (event.httpMethod !== "POST") {
+const CORS_HEADERS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'Content-Type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Content-Type': 'application/json'
+};
+
+function parseRequestBody(body) {
+  if (!body) {
+    return {};
+  }
+
+  if (typeof body === 'string') {
+    return JSON.parse(body);
+  }
+
+  return body;
+}
+
+function buildMarkdown(payload, artifacts) {
+  const meetingTitle = payload.meetingTitle || 'Meeting Notes';
+  const summary = artifacts.summary || '';
+  const keyPoints = Array.isArray(artifacts.key_points) ? artifacts.key_points : [];
+  const decisions = Array.isArray(artifacts.decisions) ? artifacts.decisions : [];
+  const risks = Array.isArray(artifacts.risks_or_open_questions)
+    ? artifacts.risks_or_open_questions
+    : [];
+  const actionItems = Array.isArray(artifacts.action_items)
+    ? artifacts.action_items
+    : [];
+  const followUpEmail = artifacts.follow_up_email || '';
+
+  const actionLines = actionItems.length
+    ? actionItems.map(function (item, index) {
+        return [
+          (index + 1) + '. ' + (item.task || ''),
+          '   - Owner: ' + (item.owner || ''),
+          '   - Due: ' + (item.due_date || ''),
+          '   - Priority: ' + (item.priority || 'Medium')
+        ].join('\n');
+      }).join('\n')
+    : '- None';
+
+  return [
+    '# ' + meetingTitle,
+    '',
+    '## Summary',
+    summary || 'None',
+    '',
+    '## Key points',
+    keyPoints.length ? keyPoints.map(function (item) { return '- ' + item; }).join('\n') : '- None',
+    '',
+    '## Decisions',
+    decisions.length ? decisions.map(function (item) { return '- ' + item; }).join('\n') : '- None',
+    '',
+    '## Open questions / risks',
+    risks.length ? risks.map(function (item) { return '- ' + item; }).join('\n') : '- None',
+    '',
+    '## Action items',
+    actionLines,
+    '',
+    '## Follow-up email',
+    followUpEmail || 'None'
+  ].join('\n');
+}
+
+exports.handler = async function (event) {
+  if (event.httpMethod === 'OPTIONS') {
+    return {
+      statusCode: 200,
+      headers: CORS_HEADERS,
+      body: JSON.stringify({ ok: true })
+    };
+  }
+
+  if (event.httpMethod !== 'POST') {
     return {
       statusCode: 405,
-      headers,
-      body: JSON.stringify({ error: "Method not allowed" })
-    };
-  }
-
-  const apiKey = process.env.PERPLEXITY_API_KEY;
-
-  if (!apiKey) {
-    return {
-      statusCode: 500,
-      headers,
+      headers: CORS_HEADERS,
       body: JSON.stringify({
-        error: "PERPLEXITY_API_KEY is missing in Netlify environment variables."
+        success: false,
+        error: 'Method not allowed. Use POST.'
       })
     };
-  }
-
-  function cleanText(text) {
-    return String(text || "")
-      .replace(/^```json\s*/i, "")
-      .replace(/^```\s*/i, "")
-      .replace(/\s*```$/i, "")
-      .trim();
-  }
-
-  function extractFirstJsonObject(text) {
-    const str = cleanText(text);
-    const firstBrace = str.indexOf("{");
-    if (firstBrace === -1) return null;
-
-    let inString = false;
-    let escape = false;
-    let depth = 0;
-
-    for (let i = firstBrace; i < str.length; i++) {
-      const ch = str[i];
-
-      if (escape) {
-        escape = false;
-        continue;
-      }
-
-      if (ch === "\\") {
-        escape = true;
-        continue;
-      }
-
-      if (ch === '"') {
-        inString = !inString;
-        continue;
-      }
-
-      if (!inString) {
-        if (ch === "{") depth++;
-        if (ch === "}") depth--;
-
-        if (depth === 0) {
-          return str.slice(firstBrace, i + 1);
-        }
-      }
-    }
-
-    return null;
-  }
-
-  function safeJsonParse(text) {
-    const attempts = [
-      cleanText(text),
-      extractFirstJsonObject(text)
-    ].filter(Boolean);
-
-    for (const candidate of attempts) {
-      try {
-        return JSON.parse(candidate);
-      } catch (e) {}
-    }
-
-    return null;
-  }
-
-  function normalizePriority(value) {
-    const v = String(value || "").trim().toLowerCase();
-    if (v === "high") return "High";
-    if (v === "low") return "Low";
-    return "Medium";
-  }
-
-  function normalizeActionItems(items) {
-    if (!Array.isArray(items)) return [];
-
-    return items.map((item) => {
-      if (typeof item === "string") {
-        return {
-          task: item.trim() || "TBD",
-          owner: "TBD",
-          due_date: "TBD",
-          priority: "Medium"
-        };
-      }
-
-      return {
-        task: String(item?.task || "").trim() || "TBD",
-        owner: String(item?.owner || "").trim() || "TBD",
-        due_date: String(item?.due_date || "").trim() || "TBD",
-        priority: normalizePriority(item?.priority)
-      };
-    }).filter(item => item.task);
-  }
-
-  function buildMarkdown(title, summary, actionItems, followUpEmail) {
-    const actionLines = actionItems.length
-      ? actionItems
-          .map((item) =>
-            `- [ ] ${item.task} — Owner: ${item.owner}; Due: ${item.due_date}; Priority: ${item.priority}`
-          )
-          .join("\n")
-      : "- No action items identified.";
-
-    return `# ${title || "Meeting Notes"}
-
-## Summary
-${summary || "No summary generated."}
-
-## Action Items
-${actionLines}
-
-## Follow-up Email
-${followUpEmail || "No follow-up email generated."}`;
-  }
-
-  async function callPerplexity(messages, useSchema = false) {
-    const payload = {
-      model: "sonar",
-      messages,
-      temperature: 0.2
-    };
-
-    if (useSchema) {
-      payload.response_format = {
-        type: "json_schema",
-        json_schema: {
-          name: "meeting_notes_response",
-          schema: {
-            type: "object",
-            additionalProperties: false,
-            properties: {
-              summary: { type: "string" },
-              action_items: {
-                type: "array",
-                items: {
-                  type: "object",
-                  additionalProperties: false,
-                  properties: {
-                    task: { type: "string" },
-                    owner: { type: "string" },
-                    due_date: { type: "string" },
-                    priority: { type: "string" }
-                  },
-                  required: ["task", "owner", "due_date", "priority"]
-                }
-              },
-              follow_up_email: { type: "string" },
-              markdown: { type: "string" }
-            },
-            required: ["summary", "action_items", "follow_up_email", "markdown"]
-          }
-        }
-      };
-    }
-
-    const response = await fetch("https://api.perplexity.ai/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-        "Accept": "application/json"
-      },
-      body: JSON.stringify(payload)
-    });
-
-    const data = await response.json();
-    return { response, data };
   }
 
   try {
-    const body = JSON.parse(event.body || "{}");
-    const meetingTitle = String(body.meetingTitle || "").trim();
-    const language = String(body.language || "English").trim();
-    const meetingType = String(body.meetingType || "General").trim();
-    const notes = String(body.notes || "").trim();
+    const body = parseRequestBody(event.body);
 
-    if (!notes) {
-      return {
-        statusCode: 400,
-        headers,
-        body: JSON.stringify({ error: "Transcript is required." })
-      };
-    }
-
-    const meetingTypeInstructions = {
-      "General": "Focus on the overall summary, practical action items, and a clear follow-up email.",
-      "Client call": "Emphasize client requests, promises made, deadlines, and next follow-up actions.",
-      "Internal sync": "Emphasize decisions, blockers, responsibilities, and immediate next steps.",
-      "Project review": "Emphasize progress updates, risks, issues, owners, and project milestones.",
-      "Sales call": "Emphasize customer needs, objections, commercial follow-ups, and next sales actions."
+    const payload = {
+      meetingTitle:
+        typeof body.meetingTitle === 'string' ? body.meetingTitle.trim() : '',
+      meetingType:
+        typeof body.meetingType === 'string' ? body.meetingType.trim() : 'General',
+      language:
+        typeof body.language === 'string' ? body.language.trim() : 'English',
+      notes:
+        typeof body.notes === 'string' ? body.notes.trim() : '',
+      outputMode: 'full_meeting_pack',
+      userQuery:
+        typeof body.userQuery === 'string' ? body.userQuery.trim() : ''
     };
 
-    const extraInstruction =
-      meetingTypeInstructions[meetingType] || meetingTypeInstructions["General"];
-
-    const mainPrompt = `
-You are an AI assistant that turns meeting transcripts into structured notes.
-
-Meeting title: ${meetingTitle || "(not provided)"}
-Meeting type: ${meetingType}
-Output language: ${language}
-
-Rules:
-- ${extraInstruction}
-- If an owner or due date is unclear, use "TBD".
-- Priority must be High, Medium, or Low.
-- Keep the summary concise and useful.
-- Write the follow-up email in a professional tone.
-- Markdown must include title, summary, action items, and follow-up email.
-
-Transcript:
-${notes}
-    `.trim();
-
-    let rawContent = "";
-    let parsed = null;
-
-    const firstAttempt = await callPerplexity(
-      [
-        {
-          role: "system",
-          content: "Return structured meeting notes."
-        },
-        {
-          role: "user",
-          content: mainPrompt
-        }
-      ],
-      true
-    );
-
-    if (!firstAttempt.response.ok) {
-      const message =
-        firstAttempt.data?.error?.message ||
-        firstAttempt.data?.error ||
-        firstAttempt.data?.message ||
-        "Perplexity API request failed.";
-
+    if (!payload.notes) {
       return {
-        statusCode: firstAttempt.response.status,
-        headers,
+        statusCode: 400,
+        headers: CORS_HEADERS,
         body: JSON.stringify({
-          error: message,
-          details: firstAttempt.data
+          success: false,
+          error: 'Missing required field: notes'
         })
       };
     }
 
-    rawContent = firstAttempt.data?.choices?.[0]?.message?.content || "";
-    parsed = safeJsonParse(rawContent);
+    const workflowResult = await runWorkflow(payload);
+    const artifacts = workflowResult.artifacts || {};
 
-    if (!parsed) {
-      const secondAttempt = await callPerplexity(
-        [
-          {
-            role: "system",
-            content: "Convert the input into valid JSON only."
-          },
-          {
-            role: "user",
-            content: `
-Convert the following content into valid JSON with exactly this schema:
-{
-  "summary": "string",
-  "action_items": [
-    {
-      "task": "string",
-      "owner": "string",
-      "due_date": "string",
-      "priority": "High | Medium | Low"
-    }
-  ],
-  "follow_up_email": "string",
-  "markdown": "string"
-}
-
-If a field is missing, fill with a reasonable fallback.
-If owner or due date is unknown, use "TBD".
-Return JSON only.
-
-Content to convert:
-${rawContent}
-            `.trim()
-          }
-        ],
-        false
-      );
-
-      if (secondAttempt.response.ok) {
-        const retryRaw = secondAttempt.data?.choices?.[0]?.message?.content || "";
-        parsed = safeJsonParse(retryRaw);
-        if (!parsed) rawContent = retryRaw;
-      }
-    }
-
-    if (!parsed) {
-      const fallbackSummary = cleanText(rawContent).slice(0, 1200) || "No summary generated.";
-      const fallbackActionItems = [];
-      const fallbackEmail = "Thank you everyone for the meeting. Please find the summary and next steps above.";
-      const fallbackMarkdown = buildMarkdown(meetingTitle, fallbackSummary, fallbackActionItems, fallbackEmail);
-
-      return {
-        statusCode: 200,
-        headers,
-        body: JSON.stringify({
-          summary: fallbackSummary,
-          action_items: fallbackActionItems,
-          follow_up_email: fallbackEmail,
-          markdown: fallbackMarkdown,
-          warning: "Model output was not valid JSON. Fallback content was used."
-        })
-      };
-    }
-
-    const summary = String(parsed?.summary || "").trim() || "No summary generated.";
-    const actionItems = normalizeActionItems(parsed?.action_items);
-    const followUpEmail =
-      String(parsed?.follow_up_email || "").trim() ||
-      "Thank you everyone for the meeting. Please find the summary and next steps above.";
-    const markdown =
-      String(parsed?.markdown || "").trim() ||
-      buildMarkdown(meetingTitle, summary, actionItems, followUpEmail);
+    const markdown = buildMarkdown(payload, artifacts);
 
     return {
       statusCode: 200,
-      headers,
+      headers: CORS_HEADERS,
       body: JSON.stringify({
-        summary,
-        action_items: actionItems,
-        follow_up_email: followUpEmail,
-        markdown
+        success: true,
+
+        summary: artifacts.summary || '',
+        key_points: Array.isArray(artifacts.key_points) ? artifacts.key_points : [],
+        decisions: Array.isArray(artifacts.decisions) ? artifacts.decisions : [],
+        risks_or_open_questions: Array.isArray(artifacts.risks_or_open_questions)
+          ? artifacts.risks_or_open_questions
+          : [],
+        action_items: Array.isArray(artifacts.action_items)
+          ? artifacts.action_items
+          : [],
+        follow_up_email: artifacts.follow_up_email || '',
+        follow_up_email_subject: artifacts.follow_up_email_subject || '',
+        markdown: markdown,
+
+        artifacts: {
+          summary: artifacts.summary || '',
+          key_points: Array.isArray(artifacts.key_points) ? artifacts.key_points : [],
+          decisions: Array.isArray(artifacts.decisions) ? artifacts.decisions : [],
+          risks_or_open_questions: Array.isArray(artifacts.risks_or_open_questions)
+            ? artifacts.risks_or_open_questions
+            : [],
+          action_items: Array.isArray(artifacts.action_items)
+            ? artifacts.action_items
+            : [],
+          follow_up_email: artifacts.follow_up_email || '',
+          follow_up_email_subject: artifacts.follow_up_email_subject || '',
+          follow_up_email_tone: artifacts.follow_up_email_tone || 'professional'
+        },
+
+        workflow: {
+          task_id: workflowResult.task_id || '',
+          status: workflowResult.status || 'completed',
+          started_at: workflowResult.started_at || '',
+          completed_at: workflowResult.completed_at || ''
+        }
       })
     };
   } catch (error) {
+    console.error('generate error:', error);
+
     return {
       statusCode: 500,
-      headers,
+      headers: CORS_HEADERS,
       body: JSON.stringify({
-        error: error.message || "Unknown server error"
+        success: false,
+        error: error.message || 'Internal server error'
       })
     };
   }
