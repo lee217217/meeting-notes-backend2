@@ -1,21 +1,20 @@
 function parseModelJson(text) {
-  if (typeof text !== 'string') {
-    return {
-      ok: false,
-      error: 'Model output is not a string.'
-    };
+  if (!text || typeof text !== 'string') {
+    throw new Error('Model response is empty or not a string');
   }
 
+  const trimmed = text.trim();
+
   try {
-    return {
-      ok: true,
-      data: JSON.parse(text)
-    };
+    return JSON.parse(trimmed);
   } catch (error) {
-    return {
-      ok: false,
-      error: error.message
-    };
+    const match = trimmed.match(/\{[\s\S]*\}|\[[\s\S]*\]/);
+
+    if (!match) {
+      throw new Error('Unable to locate JSON in model response');
+    }
+
+    return JSON.parse(match[0]);
   }
 }
 
