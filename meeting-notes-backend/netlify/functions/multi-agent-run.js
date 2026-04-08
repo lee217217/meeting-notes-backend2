@@ -1,87 +1,97 @@
-const { runMultiAgentWorkflow } = require('../../src/services/workflowService');
+const { runWorkflow } = require('../../src/services/workflowService');
 
-const RESPONSE_HEADERS = {
-  'Content-Type': 'application/json',
+const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'Content-Type',
-  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS'
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Content-Type': 'application/json'
 };
 
-function jsonResponse(statusCode, payload) {
-  return {
-    statusCode,
-    headers: RESPONSE_HEADERS,
-    body: JSON.stringify(payload)
-  };
+function parseRequestBody(body) {
+  if (!body) {
+    return {};
+  }
+
+  if (typeof body === 'string') {
+    return JSON.parse(body);
+  }
+
+  return body;
 }
 
 exports.handler = async function (event) {
   if (event.httpMethod === 'OPTIONS') {
     return {
-      statusCode: 204,
-      headers: RESPONSE_HEADERS,
-      body: ''
+      statusCode: 200,
+      headers: CORS_HEADERS,
+      body: JSON.stringify({ ok: true })
     };
-  }
-
-  if (event.httpMethod === 'GET') {
-    return jsonResponse(200, {
-      success: true,
-      message: 'multi-agent-run endpoint is alive',
-      route: '/.netlify/functions/multi-agent-run',
-      version: 'phase1-bootstrap'
-    });
   }
 
   if (event.httpMethod !== 'POST') {
-    return jsonResponse(405, {
-      success: false,
-      error: 'Method not allowed. Use POST.'
-    });
+    return {
+      statusCode: 405,
+      headers: CORS_HEADERS,
+      body: JSON.stringify({
+        success: false,
+        error: 'Method not allowed. Use POST.'
+      })
+    };
   }
 
   try {
-    let body = {};
-
-    try {
-      body = event.body ? JSON.parse(event.body) : {};
-    } catch (parseError) {
-      return jsonResponse(400, {
-        success: false,
-        error: 'Invalid JSON body.',
-        details: parseError.message
-      });
-    }
+    const body = parseRequestBody(event.body);
 
     const payload = {
-      meetingTitle: typeof body.meetingTitle === 'string' ? body.meetingTitle.trim() : '',
-      meetingType: typeof body.meetingType === 'string' ? body.meetingType.trim() : 'General',
-      language: typeof body.language === 'string' ? body.language.trim() : 'English',
-      notes: typeof body.notes === 'string' ? body.notes.trim() : '',
-      mode: typeof body.mode === 'string' ? body.mode.trim() : 'auto_workflow',
-      userQuery: typeof body.userQuery === 'string' ? body.userQuery.trim() : ''
+      meetingTitle:
+        typeof body.meetingTitle === 'string' ? body.meetingTitle.trim() : '',
+      meetingType:
+        typeof body.meetingType === 'string' ? body.meetingType.trim() : 'General',
+      language:
+        typeof body.language === 'string' ? body.language.trim() : 'English',
+      notes:
+        typeof body.notes === 'string' ? body.notes.trim() : '',
+      outputMode:
+        typeof body.outputMode === 'string'
+          ? body.outputMode.trim()
+          : typeof body.mode === 'string'
+            ? body.mode.trim()
+            : 'full_meeting_pack',
+      userQuery:
+        typeof body.userQuery === 'string' ? body.userQuery.trim() : ''
     };
 
     if (!payload.notes) {
-      return jsonResponse(400, {
-        success: false,
-        error: 'Missing required field: notes'
-      });
+      return {
+        statusCode: 400,
+        headers: CORS_HEADERS,
+        body: JSON.stringify({
+          success: false,
+          error: 'Missing required field: notes'
+        })
+      };
     }
 
-    const workflowResult = await runMultiAgentWorkflow(payload);
+    const result = await runWorkflow(payload);
 
-    return jsonResponse(200, {
-      success: true,
-      data: workflowResult
-    });
+    return {
+      statusCode: 200,
+      headers: CORS_HEADERS,
+      body: JSON.stringify({
+        success: true,
+        data: result
+      })
+    };
   } catch (error) {
     console.error('multi-agent-run error:', error);
 
-    return jsonResponse(500, {
-      success: false,
-      error: 'Internal server error.',
-      details: error.message || 'Unknown error'
-    });
+    return {
+      statusCode: 500,
+      headers: CORS_HEADERS,
+      body: JSON.stringify({
+        success: false,
+        error: error.message || 'Internal server error'
+      })
+    };
   }
 };
