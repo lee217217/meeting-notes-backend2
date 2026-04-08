@@ -79,7 +79,10 @@
     .security-note,
     .mini-stat span,
     .side-footer ul,
-    .markdown-note {
+    .markdown-note,
+    .subtle-note,
+    .section-hint,
+    .trace-note {
       color: var(--muted);
     }
 
@@ -253,11 +256,17 @@
       font: inherit;
       font-weight: 700;
       cursor: pointer;
-      transition: transform 0.18s ease, opacity 0.18s ease;
+      transition: transform 0.18s ease, opacity 0.18s ease, background 0.18s ease;
     }
 
     button:hover {
       transform: translateY(-1px);
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
     }
 
     .btn-primary {
@@ -322,7 +331,8 @@
       gap: 10px;
     }
 
-    .output-box h3 {
+    .output-box h3,
+    .multi-result-box h3 {
       margin: 0;
       font-size: 16px;
     }
@@ -557,7 +567,6 @@
       overflow: auto;
     }
 
-    /* Multi-Agent test panel */
     .multi-panel {
       margin-top: 24px;
       padding: 20px 24px 24px;
@@ -578,6 +587,7 @@
 
     .multi-result-grid {
       display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 14px;
       margin-top: 12px;
     }
@@ -587,11 +597,7 @@
       border-radius: 16px;
       padding: 12px 14px;
       background: rgba(255,255,255,0.03);
-    }
-
-    .multi-result-box h3 {
-      margin: 0 0 6px;
-      font-size: 15px;
+      min-width: 0;
     }
 
     .multi-result-box pre {
@@ -610,12 +616,156 @@
       padding: 10px 12px;
       max-height: 260px;
       overflow: auto;
+      margin-top: 10px;
+    }
+
+    .multi-wide {
+      grid-column: 1 / -1;
+    }
+
+    details.multi-result-box summary {
+      cursor: pointer;
+      font-weight: 700;
+      list-style: none;
+    }
+
+    details.multi-result-box summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .workflow-stat-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .workflow-stat {
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 14px;
+      padding: 12px;
+      background: rgba(255,255,255,0.025);
+    }
+
+    .workflow-stat span {
+      display: block;
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 5px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .workflow-stat strong {
+      display: block;
+      font-size: 14px;
+      line-height: 1.5;
+      color: #eff5ff;
+      word-break: break-word;
+    }
+
+    .insight-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .insight-block {
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 14px;
+      padding: 12px;
+      background: rgba(255,255,255,0.025);
+    }
+
+    .insight-block h4 {
+      margin: 0 0 8px;
+      font-size: 13px;
+      color: #dfe9fb;
+    }
+
+    .insight-block ul {
+      margin: 0;
+      padding-left: 18px;
+      line-height: 1.7;
+      color: #d7e2f7;
+      font-size: 13px;
+    }
+
+    .qa-pass,
+    .qa-fail {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+
+    .qa-pass {
+      color: #bff5da;
+      background: rgba(61,220,151,0.10);
+      border: 1px solid rgba(61,220,151,0.18);
+    }
+
+    .qa-fail {
+      color: #ffd2d8;
+      background: rgba(255,107,129,0.10);
+      border: 1px solid rgba(255,107,129,0.18);
+    }
+
+    .issue-list {
+      margin: 0;
+      padding-left: 18px;
+      line-height: 1.8;
+      font-size: 13px;
+      color: #dce6f8;
+    }
+
+    .trace-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .trace-item {
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 14px;
+      padding: 12px;
+      background: rgba(255,255,255,0.025);
+    }
+
+    .trace-item strong {
+      display: block;
+      font-size: 13px;
+      color: #eaf2ff;
+      margin-bottom: 4px;
+    }
+
+    .trace-item span {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .subtle-note,
+    .section-hint,
+    .trace-note {
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.95em;
     }
 
     @media (max-width: 980px) {
       .hero,
       .layout,
-      .row {
+      .row,
+      .multi-result-grid,
+      .workflow-stat-grid {
         grid-template-columns: 1fr;
       }
 
@@ -655,7 +805,7 @@
           <span>Static frontend with secure server-side AI processing on Netlify Functions</span>
         </div>
       </div>
-      <div class="version-chip">v1.2 · Filter & Sort Action Items</div>
+      <div class="version-chip">v2.0 · End-user workflow dashboard</div>
     </div>
 
     <section class="hero">
@@ -668,7 +818,8 @@
         <div class="hero-points">
           <span>Summary generation</span>
           <span>Structured action tracking</span>
-          <span>Filter and sort</span>
+          <span>Markdown export</span>
+          <span>Multi-agent workflow</span>
         </div>
       </div>
 
@@ -725,13 +876,14 @@
 
           <div class="btn-row">
             <button class="btn-primary" id="generateBtn" type="button">Generate output</button>
+            <button class="btn-primary" id="multiRunBtn" type="button">Run workflow</button>
             <button class="btn-secondary" id="copyMarkdownBtn" type="button">Copy Markdown</button>
             <button class="btn-secondary" id="demoBtn" type="button">Load sample</button>
             <button class="btn-secondary" id="clearBtn" type="button">Clear</button>
           </div>
 
           <p class="helper-note">
-            The frontend calls <code>/.netlify/functions/generate</code>, and the function sends the request to the AI API.
+            The single-output route uses <code>/.netlify/functions/generate</code>. The workflow route uses <code>/.netlify/functions/multi-agent-run</code> and returns structured artifacts plus trace data.
           </p>
 
           <div class="security-note">
@@ -744,7 +896,7 @@
         <div class="card-head">
           <div>
             <h2>Generated output</h2>
-            <p>The function returns structured JSON so the page can render a summary, action list, follow-up email, and Markdown export.</p>
+            <p>The single-output route returns structured JSON so the page can render a summary, action list, follow-up email, and Markdown export.</p>
           </div>
         </div>
 
@@ -821,14 +973,14 @@
       </div>
     </section>
 
-    <!-- Multi-Agent test panel (new) -->
     <section class="multi-panel">
-      <h2>Phase 1 Multi-Agent Test</h2>
-      <p>Use the same meeting input above, then run the new multi-agent workflow endpoint to inspect summary, actions, email and trace.</p>
+      <h2>Workflow dashboard</h2>
+      <p>Run the workflow to generate summary, action items, follow-up email, QA review, and execution trace from the same meeting input above.</p>
 
       <div class="btn-row">
-        <button class="btn-primary" id="multiRunBtn" type="button">Run Multi-Agent Workflow</button>
-        <button class="btn-secondary" id="multiClearBtn" type="button">Clear Multi-Agent Result</button>
+        <button class="btn-primary" id="multiRunBtnSecondary" type="button">Run Multi-Agent Workflow</button>
+        <button class="btn-secondary" id="copyMultiEmailBtn" type="button">Copy Workflow Email</button>
+        <button class="btn-secondary" id="multiClearBtn" type="button">Clear Result</button>
       </div>
 
       <div id="multiStatus" class="status" style="margin-top:12px;"></div>
@@ -836,32 +988,86 @@
       <div class="multi-result-grid" id="multiResultSection" style="display:none;">
         <div class="multi-result-box">
           <h3>Workflow status</h3>
-          <pre id="multiWorkflowStatus">-</pre>
+          <div class="workflow-stat-grid">
+            <div class="workflow-stat">
+              <span>Task ID</span>
+              <strong id="wfTaskId">-</strong>
+            </div>
+            <div class="workflow-stat">
+              <span>Status</span>
+              <strong id="wfStatus">-</strong>
+            </div>
+            <div class="workflow-stat">
+              <span>Current step</span>
+              <strong id="wfCurrentStep">-</strong>
+            </div>
+            <div class="workflow-stat">
+              <span>Selected agents</span>
+              <strong id="wfSelectedAgents">-</strong>
+            </div>
+            <div class="workflow-stat">
+              <span>Started at</span>
+              <strong id="wfStartedAt">-</strong>
+            </div>
+            <div class="workflow-stat">
+              <span>Completed at</span>
+              <strong id="wfCompletedAt">-</strong>
+            </div>
+          </div>
         </div>
+
         <div class="multi-result-box">
           <h3>Summary</h3>
           <pre id="multiSummary">-</pre>
         </div>
-        <div class="multi-result-box">
-          <h3>Action items</h3>
-          <pre id="multiActions">-</pre>
+
+        <div class="multi-result-box multi-wide">
+          <h3>Key points, decisions, and risks</h3>
+          <div class="insight-list">
+            <div class="insight-block">
+              <h4>Key points</h4>
+              <ul id="multiKeyPointsList"></ul>
+            </div>
+            <div class="insight-block">
+              <h4>Decisions</h4>
+              <ul id="multiDecisionsList"></ul>
+            </div>
+            <div class="insight-block">
+              <h4>Risks / Open questions</h4>
+              <ul id="multiRisksList"></ul>
+            </div>
+          </div>
         </div>
-        <div class="multi-result-box">
+
+        <div class="multi-result-box multi-wide">
+          <div class="output-head">
+            <h3>Action items</h3>
+            <div class="subtle-note" id="multiActionCount">0 workflow action items</div>
+          </div>
+          <div id="multiActionsRich" class="output-content placeholder">Workflow action items will appear here.</div>
+        </div>
+
+        <div class="multi-result-box multi-wide">
           <h3>Follow-up email</h3>
           <pre id="multiEmail">-</pre>
         </div>
+
         <div class="multi-result-box">
           <h3>QA review</h3>
-          <pre id="multiReview">-</pre>
+          <div id="multiQaBadge" class="qa-pass">PASS</div>
+          <ul id="multiIssueList" class="issue-list"></ul>
         </div>
+
         <div class="multi-result-box">
           <h3>Trace (steps)</h3>
-          <pre id="multiTrace">-</pre>
+          <div class="trace-note">This is useful for internal debugging and execution visibility.</div>
+          <div id="multiTraceList" class="trace-list" style="margin-top:10px;"></div>
         </div>
-        <div class="multi-result-box">
-          <h3>Raw JSON</h3>
+
+        <details class="multi-result-box multi-wide">
+          <summary>Raw JSON</summary>
           <pre id="multiRawJson" class="multi-json">-</pre>
-        </div>
+        </details>
       </div>
     </section>
   </div>
@@ -888,22 +1094,37 @@
     const actionSort = document.getElementById('actionSort');
     const actionCount = document.getElementById('actionCount');
 
-    // Multi-agent elements
     const multiRunBtn = document.getElementById('multiRunBtn');
+    const multiRunBtnSecondary = document.getElementById('multiRunBtnSecondary');
     const multiClearBtn = document.getElementById('multiClearBtn');
+    const copyMultiEmailBtn = document.getElementById('copyMultiEmailBtn');
     const multiStatus = document.getElementById('multiStatus');
     const multiResultSection = document.getElementById('multiResultSection');
-    const multiWorkflowStatus = document.getElementById('multiWorkflowStatus');
+
+    const wfTaskId = document.getElementById('wfTaskId');
+    const wfStatus = document.getElementById('wfStatus');
+    const wfCurrentStep = document.getElementById('wfCurrentStep');
+    const wfSelectedAgents = document.getElementById('wfSelectedAgents');
+    const wfStartedAt = document.getElementById('wfStartedAt');
+    const wfCompletedAt = document.getElementById('wfCompletedAt');
+
     const multiSummary = document.getElementById('multiSummary');
-    const multiActions = document.getElementById('multiActions');
+    const multiKeyPointsList = document.getElementById('multiKeyPointsList');
+    const multiDecisionsList = document.getElementById('multiDecisionsList');
+    const multiRisksList = document.getElementById('multiRisksList');
+    const multiActionsRich = document.getElementById('multiActionsRich');
+    const multiActionCount = document.getElementById('multiActionCount');
     const multiEmail = document.getElementById('multiEmail');
-    const multiReview = document.getElementById('multiReview');
-    const multiTrace = document.getElementById('multiTrace');
+    const multiQaBadge = document.getElementById('multiQaBadge');
+    const multiIssueList = document.getElementById('multiIssueList');
+    const multiTraceList = document.getElementById('multiTraceList');
     const multiRawJson = document.getElementById('multiRawJson');
 
     let latestMarkdown = '';
     let latestActionItems = [];
     let rawActionItems = [];
+    let latestMultiEmail = '';
+    let latestMultiActionItems = [];
 
     function setStatus(message, type) {
       const finalType = type || 'info';
@@ -1015,7 +1236,7 @@
       return list;
     }
 
-    function buildActionCards(items) {
+    function buildActionCards(items, statusLabel) {
       const cards = items.map(function(item, index) {
         const task = escapeHtml(item.task || 'TBD');
         const owner = escapeHtml(item.owner || 'TBD');
@@ -1040,7 +1261,7 @@
               '<div class="action-priority ' + priorityClass + '">' + prioritySafe + '</div>',
             '</div>',
             '<div class="action-bottom">',
-              '<div class="action-status">Next step item</div>',
+              '<div class="action-status">' + escapeHtml(statusLabel || 'Next step item') + '</div>',
               '<div class="action-deadline">Due ' + dueDate + '</div>',
             '</div>',
           '</div>'
@@ -1066,13 +1287,27 @@
         return;
       }
 
-      actionsOutput.innerHTML = buildActionCards(latestActionItems);
+      actionsOutput.innerHTML = buildActionCards(latestActionItems, 'Next step item');
       actionsOutput.classList.remove('placeholder');
     }
 
     function renderActionItems(items) {
       rawActionItems = Array.isArray(items) ? items.slice() : [];
       refreshActionItemsView();
+    }
+
+    function renderMultiActionItems(items) {
+      latestMultiActionItems = Array.isArray(items) ? items.slice() : [];
+      multiActionCount.textContent = latestMultiActionItems.length + (latestMultiActionItems.length === 1 ? ' workflow action item' : ' workflow action items');
+
+      if (!latestMultiActionItems.length) {
+        multiActionsRich.textContent = 'No workflow action items returned.';
+        multiActionsRich.classList.remove('placeholder');
+        return;
+      }
+
+      multiActionsRich.innerHTML = buildActionCards(latestMultiActionItems, 'Workflow-generated action item');
+      multiActionsRich.classList.remove('placeholder');
     }
 
     function actionsToPlainText(items) {
@@ -1089,6 +1324,48 @@
       }).join('\n');
     }
 
+    function renderList(listEl, items, emptyText) {
+      listEl.innerHTML = '';
+      if (!Array.isArray(items) || !items.length) {
+        const li = document.createElement('li');
+        li.textContent = emptyText;
+        listEl.appendChild(li);
+        return;
+      }
+      items.forEach(function(item) {
+        const li = document.createElement('li');
+        li.textContent = item;
+        listEl.appendChild(li);
+      });
+    }
+
+    function renderTrace(trace) {
+      multiTraceList.innerHTML = '';
+
+      if (!Array.isArray(trace) || !trace.length) {
+        const div = document.createElement('div');
+        div.className = 'trace-item';
+        div.innerHTML = '<strong>No trace data</strong><span>The workflow did not return step-level trace information.</span>';
+        multiTraceList.appendChild(div);
+        return;
+      }
+
+      trace.forEach(function(item) {
+        const div = document.createElement('div');
+        div.className = 'trace-item';
+
+        const title = document.createElement('strong');
+        title.textContent = (item.step || '-') + ' · ' + (item.status || '-');
+
+        const meta = document.createElement('span');
+        meta.textContent = 'Timestamp: ' + (item.timestamp || '-');
+
+        div.appendChild(title);
+        div.appendChild(meta);
+        multiTraceList.appendChild(div);
+      });
+    }
+
     async function copyText(text, successMessage) {
       if (!text || !text.trim()) {
         setStatus('Nothing to copy yet.', 'error');
@@ -1100,6 +1377,20 @@
         setStatus(successMessage, 'success');
       } catch (err) {
         setStatus('Copy failed. Your browser may block clipboard access.', 'error');
+      }
+    }
+
+    async function copyTextMulti(text, successMessage) {
+      if (!text || !text.trim()) {
+        setMultiStatus('Nothing to copy yet.', 'error');
+        return;
+      }
+
+      try {
+        await navigator.clipboard.writeText(text);
+        setMultiStatus(successMessage, 'success');
+      } catch (err) {
+        setMultiStatus('Copy failed. Your browser may block clipboard access.', 'error');
       }
     }
 
@@ -1158,7 +1449,141 @@
       }
     }
 
+    function clearMultiResult() {
+      multiResultSection.style.display = 'none';
+      wfTaskId.textContent = '-';
+      wfStatus.textContent = '-';
+      wfCurrentStep.textContent = '-';
+      wfSelectedAgents.textContent = '-';
+      wfStartedAt.textContent = '-';
+      wfCompletedAt.textContent = '-';
+      multiSummary.textContent = '-';
+      multiKeyPointsList.innerHTML = '';
+      multiDecisionsList.innerHTML = '';
+      multiRisksList.innerHTML = '';
+      multiActionsRich.textContent = 'Workflow action items will appear here.';
+      multiActionsRich.classList.add('placeholder');
+      multiActionCount.textContent = '0 workflow action items';
+      multiEmail.textContent = '-';
+      multiQaBadge.textContent = 'PASS';
+      multiQaBadge.className = 'qa-pass';
+      multiIssueList.innerHTML = '';
+      multiTraceList.innerHTML = '';
+      multiRawJson.textContent = '-';
+      latestMultiEmail = '';
+      latestMultiActionItems = [];
+      multiStatus.className = 'status';
+      multiStatus.textContent = '';
+    }
+
+    async function runMultiAgentWorkflow() {
+      const title = meetingTitle.value.trim();
+      const type = meetingType.value;
+      const lang = language.value;
+      const text = notes.value.trim();
+
+      if (!text) {
+        setMultiStatus('Please paste some meeting notes first.', 'error');
+        return;
+      }
+
+      multiRunBtn.disabled = true;
+      multiRunBtnSecondary.disabled = true;
+      multiRunBtn.textContent = 'Running...';
+      multiRunBtnSecondary.textContent = 'Running...';
+      setMultiStatus('Running multi-agent workflow...', 'info');
+      multiResultSection.style.display = 'none';
+
+      try {
+        const resp = await fetch('/.netlify/functions/multi-agent-run', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            meetingTitle: title,
+            meetingType: type,
+            language: lang,
+            notes: text,
+            mode: 'auto_workflow',
+            userQuery: ''
+          })
+        });
+
+        const data = await resp.json();
+
+        if (!resp.ok) {
+          throw new Error(data && data.error ? data.error : 'Request failed');
+        }
+
+        const wf = data.data || data;
+        const workflow = wf.workflow || {};
+        const artifacts = wf.artifacts || {};
+        const review = wf.review || {};
+
+        wfTaskId.textContent = wf.task_id || '-';
+        wfStatus.textContent = wf.status || '-';
+        wfCurrentStep.textContent = workflow.current_step || '-';
+        wfSelectedAgents.textContent = Array.isArray(workflow.selected_agents) && workflow.selected_agents.length
+          ? workflow.selected_agents.join(', ')
+          : '-';
+        wfStartedAt.textContent = wf.started_at || '-';
+        wfCompletedAt.textContent = wf.completed_at || '-';
+
+        multiSummary.textContent = artifacts.summary || '-';
+
+        renderList(multiKeyPointsList, artifacts.key_points, 'No key points returned.');
+        renderList(multiDecisionsList, artifacts.decisions, 'No decisions returned.');
+        renderList(multiRisksList, artifacts.risks_or_open_questions, 'No risks or open questions returned.');
+
+        renderMultiActionItems(artifacts.action_items || []);
+
+        latestMultiEmail = artifacts.follow_up_email || '';
+        multiEmail.textContent = latestMultiEmail || '-';
+
+        const reviewStatus = String(review.status || review.review_status || '').toLowerCase();
+        if (reviewStatus === 'pass') {
+          multiQaBadge.textContent = 'PASS';
+          multiQaBadge.className = 'qa-pass';
+        } else {
+          multiQaBadge.textContent = (review.status || review.review_status || 'UNKNOWN').toUpperCase();
+          multiQaBadge.className = 'qa-fail';
+        }
+
+        multiIssueList.innerHTML = '';
+        if (Array.isArray(review.issues) && review.issues.length) {
+          review.issues.forEach(function(issue) {
+            const li = document.createElement('li');
+            li.textContent = issue;
+            multiIssueList.appendChild(li);
+          });
+        } else {
+          const li = document.createElement('li');
+          li.textContent = 'No issues found.';
+          multiIssueList.appendChild(li);
+        }
+
+        renderTrace(wf.trace || []);
+        multiRawJson.textContent = JSON.stringify(data, null, 2);
+        multiResultSection.style.display = 'grid';
+        setMultiStatus('Multi-agent workflow completed.', 'success');
+      } catch (error) {
+        multiRawJson.textContent = JSON.stringify(
+          { success: false, error: error.message },
+          null,
+          2
+        );
+        multiResultSection.style.display = 'grid';
+        setMultiStatus('Error: ' + error.message, 'error');
+      } finally {
+        multiRunBtn.disabled = false;
+        multiRunBtnSecondary.disabled = false;
+        multiRunBtn.textContent = 'Run workflow';
+        multiRunBtnSecondary.textContent = 'Run Multi-Agent Workflow';
+      }
+    }
+
     generateBtn.addEventListener('click', generateOutput);
+    multiRunBtn.addEventListener('click', runMultiAgentWorkflow);
+    multiRunBtnSecondary.addEventListener('click', runMultiAgentWorkflow);
 
     clearBtn.addEventListener('click', function() {
       meetingTitle.value = '';
@@ -1166,6 +1591,7 @@
       meetingType.value = 'General';
       language.value = 'English';
       resetOutput();
+      clearMultiResult();
       setStatus('Cleared. Ready for a new test.', 'info');
     });
 
@@ -1180,7 +1606,8 @@ Cindy: We should avoid login and billing for the MVP to keep the build simple.
 David: Let's also keep the interface to a single page and test whether users find the output useful.
 Alice: Agreed. Ben will prepare the first prompt draft. Cindy will review the UI copy. David should test three sample transcripts before Friday.`;
       resetOutput();
-      setStatus('Sample data loaded. Click Generate output.', 'info');
+      clearMultiResult();
+      setStatus('Sample data loaded. Click Generate output or Run workflow.', 'info');
     });
 
     document.querySelectorAll('[data-copy-target]').forEach(function(btn) {
@@ -1209,6 +1636,10 @@ Alice: Agreed. Ben will prepare the first prompt draft. Cindy will review the UI
       await copyText(latestMarkdown, 'Markdown copied.');
     });
 
+    copyMultiEmailBtn.addEventListener('click', async function() {
+      await copyTextMulti(latestMultiEmail, 'Workflow email copied.');
+    });
+
     actionFilter.addEventListener('change', function() {
       refreshActionItemsView();
     });
@@ -1217,124 +1648,11 @@ Alice: Agreed. Ben will prepare the first prompt draft. Cindy will review the UI
       refreshActionItemsView();
     });
 
-    resetOutput();
-    setStatus('Paste your notes and click Generate output.', 'info');
-
-    // ===== Multi-Agent test logic =====
-    function clearMultiResult() {
-      multiResultSection.style.display = 'none';
-      multiWorkflowStatus.textContent = '-';
-      multiSummary.textContent = '-';
-      multiActions.textContent = '-';
-      multiEmail.textContent = '-';
-      multiReview.textContent = '-';
-      multiTrace.textContent = '-';
-      multiRawJson.textContent = '-';
-      multiStatus.className = 'status';
-      multiStatus.textContent = '';
-    }
-
-    async function runMultiAgentTest() {
-      const title = meetingTitle.value.trim();
-      const type = meetingType.value;
-      const lang = language.value;
-      const text = notes.value.trim();
-
-      if (!text) {
-        setMultiStatus('Please paste some meeting notes first.', 'error');
-        return;
-      }
-
-      setMultiStatus('Running multi-agent workflow...', 'info');
-      multiResultSection.style.display = 'none';
-
-      try {
-        const resp = await fetch('/.netlify/functions/multi-agent-run', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            meetingTitle: title,
-            meetingType: type,
-            language: lang,
-            notes: text,
-            mode: 'auto_workflow',
-            userQuery: ''
-          })
-        });
-
-        const data = await resp.json();
-
-        if (!resp.ok) {
-          throw new Error(data && data.error ? data.error : 'Request failed');
-        }
-
-        const wf = data.data || data;
-
-        multiWorkflowStatus.textContent =
-          'Task: ' + (wf.task_id || '-') +
-          '\\nStatus: ' + (wf.status || '-') +
-          '\\nCurrent step: ' + (wf.workflow && wf.workflow.current_step || '-') +
-          '\\nSelected agents: ' + (
-            wf.workflow && Array.isArray(wf.workflow.selected_agents)
-              ? wf.workflow.selected_agents.join(', ')
-              : '-'
-          );
-
-        multiSummary.textContent = wf.artifacts && wf.artifacts.summary || '-';
-
-        const aitems = wf.artifacts && wf.artifacts.action_items || [];
-        if (Array.isArray(aitems) && aitems.length) {
-          multiActions.textContent = aitems.map(function(item, idx) {
-            return (idx + 1) + '. ' +
-              (item.task || 'TBD') +
-              ' | Owner: ' + (item.owner || 'TBD') +
-              ' | Due: ' + (item.due_date || 'TBD') +
-              ' | Priority: ' + (item.priority || 'TBD');
-          }).join('\\n');
-        } else {
-          multiActions.textContent = '-';
-        }
-
-        multiEmail.textContent = wf.artifacts && wf.artifacts.follow_up_email || '-';
-
-        if (wf.review) {
-          multiReview.textContent =
-            'Status: ' + (wf.review.status || '-') +
-            '\\nIssues: ' + (
-              Array.isArray(wf.review.issues) && wf.review.issues.length
-                ? wf.review.issues.join('; ')
-                : 'none'
-            );
-        } else {
-          multiReview.textContent = '-';
-        }
-
-        if (Array.isArray(wf.trace) && wf.trace.length) {
-          multiTrace.textContent = wf.trace.map(function(item) {
-            return '[' + (item.timestamp || '-') + '] ' +
-              (item.step || '-') +
-              ' - ' + (item.status || '-');
-          }).join('\\n');
-        } else {
-          multiTrace.textContent = '-';
-        }
-
-        multiRawJson.textContent = JSON.stringify(data, null, 2);
-        multiResultSection.style.display = 'grid';
-        setMultiStatus('Multi-agent workflow completed.', 'success');
-      } catch (error) {
-        multiRawJson.textContent = JSON.stringify(
-          { success: false, error: error.message },
-          null,
-          2
-        );
-        multiResultSection.style.display = 'grid';
-        setMultiStatus('Error: ' + error.message, 'error');
-      }
-    }
-
-    multiRunBtn.addEventListener('click', runMultiAgentTest);
     multiClearBtn.addEventListener('click', clearMultiResult);
+
+    resetOutput();
+    clearMultiResult();
+    setStatus('Paste your notes and click Generate output.', 'info');
   </script>
 </body>
 </html>
