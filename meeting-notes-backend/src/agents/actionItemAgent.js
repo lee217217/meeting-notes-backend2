@@ -1,46 +1,78 @@
 const { actionItemSystemPrompt } = require('../prompts/actionItemPrompt');
-
-function getLanguagePack(language) {
-  if (language === 'Traditional Chinese') {
-    return {
-      defaultTask: '檢查會議摘要並確認下一步實施安排',
-      fallbackOwner: '待定',
-      fallbackDueDate: '待定'
-    };
-  }
-
-  if (language === 'Simplified Chinese') {
-    return {
-      defaultTask: '检查会议摘要并确认下一步实施安排',
-      fallbackOwner: '待定',
-      fallbackDueDate: '待定'
-    };
-  }
-
-  return {
-    defaultTask: 'Review meeting summary and confirm next implementation step',
-    fallbackOwner: 'TBD',
-    fallbackDueDate: 'TBD'
-  };
-}
+const { callLlm } = require('../services/llmClient');
+const { parseModelJson } = require('../utils/parseModelJson');
 
 async function runActionItemAgent(payload, summarizerResult) {
   const language = payload.language || 'English';
-  const lang = getLanguagePack(language);
+
+  const messages = [
+    {
+      role: 'system',
+      content: [
+        actionItemSystemPrompt.content,
+        'Respond entirely in ' + language + '.',
+        'Return only valid JSON.',
+        'Do not wrap JSON in markdown code fences.',
+        'Do not invent facts when information is missing.',
+        'If owner or due date is unknown, use an empty string.',
+        'Priority must be one of: High, Medium, Low.',
+        'Output format:',
+        '{',
+        '  "action_items": [',
+        '    {',
+        '      "task": "string",',
+        '      "owner": "string",',
+        '      "due_date": "string",',
+        '      "priority": "High|Medium|Low",',
+        '      "source_evidence": "string"',
+        '    }',
+        '  ]',
+        '}'
+      ].join(' ')
+    },
+    {
+      role: 'user',
+      content: [
+        'Meeting title: ' + (payload.meetingTitle || ''),
+        'Meeting type: ' + (payload.meetingType || ''),
+        'Language: ' + language,
+        '',
+        'Meeting summary:',
+        summarizerResult.summary || '',
+        '',
+        'Meeting notes:',
+        payload.notes || ''
+      ].join('\n')
+    }
+  ];
+
+  const response = await callLlm(messages, {
+    model: 'sonar',
+    temperature: 0.1
+  });
+
+  const parsed = parseModelJson(response.text);
+
+  const actionItems = Array.isArray(parsed.action_items)
+    ? parsed.action_items.map(function (item) {
+        return {
+          task: typeof item.task === 'string' ? item.task : '',
+          owner: typeof item.owner === 'string' ? item.owner : '',
+          due_date: typeof item.due_date === 'string' ? item.due_date : '',
+          priority:
+            item.priority === 'High' || item.priority === 'Low'
+              ? item.priority
+              : 'Medium',
+          source_evidence:
+            typeof item.source_evidence === 'string' ? item.source_evidence : ''
+        };
+      })
+    : [];
 
   return {
     agent: 'action_item_agent',
     system_prompt_name: actionItemSystemPrompt.name,
-    action_items: [
-      {
-        task: lang.defaultTask,
-        owner: lang.fallbackOwner,
-        due_date: lang.fallbackDueDate,
-        priority: 'High',
-        source_evidence:
-          summarizerResult.summary || (payload.notes || '').slice(0, 120)
-      }
-    ]
+    action_items: actionItems
   };
 }
 
