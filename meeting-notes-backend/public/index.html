@@ -80,9 +80,7 @@
     .mini-stat span,
     .side-footer ul,
     .markdown-note,
-    .subtle-note,
-    .section-hint,
-    .trace-note {
+    .subtle-note {
       color: var(--muted);
     }
 
@@ -113,7 +111,7 @@
     .stats-card,
     .main-card,
     .side-card,
-    .multi-panel {
+    .result-panel {
       background: var(--panel);
       border: 1px solid var(--line);
       border-radius: var(--radius-xl);
@@ -189,13 +187,26 @@
       padding: 22px 24px 0;
     }
 
-    .card-head h2 {
+    .card-head h2,
+    .result-panel h2 {
       margin: 0;
       font-size: 22px;
     }
 
     .card-body {
       padding: 22px 24px 24px;
+    }
+
+    .result-panel {
+      margin-top: 24px;
+      padding: 20px 24px 24px;
+    }
+
+    .result-panel p {
+      margin-top: 4px;
+      margin-bottom: 14px;
+      font-size: 13px;
+      color: var(--muted);
     }
 
     .field {
@@ -311,16 +322,27 @@
       border-color: rgba(61,220,151,0.16);
     }
 
-    .output-stack {
+    .output-stack,
+    .result-grid {
       display: grid;
       gap: 14px;
     }
 
-    .output-box {
+    .output-box,
+    .result-box {
       border: 1px solid var(--line);
       background: rgba(255,255,255,0.035);
       border-radius: 18px;
       padding: 16px;
+    }
+
+    .result-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin-top: 12px;
+    }
+
+    .result-wide {
+      grid-column: 1 / -1;
     }
 
     .output-head {
@@ -332,7 +354,7 @@
     }
 
     .output-box h3,
-    .multi-result-box h3 {
+    .result-box h3 {
       margin: 0;
       font-size: 16px;
     }
@@ -343,7 +365,8 @@
       border-radius: 10px;
     }
 
-    .output-content {
+    .output-content,
+    .result-content {
       white-space: pre-wrap;
       line-height: 1.8;
       color: #dbe7fb;
@@ -567,103 +590,6 @@
       overflow: auto;
     }
 
-    .multi-panel {
-      margin-top: 24px;
-      padding: 20px 24px 24px;
-    }
-
-    .multi-panel h2 {
-      margin-top: 0;
-      margin-bottom: 4px;
-      font-size: 20px;
-    }
-
-    .multi-panel p {
-      margin-top: 0;
-      margin-bottom: 14px;
-      font-size: 13px;
-      color: var(--muted);
-    }
-
-    .multi-result-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 14px;
-      margin-top: 12px;
-    }
-
-    .multi-result-box {
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 12px 14px;
-      background: rgba(255,255,255,0.03);
-      min-width: 0;
-    }
-
-    .multi-result-box pre {
-      margin: 0;
-      white-space: pre-wrap;
-      word-break: break-word;
-      font-size: 12px;
-      line-height: 1.7;
-      color: #e5ecf6;
-    }
-
-    .multi-json {
-      background: #020617;
-      color: #e5ecf6;
-      border-radius: 12px;
-      padding: 10px 12px;
-      max-height: 260px;
-      overflow: auto;
-      margin-top: 10px;
-    }
-
-    .multi-wide {
-      grid-column: 1 / -1;
-    }
-
-    details.multi-result-box summary {
-      cursor: pointer;
-      font-weight: 700;
-      list-style: none;
-    }
-
-    details.multi-result-box summary::-webkit-details-marker {
-      display: none;
-    }
-
-    .workflow-stat-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    .workflow-stat {
-      border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 14px;
-      padding: 12px;
-      background: rgba(255,255,255,0.025);
-    }
-
-    .workflow-stat span {
-      display: block;
-      font-size: 11px;
-      color: var(--muted);
-      margin-bottom: 5px;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-    }
-
-    .workflow-stat strong {
-      display: block;
-      font-size: 14px;
-      line-height: 1.5;
-      color: #eff5ff;
-      word-break: break-word;
-    }
-
     .insight-list {
       display: grid;
       gap: 10px;
@@ -690,67 +616,7 @@
       font-size: 13px;
     }
 
-    .qa-pass,
-    .qa-fail {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 12px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 800;
-      margin-bottom: 10px;
-    }
-
-    .qa-pass {
-      color: #bff5da;
-      background: rgba(61,220,151,0.10);
-      border: 1px solid rgba(61,220,151,0.18);
-    }
-
-    .qa-fail {
-      color: #ffd2d8;
-      background: rgba(255,107,129,0.10);
-      border: 1px solid rgba(255,107,129,0.18);
-    }
-
-    .issue-list {
-      margin: 0;
-      padding-left: 18px;
-      line-height: 1.8;
-      font-size: 13px;
-      color: #dce6f8;
-    }
-
-    .trace-list {
-      display: grid;
-      gap: 10px;
-    }
-
-    .trace-item {
-      border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 14px;
-      padding: 12px;
-      background: rgba(255,255,255,0.025);
-    }
-
-    .trace-item strong {
-      display: block;
-      font-size: 13px;
-      color: #eaf2ff;
-      margin-bottom: 4px;
-    }
-
-    .trace-item span {
-      display: block;
-      font-size: 12px;
-      color: var(--muted);
-      line-height: 1.7;
-    }
-
-    .subtle-note,
-    .section-hint,
-    .trace-note {
+    .subtle-note {
       font-size: 12px;
       line-height: 1.7;
     }
@@ -764,8 +630,7 @@
       .hero,
       .layout,
       .row,
-      .multi-result-grid,
-      .workflow-stat-grid {
+      .result-grid {
         grid-template-columns: 1fr;
       }
 
@@ -805,7 +670,7 @@
           <span>Static frontend with secure server-side AI processing on Netlify Functions</span>
         </div>
       </div>
-      <div class="version-chip">v2.0 · End-user workflow dashboard</div>
+      <div class="version-chip">v2.1 · User-facing simplified UI</div>
     </div>
 
     <section class="hero">
@@ -818,15 +683,15 @@
         <div class="hero-points">
           <span>Summary generation</span>
           <span>Structured action tracking</span>
+          <span>Follow-up email</span>
           <span>Markdown export</span>
-          <span>Multi-agent workflow</span>
         </div>
       </div>
 
       <div class="stats-card">
-        <div class="mini-stat"><strong>Static frontend</strong><span>Deploy the interface as a normal Netlify site.</span></div>
-        <div class="mini-stat"><strong>Serverless backend</strong><span>The AI request runs inside a Netlify Function.</span></div>
-        <div class="mini-stat"><strong>Private key</strong><span>Keep your API key in Netlify environment variables only.</span></div>
+        <div class="mini-stat"><strong>Simple input</strong><span>Paste notes and generate clean meeting output in one flow.</span></div>
+        <div class="mini-stat"><strong>Server-side AI</strong><span>The request runs through Netlify Functions, not in the browser.</span></div>
+        <div class="mini-stat"><strong>Ready to copy</strong><span>Copy email, markdown, or action items for your next step.</span></div>
       </div>
     </section>
 
@@ -840,7 +705,7 @@
         </div>
 
         <div class="card-body">
-          <div id="status" class="status info">Paste your notes and click Generate output.</div>
+          <div id="status" class="status info">Paste your notes and click Generate meeting results.</div>
 
           <div class="row">
             <div class="field">
@@ -875,19 +740,18 @@
           </div>
 
           <div class="btn-row">
-            <button class="btn-primary" id="generateBtn" type="button">Generate output</button>
-            <button class="btn-primary" id="multiRunBtn" type="button">Run workflow</button>
+            <button class="btn-primary" id="multiRunBtn" type="button">Generate meeting results</button>
             <button class="btn-secondary" id="copyMarkdownBtn" type="button">Copy Markdown</button>
             <button class="btn-secondary" id="demoBtn" type="button">Load sample</button>
             <button class="btn-secondary" id="clearBtn" type="button">Clear</button>
           </div>
 
           <p class="helper-note">
-            The single-output route uses <code>/.netlify/functions/generate</code>. The workflow route uses <code>/.netlify/functions/multi-agent-run</code> and returns structured artifacts plus trace data.
+            This page uses <code>/.netlify/functions/multi-agent-run</code> to generate user-facing meeting outputs.
           </p>
 
           <div class="security-note">
-            Set <code>PERPLEXITY_API_KEY</code> in Netlify environment variables. Never place the key in browser-side code.
+            Keep <code>PERPLEXITY_API_KEY</code> in Netlify environment variables only. Never place the key in browser-side code.
           </div>
         </div>
       </div>
@@ -895,8 +759,8 @@
       <div class="side-card">
         <div class="card-head">
           <div>
-            <h2>Generated output</h2>
-            <p>The single-output route returns structured JSON so the page can render a summary, action list, follow-up email, and Markdown export.</p>
+            <h2>Quick output</h2>
+            <p>The generated results appear below in a user-friendly format for copying, reviewing, and sharing.</p>
           </div>
         </div>
 
@@ -907,17 +771,17 @@
                 <h3>Summary</h3>
                 <button class="btn-secondary copy-btn" data-copy-target="summaryOutput">Copy</button>
               </div>
-              <div id="summaryOutput" class="output-content placeholder">Your AI summary will appear here.</div>
+              <div id="summaryOutput" class="output-content placeholder">Your meeting summary will appear here.</div>
             </div>
 
             <div class="output-box">
               <div class="output-head">
-                <h3>Action items · who does what next</h3>
+                <h3>Action items</h3>
                 <button class="btn-secondary copy-btn" id="copyActionsBtn" type="button">Copy</button>
               </div>
 
               <div class="actions-toolbar">
-                <div id="actionCount" class="action-count">0 open action items</div>
+                <div id="actionCount" class="action-count">0 action items</div>
 
                 <div class="actions-controls">
                   <label class="mini-control">
@@ -939,13 +803,13 @@
                 </div>
               </div>
 
-              <div id="actionsOutput" class="output-content placeholder">Your structured action items will appear here.</div>
+              <div id="actionsOutput" class="output-content placeholder">Your action items will appear here.</div>
             </div>
 
             <div class="output-box">
               <div class="output-head">
                 <h3>Follow-up email</h3>
-                <button class="btn-secondary copy-btn" data-copy-target="emailOutput">Copy</button>
+                <button class="btn-secondary copy-btn" id="copyEmailBtn" type="button">Copy</button>
               </div>
               <div id="emailOutput" class="output-content placeholder">Your follow-up draft will appear here.</div>
             </div>
@@ -973,101 +837,52 @@
       </div>
     </section>
 
-    <section class="multi-panel">
-      <h2>Workflow dashboard</h2>
-      <p>Run the workflow to generate summary, action items, follow-up email, QA review, and execution trace from the same meeting input above.</p>
+    <section class="result-panel">
+      <h2>Meeting results</h2>
+      <p>These are the user-facing results generated from the workflow. Internal execution details are hidden.</p>
 
-      <div class="btn-row">
-        <button class="btn-primary" id="multiRunBtnSecondary" type="button">Run Multi-Agent Workflow</button>
-        <button class="btn-secondary" id="copyMultiEmailBtn" type="button">Copy Workflow Email</button>
-        <button class="btn-secondary" id="multiClearBtn" type="button">Clear Result</button>
-      </div>
+      <div id="resultStatus" class="status" style="margin-top:12px;"></div>
 
-      <div id="multiStatus" class="status" style="margin-top:12px;"></div>
-
-      <div class="multi-result-grid" id="multiResultSection" style="display:none;">
-        <div class="multi-result-box">
-          <h3>Workflow status</h3>
-          <div class="workflow-stat-grid">
-            <div class="workflow-stat">
-              <span>Task ID</span>
-              <strong id="wfTaskId">-</strong>
-            </div>
-            <div class="workflow-stat">
-              <span>Status</span>
-              <strong id="wfStatus">-</strong>
-            </div>
-            <div class="workflow-stat">
-              <span>Current step</span>
-              <strong id="wfCurrentStep">-</strong>
-            </div>
-            <div class="workflow-stat">
-              <span>Selected agents</span>
-              <strong id="wfSelectedAgents">-</strong>
-            </div>
-            <div class="workflow-stat">
-              <span>Started at</span>
-              <strong id="wfStartedAt">-</strong>
-            </div>
-            <div class="workflow-stat">
-              <span>Completed at</span>
-              <strong id="wfCompletedAt">-</strong>
-            </div>
-          </div>
-        </div>
-
-        <div class="multi-result-box">
+      <div class="result-grid" id="resultSection" style="display:none;">
+        <div class="result-box">
           <h3>Summary</h3>
-          <pre id="multiSummary">-</pre>
+          <div id="resultSummary" class="result-content">-</div>
         </div>
 
-        <div class="multi-result-box multi-wide">
-          <h3>Key points, decisions, and risks</h3>
-          <div class="insight-list">
+        <div class="result-box">
+          <h3>Follow-up email</h3>
+          <div class="output-head" style="margin-top:8px; margin-bottom:10px;">
+            <div class="subtle-note">Ready to copy into email.</div>
+            <button class="btn-secondary copy-btn" id="copyResultEmailBtn" type="button">Copy</button>
+          </div>
+          <div id="resultEmail" class="result-content">-</div>
+        </div>
+
+        <div class="result-box result-wide">
+          <h3>Key points, decisions, and open questions</h3>
+          <div class="insight-list" style="margin-top:12px;">
             <div class="insight-block">
               <h4>Key points</h4>
-              <ul id="multiKeyPointsList"></ul>
+              <ul id="resultKeyPoints"></ul>
             </div>
             <div class="insight-block">
               <h4>Decisions</h4>
-              <ul id="multiDecisionsList"></ul>
+              <ul id="resultDecisions"></ul>
             </div>
             <div class="insight-block">
-              <h4>Risks / Open questions</h4>
-              <ul id="multiRisksList"></ul>
+              <h4>Open questions / risks</h4>
+              <ul id="resultRisks"></ul>
             </div>
           </div>
         </div>
 
-        <div class="multi-result-box multi-wide">
+        <div class="result-box result-wide">
           <div class="output-head">
             <h3>Action items</h3>
-            <div class="subtle-note" id="multiActionCount">0 workflow action items</div>
+            <div id="workflowActionCount" class="subtle-note">0 workflow action items</div>
           </div>
-          <div id="multiActionsRich" class="output-content placeholder">Workflow action items will appear here.</div>
+          <div id="workflowActionsOutput" class="output-content placeholder">Workflow-generated action items will appear here.</div>
         </div>
-
-        <div class="multi-result-box multi-wide">
-          <h3>Follow-up email</h3>
-          <pre id="multiEmail">-</pre>
-        </div>
-
-        <div class="multi-result-box">
-          <h3>QA review</h3>
-          <div id="multiQaBadge" class="qa-pass">PASS</div>
-          <ul id="multiIssueList" class="issue-list"></ul>
-        </div>
-
-        <div class="multi-result-box">
-          <h3>Trace (steps)</h3>
-          <div class="trace-note">This is useful for internal debugging and execution visibility.</div>
-          <div id="multiTraceList" class="trace-list" style="margin-top:10px;"></div>
-        </div>
-
-        <details class="multi-result-box multi-wide">
-          <summary>Raw JSON</summary>
-          <pre id="multiRawJson" class="multi-json">-</pre>
-        </details>
       </div>
     </section>
   </div>
@@ -1084,47 +899,34 @@
     const markdownPreview = document.getElementById('markdownPreview');
     const statusBox = document.getElementById('status');
 
-    const generateBtn = document.getElementById('generateBtn');
+    const resultStatus = document.getElementById('resultStatus');
+    const resultSection = document.getElementById('resultSection');
+    const resultSummary = document.getElementById('resultSummary');
+    const resultEmail = document.getElementById('resultEmail');
+    const resultKeyPoints = document.getElementById('resultKeyPoints');
+    const resultDecisions = document.getElementById('resultDecisions');
+    const resultRisks = document.getElementById('resultRisks');
+    const workflowActionsOutput = document.getElementById('workflowActionsOutput');
+    const workflowActionCount = document.getElementById('workflowActionCount');
+
+    const multiRunBtn = document.getElementById('multiRunBtn');
     const copyMarkdownBtn = document.getElementById('copyMarkdownBtn');
     const copyMarkdownBtn2 = document.getElementById('copyMarkdownBtn2');
     const copyActionsBtn = document.getElementById('copyActionsBtn');
+    const copyEmailBtn = document.getElementById('copyEmailBtn');
+    const copyResultEmailBtn = document.getElementById('copyResultEmailBtn');
     const clearBtn = document.getElementById('clearBtn');
     const demoBtn = document.getElementById('demoBtn');
     const actionFilter = document.getElementById('actionFilter');
     const actionSort = document.getElementById('actionSort');
     const actionCount = document.getElementById('actionCount');
 
-    const multiRunBtn = document.getElementById('multiRunBtn');
-    const multiRunBtnSecondary = document.getElementById('multiRunBtnSecondary');
-    const multiClearBtn = document.getElementById('multiClearBtn');
-    const copyMultiEmailBtn = document.getElementById('copyMultiEmailBtn');
-    const multiStatus = document.getElementById('multiStatus');
-    const multiResultSection = document.getElementById('multiResultSection');
-
-    const wfTaskId = document.getElementById('wfTaskId');
-    const wfStatus = document.getElementById('wfStatus');
-    const wfCurrentStep = document.getElementById('wfCurrentStep');
-    const wfSelectedAgents = document.getElementById('wfSelectedAgents');
-    const wfStartedAt = document.getElementById('wfStartedAt');
-    const wfCompletedAt = document.getElementById('wfCompletedAt');
-
-    const multiSummary = document.getElementById('multiSummary');
-    const multiKeyPointsList = document.getElementById('multiKeyPointsList');
-    const multiDecisionsList = document.getElementById('multiDecisionsList');
-    const multiRisksList = document.getElementById('multiRisksList');
-    const multiActionsRich = document.getElementById('multiActionsRich');
-    const multiActionCount = document.getElementById('multiActionCount');
-    const multiEmail = document.getElementById('multiEmail');
-    const multiQaBadge = document.getElementById('multiQaBadge');
-    const multiIssueList = document.getElementById('multiIssueList');
-    const multiTraceList = document.getElementById('multiTraceList');
-    const multiRawJson = document.getElementById('multiRawJson');
-
     let latestMarkdown = '';
     let latestActionItems = [];
     let rawActionItems = [];
-    let latestMultiEmail = '';
-    let latestMultiActionItems = [];
+    let latestEmail = '';
+    let latestWorkflowEmail = '';
+    let latestWorkflowActionItems = [];
 
     function setStatus(message, type) {
       const finalType = type || 'info';
@@ -1132,10 +934,10 @@
       statusBox.textContent = message;
     }
 
-    function setMultiStatus(message, type) {
+    function setResultStatus(message, type) {
       const finalType = type || 'info';
-      multiStatus.className = 'status show ' + finalType;
-      multiStatus.textContent = message;
+      resultStatus.className = 'status show ' + finalType;
+      resultStatus.textContent = message;
     }
 
     function setOutput(el, value) {
@@ -1144,8 +946,8 @@
     }
 
     function resetOutput() {
-      summaryOutput.textContent = 'Your AI summary will appear here.';
-      actionsOutput.textContent = 'Your structured action items will appear here.';
+      summaryOutput.textContent = 'Your meeting summary will appear here.';
+      actionsOutput.textContent = 'Your action items will appear here.';
       emailOutput.textContent = 'Your follow-up draft will appear here.';
       markdownPreview.textContent = 'Your Markdown export will appear here.';
 
@@ -1157,10 +959,27 @@
       latestMarkdown = '';
       latestActionItems = [];
       rawActionItems = [];
+      latestEmail = '';
 
       actionFilter.value = 'all';
       actionSort.value = 'original';
-      actionCount.textContent = '0 open action items';
+      actionCount.textContent = '0 action items';
+    }
+
+    function resetResultSection() {
+      resultSection.style.display = 'none';
+      resultSummary.textContent = '-';
+      resultEmail.textContent = '-';
+      resultKeyPoints.innerHTML = '';
+      resultDecisions.innerHTML = '';
+      resultRisks.innerHTML = '';
+      workflowActionsOutput.textContent = 'Workflow-generated action items will appear here.';
+      workflowActionsOutput.classList.add('placeholder');
+      workflowActionCount.textContent = '0 workflow action items';
+      latestWorkflowEmail = '';
+      latestWorkflowActionItems = [];
+      resultStatus.className = 'status';
+      resultStatus.textContent = '';
     }
 
     function escapeHtml(text) {
@@ -1211,7 +1030,7 @@
 
     function updateActionCount(items) {
       const count = Array.isArray(items) ? items.length : 0;
-      actionCount.textContent = count + (count === 1 ? ' open action item' : ' open action items');
+      actionCount.textContent = count + (count === 1 ? ' action item' : ' action items');
     }
 
     function getVisibleActionItems() {
@@ -1276,7 +1095,7 @@
       updateActionCount(latestActionItems);
 
       if (!rawActionItems.length) {
-        actionsOutput.textContent = 'Your structured action items will appear here.';
+        actionsOutput.textContent = 'Your action items will appear here.';
         actionsOutput.classList.add('placeholder');
         return;
       }
@@ -1296,18 +1115,18 @@
       refreshActionItemsView();
     }
 
-    function renderMultiActionItems(items) {
-      latestMultiActionItems = Array.isArray(items) ? items.slice() : [];
-      multiActionCount.textContent = latestMultiActionItems.length + (latestMultiActionItems.length === 1 ? ' workflow action item' : ' workflow action items');
+    function renderWorkflowActionItems(items) {
+      latestWorkflowActionItems = Array.isArray(items) ? items.slice() : [];
+      workflowActionCount.textContent = latestWorkflowActionItems.length + (latestWorkflowActionItems.length === 1 ? ' workflow action item' : ' workflow action items');
 
-      if (!latestMultiActionItems.length) {
-        multiActionsRich.textContent = 'No workflow action items returned.';
-        multiActionsRich.classList.remove('placeholder');
+      if (!latestWorkflowActionItems.length) {
+        workflowActionsOutput.textContent = 'Workflow-generated action items will appear here.';
+        workflowActionsOutput.classList.add('placeholder');
         return;
       }
 
-      multiActionsRich.innerHTML = buildActionCards(latestMultiActionItems, 'Workflow-generated action item');
-      multiActionsRich.classList.remove('placeholder');
+      workflowActionsOutput.innerHTML = buildActionCards(latestWorkflowActionItems, 'Workflow-generated action item');
+      workflowActionsOutput.classList.remove('placeholder');
     }
 
     function actionsToPlainText(items) {
@@ -1339,160 +1158,37 @@
       });
     }
 
-    function renderTrace(trace) {
-      multiTraceList.innerHTML = '';
+    async function copyText(text, successMessage, useResultStatus) {
+      const setter = useResultStatus ? setResultStatus : setStatus;
 
-      if (!Array.isArray(trace) || !trace.length) {
-        const div = document.createElement('div');
-        div.className = 'trace-item';
-        div.innerHTML = '<strong>No trace data</strong><span>The workflow did not return step-level trace information.</span>';
-        multiTraceList.appendChild(div);
-        return;
-      }
-
-      trace.forEach(function(item) {
-        const div = document.createElement('div');
-        div.className = 'trace-item';
-
-        const title = document.createElement('strong');
-        title.textContent = (item.step || '-') + ' · ' + (item.status || '-');
-
-        const meta = document.createElement('span');
-        meta.textContent = 'Timestamp: ' + (item.timestamp || '-');
-
-        div.appendChild(title);
-        div.appendChild(meta);
-        multiTraceList.appendChild(div);
-      });
-    }
-
-    async function copyText(text, successMessage) {
       if (!text || !text.trim()) {
-        setStatus('Nothing to copy yet.', 'error');
+        setter('Nothing to copy yet.', 'error');
         return;
       }
 
       try {
         await navigator.clipboard.writeText(text);
-        setStatus(successMessage, 'success');
+        setter(successMessage, 'success');
       } catch (err) {
-        setStatus('Copy failed. Your browser may block clipboard access.', 'error');
+        setter('Copy failed. Your browser may block clipboard access.', 'error');
       }
     }
 
-    async function copyTextMulti(text, successMessage) {
-      if (!text || !text.trim()) {
-        setMultiStatus('Nothing to copy yet.', 'error');
-        return;
-      }
-
-      try {
-        await navigator.clipboard.writeText(text);
-        setMultiStatus(successMessage, 'success');
-      } catch (err) {
-        setMultiStatus('Copy failed. Your browser may block clipboard access.', 'error');
-      }
-    }
-
-    async function generateOutput() {
-      const payload = {
-        meetingTitle: meetingTitle.value.trim(),
-        language: language.value,
-        meetingType: meetingType.value,
-        notes: notes.value.trim()
-      };
-
-      if (!payload.notes) {
-        setStatus('Please paste some meeting notes first.', 'error');
-        return;
-      }
-
-      generateBtn.disabled = true;
-      generateBtn.textContent = 'Generating...';
-      setStatus('Sending request to Netlify Function...', 'info');
-
-      try {
-        const response = await fetch('/.netlify/functions/generate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(
-            data.error ||
-            data.message ||
-            JSON.stringify(data) ||
-            'Request failed.'
-          );
-        }
-
-        setOutput(summaryOutput, data.summary || 'No summary returned.');
-        renderActionItems(data.action_items || []);
-        setOutput(emailOutput, data.follow_up_email || 'No follow-up email returned.');
-        setOutput(markdownPreview, data.markdown || 'No Markdown returned.');
-
-        latestMarkdown = data.markdown || '';
-
-        if (data.warning) {
-          setStatus('Generated with fallback: ' + data.warning, 'info');
-        } else {
-          setStatus('Output generated successfully.', 'success');
-        }
-      } catch (error) {
-        setStatus('Generation failed: ' + error.message, 'error');
-      } finally {
-        generateBtn.disabled = false;
-        generateBtn.textContent = 'Generate output';
-      }
-    }
-
-    function clearMultiResult() {
-      multiResultSection.style.display = 'none';
-      wfTaskId.textContent = '-';
-      wfStatus.textContent = '-';
-      wfCurrentStep.textContent = '-';
-      wfSelectedAgents.textContent = '-';
-      wfStartedAt.textContent = '-';
-      wfCompletedAt.textContent = '-';
-      multiSummary.textContent = '-';
-      multiKeyPointsList.innerHTML = '';
-      multiDecisionsList.innerHTML = '';
-      multiRisksList.innerHTML = '';
-      multiActionsRich.textContent = 'Workflow action items will appear here.';
-      multiActionsRich.classList.add('placeholder');
-      multiActionCount.textContent = '0 workflow action items';
-      multiEmail.textContent = '-';
-      multiQaBadge.textContent = 'PASS';
-      multiQaBadge.className = 'qa-pass';
-      multiIssueList.innerHTML = '';
-      multiTraceList.innerHTML = '';
-      multiRawJson.textContent = '-';
-      latestMultiEmail = '';
-      latestMultiActionItems = [];
-      multiStatus.className = 'status';
-      multiStatus.textContent = '';
-    }
-
-    async function runMultiAgentWorkflow() {
+    async function runWorkflow() {
       const title = meetingTitle.value.trim();
       const type = meetingType.value;
       const lang = language.value;
       const text = notes.value.trim();
 
       if (!text) {
-        setMultiStatus('Please paste some meeting notes first.', 'error');
+        setResultStatus('Please paste some meeting notes first.', 'error');
         return;
       }
 
       multiRunBtn.disabled = true;
-      multiRunBtnSecondary.disabled = true;
-      multiRunBtn.textContent = 'Running...';
-      multiRunBtnSecondary.textContent = 'Running...';
-      setMultiStatus('Running multi-agent workflow...', 'info');
-      multiResultSection.style.display = 'none';
+      multiRunBtn.textContent = 'Generating...';
+      setResultStatus('Generating meeting results...', 'info');
+      resultSection.style.display = 'none';
 
       try {
         const resp = await fetch('/.netlify/functions/multi-agent-run', {
@@ -1515,75 +1211,70 @@
         }
 
         const wf = data.data || data;
-        const workflow = wf.workflow || {};
         const artifacts = wf.artifacts || {};
-        const review = wf.review || {};
 
-        wfTaskId.textContent = wf.task_id || '-';
-        wfStatus.textContent = wf.status || '-';
-        wfCurrentStep.textContent = workflow.current_step || '-';
-        wfSelectedAgents.textContent = Array.isArray(workflow.selected_agents) && workflow.selected_agents.length
-          ? workflow.selected_agents.join(', ')
-          : '-';
-        wfStartedAt.textContent = wf.started_at || '-';
-        wfCompletedAt.textContent = wf.completed_at || '-';
+        resultSummary.textContent = artifacts.summary || '-';
+        latestWorkflowEmail = artifacts.follow_up_email || '';
+        resultEmail.textContent = latestWorkflowEmail || '-';
 
-        multiSummary.textContent = artifacts.summary || '-';
+        renderList(resultKeyPoints, artifacts.key_points, 'No key points returned.');
+        renderList(resultDecisions, artifacts.decisions, 'No decisions returned.');
+        renderList(resultRisks, artifacts.risks_or_open_questions, 'No open questions returned.');
+        renderWorkflowActionItems(artifacts.action_items || []);
 
-        renderList(multiKeyPointsList, artifacts.key_points, 'No key points returned.');
-        renderList(multiDecisionsList, artifacts.decisions, 'No decisions returned.');
-        renderList(multiRisksList, artifacts.risks_or_open_questions, 'No risks or open questions returned.');
+        summaryOutput.textContent = artifacts.summary || 'No summary returned.';
+        summaryOutput.classList.remove('placeholder');
 
-        renderMultiActionItems(artifacts.action_items || []);
+        renderActionItems(artifacts.action_items || []);
 
-        latestMultiEmail = artifacts.follow_up_email || '';
-        multiEmail.textContent = latestMultiEmail || '-';
+        emailOutput.textContent = artifacts.follow_up_email || 'No follow-up email returned.';
+        emailOutput.classList.remove('placeholder');
+        latestEmail = artifacts.follow_up_email || '';
 
-        const reviewStatus = String(review.status || review.review_status || '').toLowerCase();
-        if (reviewStatus === 'pass') {
-          multiQaBadge.textContent = 'PASS';
-          multiQaBadge.className = 'qa-pass';
-        } else {
-          multiQaBadge.textContent = (review.status || review.review_status || 'UNKNOWN').toUpperCase();
-          multiQaBadge.className = 'qa-fail';
-        }
+        const markdown = [
+          '# ' + (meetingTitle.value.trim() || 'Meeting Notes'),
+          '',
+          '## Summary',
+          artifacts.summary || '',
+          '',
+          '## Key points',
+          (Array.isArray(artifacts.key_points) && artifacts.key_points.length)
+            ? artifacts.key_points.map(function(item) { return '- ' + item; }).join('\n')
+            : '- None',
+          '',
+          '## Decisions',
+          (Array.isArray(artifacts.decisions) && artifacts.decisions.length)
+            ? artifacts.decisions.map(function(item) { return '- ' + item; }).join('\n')
+            : '- None',
+          '',
+          '## Open questions / risks',
+          (Array.isArray(artifacts.risks_or_open_questions) && artifacts.risks_or_open_questions.length)
+            ? artifacts.risks_or_open_questions.map(function(item) { return '- ' + item; }).join('\n')
+            : '- None',
+          '',
+          '## Action items',
+          actionsToPlainText(artifacts.action_items || []),
+          '',
+          '## Follow-up email',
+          artifacts.follow_up_email || ''
+        ].join('\n');
 
-        multiIssueList.innerHTML = '';
-        if (Array.isArray(review.issues) && review.issues.length) {
-          review.issues.forEach(function(issue) {
-            const li = document.createElement('li');
-            li.textContent = issue;
-            multiIssueList.appendChild(li);
-          });
-        } else {
-          const li = document.createElement('li');
-          li.textContent = 'No issues found.';
-          multiIssueList.appendChild(li);
-        }
+        latestMarkdown = markdown;
+        markdownPreview.textContent = markdown;
+        markdownPreview.classList.remove('placeholder');
 
-        renderTrace(wf.trace || []);
-        multiRawJson.textContent = JSON.stringify(data, null, 2);
-        multiResultSection.style.display = 'grid';
-        setMultiStatus('Multi-agent workflow completed.', 'success');
+        resultSection.style.display = 'grid';
+        setResultStatus('Meeting results generated successfully.', 'success');
+        setStatus('Quick output updated successfully.', 'success');
       } catch (error) {
-        multiRawJson.textContent = JSON.stringify(
-          { success: false, error: error.message },
-          null,
-          2
-        );
-        multiResultSection.style.display = 'grid';
-        setMultiStatus('Error: ' + error.message, 'error');
+        setResultStatus('Generation failed: ' + error.message, 'error');
       } finally {
         multiRunBtn.disabled = false;
-        multiRunBtnSecondary.disabled = false;
-        multiRunBtn.textContent = 'Run workflow';
-        multiRunBtnSecondary.textContent = 'Run Multi-Agent Workflow';
+        multiRunBtn.textContent = 'Generate meeting results';
       }
     }
 
-    generateBtn.addEventListener('click', generateOutput);
-    multiRunBtn.addEventListener('click', runMultiAgentWorkflow);
-    multiRunBtnSecondary.addEventListener('click', runMultiAgentWorkflow);
+    multiRunBtn.addEventListener('click', runWorkflow);
 
     clearBtn.addEventListener('click', function() {
       meetingTitle.value = '';
@@ -1591,8 +1282,8 @@
       meetingType.value = 'General';
       language.value = 'English';
       resetOutput();
-      clearMultiResult();
-      setStatus('Cleared. Ready for a new test.', 'info');
+      resetResultSection();
+      setStatus('Cleared. Ready for a new meeting.', 'info');
     });
 
     demoBtn.addEventListener('click', function() {
@@ -1606,8 +1297,8 @@ Cindy: We should avoid login and billing for the MVP to keep the build simple.
 David: Let's also keep the interface to a single page and test whether users find the output useful.
 Alice: Agreed. Ben will prepare the first prompt draft. Cindy will review the UI copy. David should test three sample transcripts before Friday.`;
       resetOutput();
-      clearMultiResult();
-      setStatus('Sample data loaded. Click Generate output or Run workflow.', 'info');
+      resetResultSection();
+      setStatus('Sample data loaded. Click Generate meeting results.', 'info');
     });
 
     document.querySelectorAll('[data-copy-target]').forEach(function(btn) {
@@ -1620,24 +1311,28 @@ Alice: Agreed. Ben will prepare the first prompt draft. Cindy will review the UI
           return;
         }
 
-        await copyText(text, 'Copied to clipboard.');
+        await copyText(text, 'Copied to clipboard.', false);
       });
     });
 
     copyActionsBtn.addEventListener('click', async function() {
-      await copyText(actionsToPlainText(latestActionItems), 'Action items copied.');
+      await copyText(actionsToPlainText(latestActionItems), 'Action items copied.', false);
+    });
+
+    copyEmailBtn.addEventListener('click', async function() {
+      await copyText(latestEmail, 'Email copied.', false);
+    });
+
+    copyResultEmailBtn.addEventListener('click', async function() {
+      await copyText(latestWorkflowEmail, 'Meeting email copied.', true);
     });
 
     copyMarkdownBtn.addEventListener('click', async function() {
-      await copyText(latestMarkdown, 'Markdown copied.');
+      await copyText(latestMarkdown, 'Markdown copied.', false);
     });
 
     copyMarkdownBtn2.addEventListener('click', async function() {
-      await copyText(latestMarkdown, 'Markdown copied.');
-    });
-
-    copyMultiEmailBtn.addEventListener('click', async function() {
-      await copyTextMulti(latestMultiEmail, 'Workflow email copied.');
+      await copyText(latestMarkdown, 'Markdown copied.', false);
     });
 
     actionFilter.addEventListener('change', function() {
@@ -1648,11 +1343,9 @@ Alice: Agreed. Ben will prepare the first prompt draft. Cindy will review the UI
       refreshActionItemsView();
     });
 
-    multiClearBtn.addEventListener('click', clearMultiResult);
-
     resetOutput();
-    clearMultiResult();
-    setStatus('Paste your notes and click Generate output.', 'info');
+    resetResultSection();
+    setStatus('Paste your notes and click Generate meeting results.', 'info');
   </script>
 </body>
 </html>
