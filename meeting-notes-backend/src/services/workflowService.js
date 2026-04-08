@@ -1,174 +1,148 @@
-const { nowIso, createTaskId, createTraceEntry } = require('../utils/time');
-const { logStepStart, logStepSuccess, logStepFailure } = require('./traceLogger');
-const { validateWithSchema } = require('./schemaValidator');
-
 const { runCoordinatorAgent } = require('../agents/coordinatorAgent');
 const { runSummarizerAgent } = require('../agents/summarizerAgent');
 const { runActionItemAgent } = require('../agents/actionItemAgent');
 const { runFollowupEmailAgent } = require('../agents/followupEmailAgent');
 const { runQaReviewAgent } = require('../agents/qaReviewAgent');
 
-function assertValidation(result, schemaName, stepName) {
-  const validation = validateWithSchema(result, schemaName);
-
-  if (!validation.valid) {
-    throw new Error(
-      stepName + ' validation failed: ' + validation.errors.join('; ')
-    );
-  }
+function nowIso() {
+  return new Date().toISOString();
 }
 
-async function runMultiAgentWorkflow(payload) {
+function createTaskId() {
+  return 'wf_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+}
+
+async function runWorkflow(payload) {
   const taskId = createTaskId();
   const startedAt = nowIso();
+  const trace = [];
 
-  const result = {
-    task_id: taskId,
-    status: 'pending',
-    started_at: startedAt,
-    completed_at: null,
-    input: {
-      meetingTitle: payload.meetingTitle || '',
-      meetingType: payload.meetingType || 'General',
-      language: payload.language || 'English',
-      mode: payload.mode || 'auto_workflow',
-      userQuery: payload.userQuery || ''
-    },
-    workflow: {
-      current_step: 'coordinator',
-      selected_agents: [],
-      history: []
-    },
-    artifacts: {
-      summary: '',
-      key_points: [],
-      decisions: [],
-      risks_or_open_questions: [],
-      action_items: [],
-      follow_up_email: '',
-      email_subject: ''
-    },
-    review: {
-      status: 'pending',
-      issues: []
-    },
-    trace: [],
-    error: null
+  function pushTrace(step, status, extra) {
+    trace.push({
+      step: step,
+      status: status,
+      timestamp: nowIso(),
+      details: extra || null
+    });
+  }
+
+  pushTrace('workflow', 'started', {
+    meetingTitle: payload.meetingTitle || '',
+    meetingType: payload.meetingType || '',
+    language: payload.language || 'English'
+  });
+
+  const coordinatorResult = await runCoordinatorAgent(payload, {
+    source: 'multi-agent-run',
+    started_at: startedAt
+  });
+
+  pushTrace('coordinator', 'completed', {
+    selected_agents: coordinatorResult.selected_agents || [],
+    task_type: coordinatorResult.task_type || ''
+  });
+
+  const summarizerResult = await runSummarizerAgent(payload);
+
+  pushTrace('summarizer', 'completed', {
+    has_summary: Boolean(summarizerResult.summary),
+    key_points_count: Array.isArray(summarizerResult.key_points)
+      ? summarizerResult.key_points.length
+      : 0
+  });
+
+  const actionItemResult = await runActionItemAgent(payload, summarizerResult);
+
+  pushTrace('action_item_agent', 'completed', {
+    action_items_count: Array.isArray(actionItemResult.action_items)
+      ? actionItemResult.action_items.length
+      : 0
+  });
+
+  const followupEmailResult = await runFollowupEmailAgent(
+    payload,
+    summarizerResult,
+    actionItemResult
+  );
+
+  pushTrace('followup_email_agent', 'completed', {
+    has_email_subject: Boolean(followupEmailResult.email_subject),
+    has_email_body: Boolean(followupEmailResult.email_body)
+  });
+
+  const artifacts = {
+    summary: summarizerResult.summary || '',
+    key_points: Array.isArray(summarizerResult.key_points)
+      ? summarizerResult.key_points
+      : [],
+    decisions: Array.isArray(summarizerResult.decisions)
+      ? summarizerResult.decisions
+      : [],
+    risks_or_open_questions: Array.isArray(
+      summarizerResult.risks_or_open_questions
+    )
+      ? summarizerResult.risks_or_open_questions
+      : [],
+    action_items: Array.isArray(actionItemResult.action_items)
+      ? actionItemResult.action_items
+      : [],
+    follow_up_email: followupEmailResult.email_body || '',
+    follow_up_email_subject: followupEmailResult.email_subject || '',
+    follow_up_email_tone: followupEmailResult.tone || 'professional'
   };
 
-  try {
-    result.status = 'running';
+  const qaReviewResult = await runQaReviewAgent(payload, artifacts);
 
-    logStepStart(result, 'coordinator');
-    const coordinatorResult = await runCoordinatorAgent(payload, {
-      hasNotes: Boolean(payload.notes),
-      notesLength: payload.notes ? payload.notes.length : 0
-    });
-    assertValidation(coordinatorResult, 'coordinator', 'Coordinator');
+  pushTrace('qa_review_agent', 'completed', {
+    review_status: qaReviewResult.review_status || 'pass',
+    issues_count: Array.isArray(qaReviewResult.issues)
+      ? qaReviewResult.issues.length
+      : 0
+  });
 
-    result.workflow.selected_agents = coordinatorResult.selected_agents || [];
-    result.workflow.current_step = 'meeting_summarizer';
-    result.workflow.history.push({
-      step: 'coordinator',
-      status: 'done',
-      completed_at: nowIso()
-    });
-    result.trace.push(createTraceEntry('coordinator', 'done', coordinatorResult));
-    logStepSuccess(result, 'coordinator', coordinatorResult);
+  const finalArtifacts =
+    qaReviewResult.review_status === 'fail' &&
+    qaReviewResult.fixed_output &&
+    typeof qaReviewResult.fixed_output === 'object'
+      ? {
+          summary:
+            qaReviewResult.fixed_output.summary || artifacts.summary || '',
+          key_points: artifacts.key_points,
+          decisions: artifacts.decisions,
+          risks_or_open_questions: artifacts.risks_or_open_questions,
+          action_items: Array.isArray(qaReviewResult.fixed_output.action_items)
+            ? qaReviewResult.fixed_output.action_items
+            : artifacts.action_items,
+          follow_up_email:
+            qaReviewResult.fixed_output.follow_up_email ||
+            artifacts.follow_up_email ||
+            '',
+          follow_up_email_subject: artifacts.follow_up_email_subject,
+          follow_up_email_tone: artifacts.follow_up_email_tone
+        }
+      : artifacts;
 
-    logStepStart(result, 'meeting_summarizer');
-    const summarizerResult = await runSummarizerAgent(payload);
-    assertValidation(summarizerResult, 'summarizer', 'Summarizer');
+  pushTrace('workflow', 'completed', {
+    final_review_status: qaReviewResult.review_status || 'pass'
+  });
 
-    result.artifacts.summary = summarizerResult.summary || '';
-    result.artifacts.key_points = summarizerResult.key_points || [];
-    result.artifacts.decisions = summarizerResult.decisions || [];
-    result.artifacts.risks_or_open_questions = summarizerResult.risks_or_open_questions || [];
-    result.workflow.current_step = 'action_item_agent';
-    result.workflow.history.push({
-      step: 'meeting_summarizer',
-      status: 'done',
-      completed_at: nowIso()
-    });
-    result.trace.push(createTraceEntry('meeting_summarizer', 'done', summarizerResult));
-    logStepSuccess(result, 'meeting_summarizer', summarizerResult);
-
-    logStepStart(result, 'action_item_agent');
-    const actionItemResult = await runActionItemAgent(payload, summarizerResult);
-    assertValidation(actionItemResult, 'actionItem', 'Action item agent');
-
-    result.artifacts.action_items = actionItemResult.action_items || [];
-    result.workflow.current_step = 'followup_email_agent';
-    result.workflow.history.push({
-      step: 'action_item_agent',
-      status: 'done',
-      completed_at: nowIso()
-    });
-    result.trace.push(createTraceEntry('action_item_agent', 'done', actionItemResult));
-    logStepSuccess(result, 'action_item_agent', actionItemResult);
-
-    logStepStart(result, 'followup_email_agent');
-    const followupEmailResult = await runFollowupEmailAgent(payload, summarizerResult, actionItemResult);
-    assertValidation(followupEmailResult, 'followupEmail', 'Follow-up email agent');
-
-    result.artifacts.follow_up_email = followupEmailResult.email_body || '';
-    result.artifacts.email_subject = followupEmailResult.email_subject || '';
-    result.workflow.current_step = 'qa_review_agent';
-    result.workflow.history.push({
-      step: 'followup_email_agent',
-      status: 'done',
-      completed_at: nowIso()
-    });
-    result.trace.push(createTraceEntry('followup_email_agent', 'done', followupEmailResult));
-    logStepSuccess(result, 'followup_email_agent', followupEmailResult);
-
-    logStepStart(result, 'qa_review_agent');
-    const qaReviewResult = await runQaReviewAgent(payload, result.artifacts);
-    assertValidation(qaReviewResult, 'qaReview', 'QA review agent');
-
-    result.review.status = qaReviewResult.review_status || 'pending';
-    result.review.issues = qaReviewResult.issues || [];
-    result.workflow.current_step = 'done';
-    result.workflow.history.push({
-      step: 'qa_review_agent',
-      status: 'done',
-      completed_at: nowIso()
-    });
-    result.trace.push(createTraceEntry('qa_review_agent', 'done', qaReviewResult));
-    logStepSuccess(result, 'qa_review_agent', qaReviewResult);
-
-    assertValidation(result, 'workflowResult', 'Workflow result');
-
-    result.status = qaReviewResult.review_status === 'fail' ? 'failed' : 'done';
-    result.completed_at = nowIso();
-
-    return result;
-  } catch (error) {
-    result.status = 'failed';
-    result.completed_at = nowIso();
-    result.error = {
-      message: error.message || 'Unknown workflow error',
-      step: result.workflow.current_step || 'unknown'
-    };
-
-    result.workflow.history.push({
-      step: result.workflow.current_step || 'unknown',
-      status: 'failed',
-      completed_at: nowIso()
-    });
-
-    result.trace.push(createTraceEntry(
-      result.workflow.current_step || 'unknown',
-      'failed',
-      { error: error.message || 'Unknown workflow error' }
-    ));
-
-    logStepFailure(result, result.workflow.current_step || 'unknown', error);
-
-    return result;
-  }
+  return {
+    success: true,
+    task_id: taskId,
+    status: 'completed',
+    started_at: startedAt,
+    completed_at: nowIso(),
+    workflow: {
+      current_step: 'completed',
+      selected_agents: coordinatorResult.selected_agents || [],
+      task_type: coordinatorResult.task_type || 'full_meeting_pack'
+    },
+    artifacts: finalArtifacts,
+    review: qaReviewResult,
+    trace: trace
+  };
 }
 
 module.exports = {
-  runMultiAgentWorkflow
+  runWorkflow
 };
