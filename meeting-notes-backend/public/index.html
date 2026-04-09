@@ -7,500 +7,21 @@
   <link rel="preconnect" href="https://api.fontshare.com" />
   <link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&f[]=cabinet-grotesk@500,700,800&display=swap" rel="stylesheet" />
   <style>
-    :root,
-    [data-theme="light"] {
-      --color-bg: #f7f6f2;
-      --color-surface: #fbfaf7;
-      --color-surface-2: #f3f0ec;
-      --color-border: rgba(40, 37, 29, 0.12);
-      --color-text: #28251d;
-      --color-text-muted: #66645d;
-      --color-text-faint: #98958d;
-      --color-text-inverse: #f8f7f4;
-      --color-primary: #01696f;
-      --color-primary-hover: #0c4e54;
-      --color-primary-soft: rgba(1, 105, 111, 0.1);
-      --color-success: #2f6b3f;
-      --color-danger: #8b3d39;
-      --shadow-sm: 0 1px 2px rgba(20, 18, 12, 0.06);
-      --shadow-md: 0 12px 30px rgba(20, 18, 12, 0.08);
-      --shadow-lg: 0 24px 60px rgba(20, 18, 12, 0.12);
-      --radius-sm: 10px;
-      --radius-md: 16px;
-      --radius-lg: 24px;
-      --space-2: 0.5rem;
-      --space-3: 0.75rem;
-      --space-4: 1rem;
-      --space-5: 1.25rem;
-      --space-6: 1.5rem;
-      --space-8: 2rem;
-      --space-10: 2.5rem;
-      --space-12: 3rem;
-      --space-16: 4rem;
-      --space-20: 5rem;
-      --text-xs: 0.8125rem;
-      --text-sm: 0.9375rem;
-      --text-base: 1rem;
-      --text-lg: clamp(1.125rem, 1rem + 0.5vw, 1.4rem);
-      --text-xl: clamp(1.65rem, 1.2rem + 1.25vw, 2.3rem);
-      --text-2xl: clamp(2.2rem, 1.6rem + 2vw, 3.8rem);
-      --content: 1180px;
-      --font-body: 'General Sans', 'Inter', sans-serif;
-      --font-display: 'Cabinet Grotesk', 'General Sans', sans-serif;
-    }
-
-    [data-theme="dark"] {
-      --color-bg: #121313;
-      --color-surface: #171918;
-      --color-surface-2: #1e211f;
-      --color-border: rgba(236, 235, 231, 0.12);
-      --color-text: #ecebe7;
-      --color-text-muted: #b3b1aa;
-      --color-text-faint: #7e7b74;
-      --color-text-inverse: #11120f;
-      --color-primary: #63aab3;
-      --color-primary-hover: #87c0c7;
-      --color-primary-soft: rgba(99, 170, 179, 0.16);
-      --color-success: #8ac29b;
-      --color-danger: #e3a19a;
-      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
-      --shadow-md: 0 16px 32px rgba(0, 0, 0, 0.24);
-      --shadow-lg: 0 24px 70px rgba(0, 0, 0, 0.32);
-    }
-
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body {
-      margin: 0;
-      font-family: var(--font-body);
-      background: var(--color-bg);
-      color: var(--color-text);
-      line-height: 1.6;
-      -webkit-font-smoothing: antialiased;
-      text-rendering: optimizeLegibility;
-    }
-    a { color: inherit; text-decoration: none; }
-    button, input, select, textarea { font: inherit; }
-    button { cursor: pointer; }
-    img, svg { display: block; max-width: 100%; }
-    textarea { resize: vertical; }
-    .container { width: min(calc(100% - 2rem), var(--content)); margin: 0 auto; }
-    .skip-link {
-      position: absolute;
-      left: 1rem;
-      top: -3rem;
-      background: var(--color-primary);
-      color: var(--color-text-inverse);
-      padding: 0.75rem 1rem;
-      border-radius: var(--radius-sm);
-      z-index: 20;
-    }
-    .skip-link:focus { top: 1rem; }
-    .site-header {
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      backdrop-filter: blur(14px);
-      background: color-mix(in srgb, var(--color-bg) 88%, transparent);
-      border-bottom: 1px solid var(--color-border);
-    }
-    .nav-row {
-      min-height: 76px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: var(--space-4);
-    }
-    .brand {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.9rem;
-      font-weight: 600;
-      letter-spacing: -0.02em;
-    }
-    .brand-mark {
-      width: 34px;
-      height: 34px;
-      border-radius: 12px;
-      display: grid;
-      place-items: center;
-      background: var(--color-surface);
-      border: 1px solid var(--color-border);
-      box-shadow: var(--shadow-sm);
-    }
-    .brand-mark svg { width: 22px; height: 22px; color: var(--color-primary); }
-    .nav-actions {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-    }
-    .control-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      padding: 0.35rem;
-      border: 1px solid var(--color-border);
-      border-radius: 999px;
-      background: var(--color-surface);
-    }
-    .control-pill button {
-      border: 0;
-      background: transparent;
-      color: var(--color-text-muted);
-      padding: 0.55rem 0.9rem;
-      border-radius: 999px;
-      min-width: 44px;
-      min-height: 44px;
-    }
-    .control-pill button.active {
-      background: var(--color-primary);
-      color: var(--color-text-inverse);
-    }
-    .theme-toggle,
-    .ghost-link,
-    .primary-link,
-    .secondary-link,
-    .submit-button,
-    .small-button {
-      min-height: 46px;
-      border-radius: 999px;
-      border: 1px solid transparent;
-      transition: 180ms ease;
-    }
-    .theme-toggle, .ghost-link, .secondary-link, .small-button {
-      background: var(--color-surface);
-      color: var(--color-text);
-      border-color: var(--color-border);
-    }
-    .theme-toggle:hover, .ghost-link:hover, .secondary-link:hover, .small-button:hover {
-      background: var(--color-surface-2);
-    }
-    .theme-toggle {
-      width: 46px;
-      display: inline-grid;
-      place-items: center;
-    }
-    .primary-link, .submit-button {
-      background: var(--color-primary);
-      color: var(--color-text-inverse);
-      padding: 0 1.15rem;
-      box-shadow: var(--shadow-sm);
-    }
-    .primary-link:hover, .submit-button:hover { background: var(--color-primary-hover); }
-    .secondary-link, .ghost-link, .small-button { padding: 0 1rem; }
-    .hero {
-      padding: clamp(4rem, 9vw, 7rem) 0 3rem;
-    }
-    .hero-grid {
-      display: grid;
-      grid-template-columns: 1.1fr 0.9fr;
-      gap: clamp(2rem, 4vw, 4rem);
-      align-items: start;
-    }
-    .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: var(--text-sm);
-      color: var(--color-primary);
-      background: var(--color-primary-soft);
-      border-radius: 999px;
-      padding: 0.5rem 0.9rem;
-      margin-bottom: 1.2rem;
-      font-weight: 600;
-    }
-    h1, h2, h3 {
-      font-family: var(--font-display);
-      letter-spacing: -0.04em;
-      line-height: 1.04;
-      margin: 0;
-    }
-    h1 { font-size: var(--text-2xl); max-width: 11ch; }
-    h2 { font-size: var(--text-xl); }
-    p { margin: 0; color: var(--color-text-muted); }
-    .hero-copy p {
-      margin-top: 1.2rem;
-      max-width: 60ch;
-      font-size: 1.05rem;
-    }
-    .hero-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.9rem;
-      margin-top: 1.6rem;
-    }
-    .hero-metrics {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 1rem;
-      margin-top: 2rem;
-    }
-    .metric {
-      padding: 1rem;
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-md);
-      background: var(--color-surface);
-    }
-    .metric strong {
-      display: block;
-      font-size: 1.35rem;
-      font-family: var(--font-display);
-      letter-spacing: -0.03em;
-      color: var(--color-text);
-    }
-    .hero-panel,
-    .card,
-    .workspace,
-    .result-card,
-    .quote-card,
-    .mini-card {
-      background: var(--color-surface);
-      border: 1px solid var(--color-border);
-      box-shadow: var(--shadow-md);
-    }
-    .hero-panel {
-      border-radius: var(--radius-lg);
-      padding: 1.2rem;
-      display: grid;
-      gap: 1rem;
-    }
-    .panel-label {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      color: var(--color-text-muted);
-      font-size: var(--text-sm);
-    }
-    .status-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 999px;
-      background: var(--color-success);
-      display: inline-block;
-      margin-right: 0.45rem;
-    }
-    .flow-list {
-      display: grid;
-      gap: 0.8rem;
-    }
-    .flow-item {
-      display: grid;
-      grid-template-columns: 38px 1fr;
-      gap: 0.85rem;
-      align-items: start;
-      padding: 0.9rem;
-      border-radius: var(--radius-md);
-      background: var(--color-surface-2);
-      border: 1px solid var(--color-border);
-    }
-    .flow-item span {
-      width: 38px;
-      height: 38px;
-      border-radius: 12px;
-      display: grid;
-      place-items: center;
-      font-weight: 700;
-      color: var(--color-primary);
-      background: var(--color-primary-soft);
-    }
-    .section {
-      padding: 2.5rem 0;
-    }
-    .section-head {
-      display: flex;
-      justify-content: space-between;
-      gap: 1rem;
-      align-items: end;
-      margin-bottom: 1.5rem;
-    }
-    .section-head p { max-width: 62ch; }
-    .grid-3,
-    .grid-4,
-    .trust-grid,
-    .results-grid,
-    .use-grid {
-      display: grid;
-      gap: 1rem;
-    }
-    .grid-3, .trust-grid, .results-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-    .grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-    .use-grid { grid-template-columns: 1.1fr 0.9fr; }
-    .card, .result-card, .quote-card, .mini-card {
-      border-radius: var(--radius-md);
-      padding: 1.2rem;
-    }
-    .card h3, .result-card h3, .quote-card h3, .mini-card h3 {
-      font-size: 1.1rem;
-      margin-bottom: 0.65rem;
-      letter-spacing: -0.03em;
-    }
-    .card ul, .result-card ul {
-      padding-left: 1.1rem;
-      margin: 0.75rem 0 0;
-      color: var(--color-text-muted);
-    }
-    .workspace {
-      border-radius: 28px;
-      padding: 1.35rem;
-      display: grid;
-      gap: 1.25rem;
-    }
-    .workspace-grid {
-      display: grid;
-      grid-template-columns: 0.95fr 1.05fr;
-      gap: 1rem;
-    }
-    .stack { display: grid; gap: 1rem; }
-    label {
-      display: grid;
-      gap: 0.45rem;
-      font-weight: 600;
-      color: var(--color-text);
-      font-size: var(--text-sm);
-    }
-    input, select, textarea {
-      width: 100%;
-      border: 1px solid var(--color-border);
-      background: var(--color-bg);
-      color: var(--color-text);
-      border-radius: 16px;
-      padding: 0.95rem 1rem;
-      outline: none;
-    }
-    input:focus, select:focus, textarea:focus {
-      border-color: var(--color-primary);
-      box-shadow: 0 0 0 3px var(--color-primary-soft);
-    }
-    textarea { min-height: 300px; }
-    .inline-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 1rem;
-    }
-    .form-actions, .result-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-      align-items: center;
-    }
-    .helper {
-      color: var(--color-text-faint);
-      font-size: var(--text-sm);
-    }
-    .status {
-      min-height: 1.5rem;
-      color: var(--color-text-muted);
-      font-size: var(--text-sm);
-    }
-    .status.success { color: var(--color-success); }
-    .status.error { color: var(--color-danger); }
-    .result-shell {
-      display: grid;
-      gap: 1rem;
-      align-content: start;
-    }
-    .result-toolbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
-    .result-block {
-      border: 1px solid var(--color-border);
-      border-radius: 18px;
-      padding: 1rem;
-      background: var(--color-bg);
-    }
-    .result-block h3 {
-      margin-bottom: 0.6rem;
-      font-size: 1rem;
-      font-family: var(--font-body);
-      letter-spacing: -0.02em;
-    }
-    .result-block pre {
-      margin: 0;
-      white-space: pre-wrap;
-      word-break: break-word;
-      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-      font-size: 0.92rem;
-      color: var(--color-text-muted);
-    }
-    .list-clean {
-      margin: 0;
-      padding-left: 1.1rem;
-      color: var(--color-text-muted);
-    }
-    .list-clean li + li { margin-top: 0.45rem; }
-    .callout {
-      display: flex;
-      gap: 0.8rem;
-      align-items: start;
-      padding: 1rem;
-      border-radius: 18px;
-      border: 1px solid var(--color-border);
-      background: var(--color-primary-soft);
-    }
-    .callout strong { display: block; margin-bottom: 0.2rem; }
-    .footer {
-      padding: 2rem 0 3rem;
-      color: var(--color-text-faint);
-      font-size: var(--text-sm);
-    }
-    .footer-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 1rem;
-      flex-wrap: wrap;
-      border-top: 1px solid var(--color-border);
-      padding-top: 1.5rem;
-    }
-    .hidden { display: none !important; }
-
-    @media (max-width: 980px) {
-      .hero-grid,
-      .workspace-grid,
-      .use-grid,
-      .grid-3,
-      .grid-4,
-      .trust-grid,
-      .results-grid {
-        grid-template-columns: 1fr;
-      }
-      .hero-metrics,
-      .inline-grid { grid-template-columns: 1fr; }
-      h1 { max-width: 14ch; }
-    }
-
-    @media (max-width: 640px) {
-      .nav-row, .section-head, .result-toolbar, .footer-row {
-        align-items: flex-start;
-        flex-direction: column;
-      }
-      .nav-actions { width: 100%; justify-content: flex-start; }
-      .hero { padding-top: 2.6rem; }
-      .workspace, .hero-panel { padding: 1rem; }
-    }
+    :root,[data-theme="light"]{--color-bg:#f7f6f2;--color-surface:#fbfaf7;--color-surface-2:#f3f0ec;--color-border:rgba(40,37,29,.12);--color-text:#28251d;--color-text-muted:#66645d;--color-text-faint:#98958d;--color-text-inverse:#f8f7f4;--color-primary:#01696f;--color-primary-hover:#0c4e54;--color-primary-soft:rgba(1,105,111,.1);--color-success:#2f6b3f;--color-danger:#8b3d39;--shadow-sm:0 1px 2px rgba(20,18,12,.06);--shadow-md:0 12px 30px rgba(20,18,12,.08);--shadow-lg:0 24px 60px rgba(20,18,12,.12);--radius-sm:10px;--radius-md:16px;--radius-lg:24px;--content:1180px;--font-body:'General Sans','Inter',sans-serif;--font-display:'Cabinet Grotesk','General Sans',sans-serif}
+    [data-theme="dark"]{--color-bg:#121313;--color-surface:#171918;--color-surface-2:#1e211f;--color-border:rgba(236,235,231,.12);--color-text:#ecebe7;--color-text-muted:#b3b1aa;--color-text-faint:#7e7b74;--color-text-inverse:#11120f;--color-primary:#63aab3;--color-primary-hover:#87c0c7;--color-primary-soft:rgba(99,170,179,.16);--color-success:#8ac29b;--color-danger:#e3a19a;--shadow-sm:0 1px 2px rgba(0,0,0,.2);--shadow-md:0 16px 32px rgba(0,0,0,.24);--shadow-lg:0 24px 70px rgba(0,0,0,.32)}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:var(--font-body);background:var(--color-bg);color:var(--color-text);line-height:1.6;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}a{color:inherit;text-decoration:none}button,input,select,textarea{font:inherit}button{cursor:pointer}img,svg{display:block;max-width:100%}textarea{resize:vertical}.container{width:min(calc(100% - 2rem),var(--content));margin:0 auto}.skip-link{position:absolute;left:1rem;top:-3rem;background:var(--color-primary);color:var(--color-text-inverse);padding:.75rem 1rem;border-radius:var(--radius-sm);z-index:20}.skip-link:focus{top:1rem}.site-header{position:sticky;top:0;z-index:10;backdrop-filter:blur(14px);background:color-mix(in srgb,var(--color-bg) 88%,transparent);border-bottom:1px solid var(--color-border)}.nav-row{min-height:76px;display:flex;align-items:center;justify-content:space-between;gap:1rem}.brand{display:inline-flex;align-items:center;gap:.9rem;font-weight:600;letter-spacing:-.02em}.brand-mark{width:34px;height:34px;border-radius:12px;display:grid;place-items:center;background:var(--color-surface);border:1px solid var(--color-border);box-shadow:var(--shadow-sm)}.brand-mark svg{width:22px;height:22px;color:var(--color-primary)}.nav-actions{display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;justify-content:flex-end}.control-pill{display:inline-flex;align-items:center;gap:.4rem;padding:.35rem;border:1px solid var(--color-border);border-radius:999px;background:var(--color-surface)}.control-pill button{border:0;background:transparent;color:var(--color-text-muted);padding:.55rem .9rem;border-radius:999px;min-width:44px;min-height:44px}.control-pill button.active{background:var(--color-primary);color:var(--color-text-inverse)}.theme-toggle,.ghost-link,.primary-link,.secondary-link,.submit-button,.small-button{min-height:46px;border-radius:999px;border:1px solid transparent;transition:180ms ease}.theme-toggle,.ghost-link,.secondary-link,.small-button{background:var(--color-surface);color:var(--color-text);border-color:var(--color-border)}.theme-toggle:hover,.ghost-link:hover,.secondary-link:hover,.small-button:hover{background:var(--color-surface-2)}.theme-toggle{width:46px;display:inline-grid;place-items:center}.primary-link,.submit-button{background:var(--color-primary);color:var(--color-text-inverse);padding:0 1.15rem;box-shadow:var(--shadow-sm)}.primary-link:hover,.submit-button:hover{background:var(--color-primary-hover)}.secondary-link,.ghost-link,.small-button{padding:0 1rem}.hero{padding:clamp(4rem,9vw,7rem) 0 3rem}.hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(2rem,4vw,4rem);align-items:start}.eyebrow{display:inline-flex;align-items:center;gap:.5rem;font-size:.9375rem;color:var(--color-primary);background:var(--color-primary-soft);border-radius:999px;padding:.5rem .9rem;margin-bottom:1.2rem;font-weight:600}h1,h2,h3{font-family:var(--font-display);letter-spacing:-.04em;line-height:1.04;margin:0}h1{font-size:clamp(2.2rem,1.6rem + 2vw,3.8rem);max-width:11ch}h2{font-size:clamp(1.65rem,1.2rem + 1.25vw,2.3rem)}p{margin:0;color:var(--color-text-muted)}.hero-copy p{margin-top:1.2rem;max-width:60ch;font-size:1.05rem}.hero-actions{display:flex;flex-wrap:wrap;gap:.9rem;margin-top:1.6rem}.hero-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;margin-top:2rem}.metric{padding:1rem;border:1px solid var(--color-border);border-radius:var(--radius-md);background:var(--color-surface)}.metric strong{display:block;font-size:1.35rem;font-family:var(--font-display);letter-spacing:-.03em;color:var(--color-text)}.hero-panel,.card,.workspace,.result-card,.quote-card,.mini-card{background:var(--color-surface);border:1px solid var(--color-border);box-shadow:var(--shadow-md)}.hero-panel{border-radius:var(--radius-lg);padding:1.2rem;display:grid;gap:1rem}.panel-label{display:flex;justify-content:space-between;align-items:center;color:var(--color-text-muted);font-size:.9375rem}.status-dot{width:10px;height:10px;border-radius:999px;background:var(--color-success);display:inline-block;margin-right:.45rem}.flow-list{display:grid;gap:.8rem}.flow-item{display:grid;grid-template-columns:38px 1fr;gap:.85rem;align-items:start;padding:.9rem;border-radius:var(--radius-md);background:var(--color-surface-2);border:1px solid var(--color-border)}.flow-item span{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font-weight:700;color:var(--color-primary);background:var(--color-primary-soft)}.section{padding:2.5rem 0}.section-head{display:flex;justify-content:space-between;gap:1rem;align-items:end;margin-bottom:1.5rem}.section-head p{max-width:62ch}.grid-3,.trust-grid,.results-grid,.use-grid{display:grid;gap:1rem}.grid-3,.trust-grid,.results-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.use-grid{grid-template-columns:1.1fr .9fr}.card,.result-card,.quote-card,.mini-card{border-radius:var(--radius-md);padding:1.2rem}.card h3,.result-card h3,.quote-card h3,.mini-card h3{font-size:1.1rem;margin-bottom:.65rem;letter-spacing:-.03em}.card ul,.result-card ul{padding-left:1.1rem;margin:.75rem 0 0;color:var(--color-text-muted)}.workspace{border-radius:28px;padding:1.35rem;display:grid;gap:1.25rem}.workspace-grid{display:grid;grid-template-columns:.95fr 1.05fr;gap:1rem}.stack{display:grid;gap:1rem}label{display:grid;gap:.45rem;font-weight:600;color:var(--color-text);font-size:.9375rem}input,select,textarea{width:100%;border:1px solid var(--color-border);background:var(--color-bg);color:var(--color-text);border-radius:16px;padding:.95rem 1rem;outline:none}input:focus,select:focus,textarea:focus{border-color:var(--color-primary);box-shadow:0 0 0 3px var(--color-primary-soft)}textarea{min-height:300px}.inline-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.form-actions,.result-actions{display:flex;flex-wrap:wrap;gap:.75rem;align-items:center}.helper{color:var(--color-text-faint);font-size:.9375rem}.status{min-height:1.5rem;color:var(--color-text-muted);font-size:.9375rem}.status.success{color:var(--color-success)}.status.error{color:var(--color-danger)}.result-shell{display:grid;gap:1rem;align-content:start}.result-toolbar{display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap}.result-block{border:1px solid var(--color-border);border-radius:18px;padding:1rem;background:var(--color-bg)}.result-block h3{margin-bottom:.6rem;font-size:1rem;font-family:var(--font-body);letter-spacing:-.02em}.result-block pre{margin:0;white-space:pre-wrap;word-break:break-word;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.92rem;color:var(--color-text-muted)}.list-clean{margin:0;padding-left:1.1rem;color:var(--color-text-muted)}.list-clean li+li{margin-top:.45rem}.callout{display:flex;gap:.8rem;align-items:start;padding:1rem;border-radius:18px;border:1px solid var(--color-border);background:var(--color-primary-soft)}.callout strong{display:block;margin-bottom:.2rem}.footer{padding:2rem 0 3rem;color:var(--color-text-faint);font-size:.9375rem}.footer-row{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;border-top:1px solid var(--color-border);padding-top:1.5rem}@media (max-width:980px){.hero-grid,.workspace-grid,.use-grid,.grid-3,.trust-grid,.results-grid{grid-template-columns:1fr}.hero-metrics,.inline-grid{grid-template-columns:1fr}h1{max-width:14ch}}@media (max-width:640px){.nav-row,.section-head,.result-toolbar,.footer-row{align-items:flex-start;flex-direction:column}.nav-actions{width:100%;justify-content:flex-start}.hero{padding-top:2.6rem}.workspace,.hero-panel{padding:1rem}}
   </style>
 </head>
 <body>
   <a class="skip-link" href="#main" data-i18n="skipToContent">Skip to content</a>
-
   <header class="site-header">
     <div class="container nav-row">
       <a class="brand" href="#top" aria-label="Meeting Workspace home">
         <span class="brand-mark" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M4 7.5 12 3l8 4.5v9L12 21l-8-4.5v-9Z"></path>
-            <path d="M8.5 10.5 12 12.5l3.5-2"></path>
-            <path d="M12 12.5v4"></path>
-          </svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7.5 12 3l8 4.5v9L12 21l-8-4.5v-9Z"></path><path d="M8.5 10.5 12 12.5l3.5-2"></path><path d="M12 12.5v4"></path></svg>
         </span>
         <span>Meeting Workspace</span>
       </a>
-
       <div class="nav-actions">
         <div class="control-pill" role="group" aria-label="Interface language switcher">
           <button type="button" class="active" data-ui-lang="en">EN</button>
@@ -512,7 +33,6 @@
       </div>
     </div>
   </header>
-
   <main id="main">
     <section class="hero" id="top">
       <div class="container hero-grid">
@@ -525,728 +45,123 @@
             <a class="secondary-link" href="#deliverables" data-i18n="heroSecondary">See deliverables</a>
           </div>
           <div class="hero-metrics">
-            <div class="metric">
-              <strong data-i18n="metricOneValue">4 outputs</strong>
-              <span data-i18n="metricOneLabel">Summary, actions, decisions, and email draft.</span>
-            </div>
-            <div class="metric">
-              <strong data-i18n="metricTwoValue">2 language layers</strong>
-              <span data-i18n="metricTwoLabel">UI language and output language stay separate.</span>
-            </div>
-            <div class="metric">
-              <strong data-i18n="metricThreeValue">1 workflow</strong>
-              <span data-i18n="metricThreeLabel">One submission powers the full meeting pack.</span>
-            </div>
+            <div class="metric"><strong data-i18n="metricOneValue">4 outputs</strong><span data-i18n="metricOneLabel">Summary, actions, decisions, and email draft.</span></div>
+            <div class="metric"><strong data-i18n="metricTwoValue">2 language layers</strong><span data-i18n="metricTwoLabel">UI language and output language stay separate.</span></div>
+            <div class="metric"><strong data-i18n="metricThreeValue">1 workflow</strong><span data-i18n="metricThreeLabel">One submission powers the full meeting pack.</span></div>
           </div>
         </div>
-
         <aside class="hero-panel" aria-label="Workflow preview panel">
-          <div class="panel-label">
-            <span data-i18n="panelLabel">Workflow preview</span>
-            <span><span class="status-dot"></span><span data-i18n="panelStatus">Ready</span></span>
-          </div>
+          <div class="panel-label"><span data-i18n="panelLabel">Workflow preview</span><span><span class="status-dot"></span><span data-i18n="panelStatus">Ready</span></span></div>
           <div class="flow-list">
-            <div class="flow-item">
-              <span>1</span>
-              <div>
-                <strong data-i18n="flowOneTitle">Summarize the meeting</strong>
-                <p data-i18n="flowOneDesc">Extract the main discussion, decisions, and unresolved questions from raw notes.</p>
-              </div>
-            </div>
-            <div class="flow-item">
-              <span>2</span>
-              <div>
-                <strong data-i18n="flowTwoTitle">Create action items</strong>
-                <p data-i18n="flowTwoDesc">Turn discussion into task, owner, due date, priority, and source evidence.</p>
-              </div>
-            </div>
-            <div class="flow-item">
-              <span>3</span>
-              <div>
-                <strong data-i18n="flowThreeTitle">Draft the follow-up</strong>
-                <p data-i18n="flowThreeDesc">Prepare a concise professional email that can be sent or edited right away.</p>
-              </div>
-            </div>
+            <div class="flow-item"><span>1</span><div><strong data-i18n="flowOneTitle">Summarize the meeting</strong><p data-i18n="flowOneDesc">Extract the main discussion, decisions, and unresolved questions from raw notes.</p></div></div>
+            <div class="flow-item"><span>2</span><div><strong data-i18n="flowTwoTitle">Create action items</strong><p data-i18n="flowTwoDesc">Turn discussion into task, owner, due date, priority, and source evidence.</p></div></div>
+            <div class="flow-item"><span>3</span><div><strong data-i18n="flowThreeTitle">Draft the follow-up</strong><p data-i18n="flowThreeDesc">Prepare a concise professional email that can be sent or edited right away.</p></div></div>
           </div>
         </aside>
       </div>
     </section>
-
     <section class="section">
       <div class="container">
-        <div class="section-head">
-          <div>
-            <h2 data-i18n="problemTitle">Why teams use it</h2>
-            <p data-i18n="problemDesc">Most meetings end with scattered notes and unclear ownership. This workflow standardizes the handoff from conversation to execution.</p>
-          </div>
-        </div>
+        <div class="section-head"><div><h2 data-i18n="problemTitle">Why teams use it</h2><p data-i18n="problemDesc">Most meetings end with scattered notes and unclear ownership. This workflow standardizes the handoff from conversation to execution.</p></div></div>
         <div class="grid-3">
-          <article class="card">
-            <h3 data-i18n="problemCardOneTitle">Less manual cleanup</h3>
-            <p data-i18n="problemCardOneDesc">No more rewriting notes into another document just to extract tasks and status updates.</p>
-          </article>
-          <article class="card">
-            <h3 data-i18n="problemCardTwoTitle">Clearer accountability</h3>
-            <p data-i18n="problemCardTwoDesc">Owners, due dates, and source evidence are structured so teams know what to follow up on.</p>
-          </article>
-          <article class="card">
-            <h3 data-i18n="problemCardThreeTitle">Faster follow-through</h3>
-            <p data-i18n="problemCardThreeDesc">A ready-to-edit follow-up email reduces delay between the meeting and the next action.</p>
-          </article>
+          <article class="card"><h3 data-i18n="problemCardOneTitle">Less manual cleanup</h3><p data-i18n="problemCardOneDesc">No more rewriting notes into another document just to extract tasks and status updates.</p></article>
+          <article class="card"><h3 data-i18n="problemCardTwoTitle">Clearer accountability</h3><p data-i18n="problemCardTwoDesc">Owners, due dates, and source evidence are structured so teams know what to follow up on.</p></article>
+          <article class="card"><h3 data-i18n="problemCardThreeTitle">Faster follow-through</h3><p data-i18n="problemCardThreeDesc">A ready-to-edit follow-up email reduces delay between the meeting and the next action.</p></article>
         </div>
       </div>
     </section>
-
     <section class="section" id="deliverables">
       <div class="container">
-        <div class="section-head">
-          <div>
-            <h2 data-i18n="deliverablesTitle">Deliverables in one run</h2>
-            <p data-i18n="deliverablesDesc">The page is designed like a SaaS workspace, but the output stays practical for real operating teams.</p>
-          </div>
-        </div>
+        <div class="section-head"><div><h2 data-i18n="deliverablesTitle">Deliverables in one run</h2><p data-i18n="deliverablesDesc">The page is designed like a SaaS workspace, but the output stays practical for real operating teams.</p></div></div>
         <div class="results-grid">
-          <article class="result-card">
-            <h3 data-i18n="deliverableOneTitle">Structured summary</h3>
-            <ul>
-              <li data-i18n="deliverableOnePointOne">Short summary for quick review.</li>
-              <li data-i18n="deliverableOnePointTwo">Key points and decisions separated for clarity.</li>
-              <li data-i18n="deliverableOnePointThree">Open questions surfaced for follow-up.</li>
-            </ul>
-          </article>
-          <article class="result-card">
-            <h3 data-i18n="deliverableTwoTitle">Action items</h3>
-            <ul>
-              <li data-i18n="deliverableTwoPointOne">Task, owner, due date, priority.</li>
-              <li data-i18n="deliverableTwoPointTwo">Evidence linked back to the meeting content.</li>
-              <li data-i18n="deliverableTwoPointThree">Designed for downstream tracking or export.</li>
-            </ul>
-          </article>
-          <article class="result-card">
-            <h3 data-i18n="deliverableThreeTitle">Follow-up email</h3>
-            <ul>
-              <li data-i18n="deliverableThreePointOne">Professional tone with minimal cleanup.</li>
-              <li data-i18n="deliverableThreePointTwo">Useful for internal recap or client follow-up.</li>
-              <li data-i18n="deliverableThreePointThree">Copy-ready from the same workspace.</li>
-            </ul>
-          </article>
+          <article class="result-card"><h3 data-i18n="deliverableOneTitle">Structured summary</h3><ul><li data-i18n="deliverableOnePointOne">Short summary for quick review.</li><li data-i18n="deliverableOnePointTwo">Key points and decisions separated for clarity.</li><li data-i18n="deliverableOnePointThree">Open questions surfaced for follow-up.</li></ul></article>
+          <article class="result-card"><h3 data-i18n="deliverableTwoTitle">Action items</h3><ul><li data-i18n="deliverableTwoPointOne">Task, owner, due date, priority.</li><li data-i18n="deliverableTwoPointTwo">Evidence linked back to the meeting content.</li><li data-i18n="deliverableTwoPointThree">Designed for downstream tracking or export.</li></ul></article>
+          <article class="result-card"><h3 data-i18n="deliverableThreeTitle">Follow-up email</h3><ul><li data-i18n="deliverableThreePointOne">Professional tone with minimal cleanup.</li><li data-i18n="deliverableThreePointTwo">Useful for internal recap or client follow-up.</li><li data-i18n="deliverableThreePointThree">Copy-ready from the same workspace.</li></ul></article>
         </div>
       </div>
     </section>
-
     <section class="section">
       <div class="container use-grid">
         <div class="stack">
-          <div class="section-head" style="margin-bottom:0;">
-            <div>
-              <h2 data-i18n="useCasesTitle">Typical use cases</h2>
-              <p data-i18n="useCasesDesc">Useful for internal syncs, customer meetings, project reviews, and factory or operations coordination.</p>
-            </div>
-          </div>
-          <div class="grid-3" style="grid-template-columns:1fr;">
-            <article class="mini-card">
-              <h3 data-i18n="useCaseOneTitle">Project reviews</h3>
-              <p data-i18n="useCaseOneDesc">Capture decisions, blockers, and next steps without manually reformatting notes.</p>
-            </article>
-            <article class="mini-card">
-              <h3 data-i18n="useCaseTwoTitle">Client follow-up</h3>
-              <p data-i18n="useCaseTwoDesc">Create a clean post-meeting email and align internal action items at the same time.</p>
-            </article>
-            <article class="mini-card">
-              <h3 data-i18n="useCaseThreeTitle">Operations handoff</h3>
-              <p data-i18n="useCaseThreeDesc">Turn mixed-language notes into a clearer package for execution teams.</p>
-            </article>
+          <div class="section-head" style="margin-bottom:0"><div><h2 data-i18n="useCasesTitle">Typical use cases</h2><p data-i18n="useCasesDesc">Useful for internal syncs, customer meetings, project reviews, and factory or operations coordination.</p></div></div>
+          <div class="grid-3" style="grid-template-columns:1fr">
+            <article class="mini-card"><h3 data-i18n="useCaseOneTitle">Project reviews</h3><p data-i18n="useCaseOneDesc">Capture decisions, blockers, and next steps without manually reformatting notes.</p></article>
+            <article class="mini-card"><h3 data-i18n="useCaseTwoTitle">Client follow-up</h3><p data-i18n="useCaseTwoDesc">Create a clean post-meeting email and align internal action items at the same time.</p></article>
+            <article class="mini-card"><h3 data-i18n="useCaseThreeTitle">Operations handoff</h3><p data-i18n="useCaseThreeDesc">Turn mixed-language notes into a clearer package for execution teams.</p></article>
           </div>
         </div>
-        <aside class="quote-card">
-          <h3 data-i18n="uiLanguageTitle">UI language vs output language</h3>
-          <p data-i18n="uiLanguageDesc">This index supports bilingual interface switching while keeping the result language as a separate option in the form. That means a user can browse in English and still ask the workflow to return Traditional Chinese output, or the other way around.</p>
-        </aside>
+        <aside class="quote-card"><h3 data-i18n="uiLanguageTitle">UI language vs output language</h3><p data-i18n="uiLanguageDesc">This index supports bilingual interface switching while keeping the result language as a separate option in the form. That means a user can browse in English and still ask the workflow to return Traditional Chinese output, or the other way around.</p></aside>
       </div>
     </section>
-
     <section class="section">
       <div class="container">
-        <div class="section-head">
-          <div>
-            <h2 data-i18n="trustTitle">What this index already supports</h2>
-            <p data-i18n="trustDesc">The UI keeps language selection separate from the API payload used for generated meeting content.</p>
-          </div>
-        </div>
+        <div class="section-head"><div><h2 data-i18n="trustTitle">What this index already supports</h2><p data-i18n="trustDesc">The UI keeps language selection separate from the API payload used for generated meeting content.</p></div></div>
         <div class="trust-grid">
-          <article class="card">
-            <h3 data-i18n="trustCardOneTitle">Interface switcher</h3>
-            <p data-i18n="trustCardOneDesc">Header, section copy, labels, helper text, and status messages switch between English and Traditional Chinese.</p>
-          </article>
-          <article class="card">
-            <h3 data-i18n="trustCardTwoTitle">Stable backend contract</h3>
-            <p data-i18n="trustCardTwoDesc">The submit payload still uses the output language field for agents, so you do not need backend changes just for UI bilingual support.</p>
-          </article>
-          <article class="card">
-            <h3 data-i18n="trustCardThreeTitle">Workspace-first layout</h3>
-            <p data-i18n="trustCardThreeDesc">The page works as both a product homepage and a live demo surface for your Netlify function.</p>
-          </article>
+          <article class="card"><h3 data-i18n="trustCardOneTitle">Interface switcher</h3><p data-i18n="trustCardOneDesc">Header, section copy, labels, helper text, and status messages switch between English and Traditional Chinese.</p></article>
+          <article class="card"><h3 data-i18n="trustCardTwoTitle">Stable backend contract</h3><p data-i18n="trustCardTwoDesc">The submit payload still uses the output language field for agents, so you do not need backend changes just for UI bilingual support.</p></article>
+          <article class="card"><h3 data-i18n="trustCardThreeTitle">Workspace-first layout</h3><p data-i18n="trustCardThreeDesc">The page works as both a product homepage and a live demo surface for your Netlify function.</p></article>
         </div>
       </div>
     </section>
-
     <section class="section" id="workspace">
       <div class="container workspace">
-        <div class="section-head" style="margin-bottom:0;">
-          <div>
-            <h2 data-i18n="workspaceTitle">Live workspace</h2>
-            <p data-i18n="workspaceDesc">Paste meeting notes, choose the output language, and run the workflow from the same page.</p>
-          </div>
-        </div>
-
+        <div class="section-head" style="margin-bottom:0"><div><h2 data-i18n="workspaceTitle">Live workspace</h2><p data-i18n="workspaceDesc">Paste meeting notes, choose the output language, and run the workflow from the same page.</p></div></div>
         <div class="workspace-grid">
           <form class="stack" id="meetingForm">
             <div class="inline-grid">
-              <label>
-                <span data-i18n="fieldMeetingTitle">Meeting title</span>
-                <input id="meetingTitle" name="meetingTitle" type="text" />
-              </label>
-              <label>
-                <span data-i18n="fieldMeetingType">Meeting type</span>
-                <select id="meetingType" name="meetingType">
-                  <option value="project_sync" data-i18n="meetingTypeProject">Project sync</option>
-                  <option value="client_followup" data-i18n="meetingTypeClient">Client follow-up</option>
-                  <option value="operations_review" data-i18n="meetingTypeOperations">Operations review</option>
-                  <option value="internal_alignment" data-i18n="meetingTypeInternal">Internal alignment</option>
-                </select>
-              </label>
+              <label><span data-i18n="fieldMeetingTitle">Meeting title</span><input id="meetingTitle" name="meetingTitle" type="text" /></label>
+              <label><span data-i18n="fieldMeetingType">Meeting type</span><select id="meetingType" name="meetingType"><option value="project_sync" data-i18n="meetingTypeProject">Project sync</option><option value="client_followup" data-i18n="meetingTypeClient">Client follow-up</option><option value="operations_review" data-i18n="meetingTypeOperations">Operations review</option><option value="internal_alignment" data-i18n="meetingTypeInternal">Internal alignment</option></select></label>
             </div>
-
             <div class="inline-grid">
-              <label>
-                <span data-i18n="fieldOutputLanguage">Output language</span>
-                <select id="outputLanguage" name="outputLanguage">
-                  <option value="English">English</option>
-                  <option value="Traditional Chinese">Traditional Chinese</option>
-                  <option value="Simplified Chinese">Simplified Chinese</option>
-                </select>
-              </label>
-              <label>
-                <span data-i18n="fieldOutputMode">Output mode</span>
-                <select id="outputMode" name="outputMode">
-                  <option value="full_meeting_pack" data-i18n="outputModeFull">Full meeting pack</option>
-                  <option value="summary_only" data-i18n="outputModeSummary">Summary only</option>
-                  <option value="action_items_only" data-i18n="outputModeActions">Action items only</option>
-                </select>
-              </label>
+              <label><span data-i18n="fieldOutputLanguage">Output language</span><select id="outputLanguage" name="outputLanguage"><option value="English">English</option><option value="Traditional Chinese">Traditional Chinese</option><option value="Simplified Chinese">Simplified Chinese</option></select></label>
+              <label><span data-i18n="fieldOutputMode">Output mode</span><select id="outputMode" name="outputMode"><option value="full_meeting_pack" data-i18n="outputModeFull">Full meeting pack</option><option value="summary_only" data-i18n="outputModeSummary">Summary only</option><option value="action_items_only" data-i18n="outputModeActions">Action items only</option></select></label>
             </div>
-
-            <label>
-              <span data-i18n="fieldNotes">Meeting notes</span>
-              <textarea id="notes" name="notes"></textarea>
-            </label>
-
-            <div class="form-actions">
-              <button class="submit-button" type="submit" id="submitButton" data-i18n="runWorkflow">Run workflow</button>
-              <button class="small-button" type="button" id="loadSample" data-i18n="loadSample">Load sample</button>
-              <button class="small-button" type="button" id="clearForm" data-i18n="clearForm">Clear</button>
-            </div>
-
+            <label><span data-i18n="fieldNotes">Meeting notes</span><textarea id="notes" name="notes"></textarea></label>
+            <div class="form-actions"><button class="submit-button" type="submit" id="submitButton" data-i18n="runWorkflow">Run workflow</button><button class="small-button" type="button" id="loadSample" data-i18n="loadSample">Load sample</button><button class="small-button" type="button" id="clearForm" data-i18n="clearForm">Clear</button></div>
             <div class="helper" data-i18n="workspaceHelper">UI language affects this page only. Output language controls the generated result.</div>
             <div id="statusMessage" class="status" aria-live="polite"></div>
           </form>
-
           <div class="result-shell">
             <div class="result-toolbar">
-              <div>
-                <h3 style="font-family:var(--font-display);font-size:1.25rem;" data-i18n="resultsTitle">Generated results</h3>
-                <p data-i18n="resultsDesc">Results appear here after the Netlify function returns.</p>
-              </div>
-              <div class="result-actions">
-                <button class="small-button" type="button" id="copyMarkdown" data-i18n="copyMarkdown">Copy markdown</button>
-                <button class="small-button" type="button" id="copyEmail" data-i18n="copyEmail">Copy email</button>
-              </div>
+              <div><h3 style="font-family:var(--font-display);font-size:1.25rem;" data-i18n="resultsTitle">Generated results</h3><p data-i18n="resultsDesc">Results appear here after the Netlify function returns.</p></div>
+              <div class="result-actions"><button class="small-button" type="button" id="copyMarkdown" data-i18n="copyMarkdown">Copy markdown</button><button class="small-button" type="button" id="copyEmail" data-i18n="copyEmail">Copy email</button></div>
             </div>
-
-            <div class="callout">
-              <div>
-                <strong data-i18n="calloutTitle">Expected function endpoint</strong>
-                <p data-i18n="calloutDesc">This index submits to <code>/.netlify/functions/multi-agent-run</code> and expects artifacts like summary, decisions, action_items, and follow_up_email.</p>
-              </div>
-            </div>
-
-            <section class="result-block">
-              <h3 data-i18n="summaryTitle">Summary</h3>
-              <pre id="summaryOutput"></pre>
-            </section>
-
-            <section class="result-block">
-              <h3 data-i18n="decisionsTitle">Decisions</h3>
-              <ul id="decisionsOutput" class="list-clean"></ul>
-            </section>
-
-            <section class="result-block">
-              <h3 data-i18n="actionsTitle">Action items</h3>
-              <ul id="actionsOutput" class="list-clean"></ul>
-            </section>
-
-            <section class="result-block">
-              <h3 data-i18n="emailTitle">Follow-up email</h3>
-              <pre id="emailOutput"></pre>
-            </section>
+            <div class="callout"><div><strong data-i18n="calloutTitle">Expected function endpoint</strong><p data-i18n="calloutDesc">This index submits to /.netlify/functions/multi-agent-run and expects artifacts like summary, decisions, action_items, and follow_up_email.</p></div></div>
+            <section class="result-block"><h3 data-i18n="summaryTitle">Summary</h3><pre id="summaryOutput"></pre></section>
+            <section class="result-block"><h3 data-i18n="decisionsTitle">Decisions</h3><ul id="decisionsOutput" class="list-clean"></ul></section>
+            <section class="result-block"><h3 data-i18n="actionsTitle">Action items</h3><ul id="actionsOutput" class="list-clean"></ul></section>
+            <section class="result-block"><h3 data-i18n="emailTitle">Follow-up email</h3><pre id="emailOutput"></pre></section>
           </div>
         </div>
       </div>
     </section>
   </main>
-
   <footer class="footer">
-    <div class="container footer-row">
-      <span data-i18n="footerLeft">Meeting Workspace — bilingual SaaS landing page with live workflow demo.</span>
-      <span data-i18n="footerRight">Keep UI language and result language separate for cleaner product logic.</span>
-    </div>
+    <div class="container footer-row"><span data-i18n="footerLeft">Meeting Workspace — bilingual SaaS landing page with live workflow demo.</span><span data-i18n="footerRight">Keep UI language and result language separate for cleaner product logic.</span></div>
   </footer>
-
   <script>
-    const translations = {
-      en: {
-        skipToContent: 'Skip to content',
-        navDemo: 'Live demo',
-        navCta: 'Try the workspace',
-        eyebrow: 'Built for post-meeting execution',
-        heroTitle: 'Turn meeting notes into aligned next steps.',
-        heroDesc: 'Generate structured summaries, decisions, action items, and follow-up emails in one workspace so teams can move from discussion to delivery faster.',
-        heroPrimary: 'Open live workspace',
-        heroSecondary: 'See deliverables',
-        metricOneValue: '4 outputs',
-        metricOneLabel: 'Summary, actions, decisions, and email draft.',
-        metricTwoValue: '2 language layers',
-        metricTwoLabel: 'UI language and output language stay separate.',
-        metricThreeValue: '1 workflow',
-        metricThreeLabel: 'One submission powers the full meeting pack.',
-        panelLabel: 'Workflow preview',
-        panelStatus: 'Ready',
-        flowOneTitle: 'Summarize the meeting',
-        flowOneDesc: 'Extract the main discussion, decisions, and unresolved questions from raw notes.',
-        flowTwoTitle: 'Create action items',
-        flowTwoDesc: 'Turn discussion into task, owner, due date, priority, and source evidence.',
-        flowThreeTitle: 'Draft the follow-up',
-        flowThreeDesc: 'Prepare a concise professional email that can be sent or edited right away.',
-        problemTitle: 'Why teams use it',
-        problemDesc: 'Most meetings end with scattered notes and unclear ownership. This workflow standardizes the handoff from conversation to execution.',
-        problemCardOneTitle: 'Less manual cleanup',
-        problemCardOneDesc: 'No more rewriting notes into another document just to extract tasks and status updates.',
-        problemCardTwoTitle: 'Clearer accountability',
-        problemCardTwoDesc: 'Owners, due dates, and source evidence are structured so teams know what to follow up on.',
-        problemCardThreeTitle: 'Faster follow-through',
-        problemCardThreeDesc: 'A ready-to-edit follow-up email reduces delay between the meeting and the next action.',
-        deliverablesTitle: 'Deliverables in one run',
-        deliverablesDesc: 'The page is designed like a SaaS workspace, but the output stays practical for real operating teams.',
-        deliverableOneTitle: 'Structured summary',
-        deliverableOnePointOne: 'Short summary for quick review.',
-        deliverableOnePointTwo: 'Key points and decisions separated for clarity.',
-        deliverableOnePointThree: 'Open questions surfaced for follow-up.',
-        deliverableTwoTitle: 'Action items',
-        deliverableTwoPointOne: 'Task, owner, due date, priority.',
-        deliverableTwoPointTwo: 'Evidence linked back to the meeting content.',
-        deliverableTwoPointThree: 'Designed for downstream tracking or export.',
-        deliverableThreeTitle: 'Follow-up email',
-        deliverableThreePointOne: 'Professional tone with minimal cleanup.',
-        deliverableThreePointTwo: 'Useful for internal recap or client follow-up.',
-        deliverableThreePointThree: 'Copy-ready from the same workspace.',
-        useCasesTitle: 'Typical use cases',
-        useCasesDesc: 'Useful for internal syncs, customer meetings, project reviews, and factory or operations coordination.',
-        useCaseOneTitle: 'Project reviews',
-        useCaseOneDesc: 'Capture decisions, blockers, and next steps without manually reformatting notes.',
-        useCaseTwoTitle: 'Client follow-up',
-        useCaseTwoDesc: 'Create a clean post-meeting email and align internal action items at the same time.',
-        useCaseThreeTitle: 'Operations handoff',
-        useCaseThreeDesc: 'Turn mixed-language notes into a clearer package for execution teams.',
-        uiLanguageTitle: 'UI language vs output language',
-        uiLanguageDesc: 'This index supports bilingual interface switching while keeping the result language as a separate option in the form. That means a user can browse in English and still ask the workflow to return Traditional Chinese output, or the other way around.',
-        trustTitle: 'What this index already supports',
-        trustDesc: 'The UI keeps language selection separate from the API payload used for generated meeting content.',
-        trustCardOneTitle: 'Interface switcher',
-        trustCardOneDesc: 'Header, section copy, labels, helper text, and status messages switch between English and Traditional Chinese.',
-        trustCardTwoTitle: 'Stable backend contract',
-        trustCardTwoDesc: 'The submit payload still uses the output language field for agents, so you do not need backend changes just for UI bilingual support.',
-        trustCardThreeTitle: 'Workspace-first layout',
-        trustCardThreeDesc: 'The page works as both a product homepage and a live demo surface for your Netlify function.',
-        workspaceTitle: 'Live workspace',
-        workspaceDesc: 'Paste meeting notes, choose the output language, and run the workflow from the same page.',
-        fieldMeetingTitle: 'Meeting title',
-        fieldMeetingType: 'Meeting type',
-        fieldOutputLanguage: 'Output language',
-        fieldOutputMode: 'Output mode',
-        fieldNotes: 'Meeting notes',
-        meetingTypeProject: 'Project sync',
-        meetingTypeClient: 'Client follow-up',
-        meetingTypeOperations: 'Operations review',
-        meetingTypeInternal: 'Internal alignment',
-        outputModeFull: 'Full meeting pack',
-        outputModeSummary: 'Summary only',
-        outputModeActions: 'Action items only',
-        runWorkflow: 'Run workflow',
-        loadSample: 'Load sample',
-        clearForm: 'Clear',
-        workspaceHelper: 'UI language affects this page only. Output language controls the generated result.',
-        resultsTitle: 'Generated results',
-        resultsDesc: 'Results appear here after the Netlify function returns.',
-        copyMarkdown: 'Copy markdown',
-        copyEmail: 'Copy email',
-        calloutTitle: 'Expected function endpoint',
-        calloutDesc: 'This index submits to /.netlify/functions/multi-agent-run and expects artifacts like summary, decisions, action_items, and follow_up_email.',
-        summaryTitle: 'Summary',
-        decisionsTitle: 'Decisions',
-        actionsTitle: 'Action items',
-        emailTitle: 'Follow-up email',
-        footerLeft: 'Meeting Workspace — bilingual SaaS landing page with live workflow demo.',
-        footerRight: 'Keep UI language and result language separate for cleaner product logic.',
-        statusRunning: 'Running workflow...',
-        statusSuccess: 'Workflow complete.',
-        statusError: 'The workflow request failed.',
-        statusCopiedMarkdown: 'Markdown copied.',
-        statusCopiedEmail: 'Email copied.',
-        statusNothingToCopy: 'There is no content to copy yet.',
-        statusFormCleared: 'Form cleared.',
-        sampleMeetingTitle: 'Weekly production sync',
-        sampleNotes: 'Design team confirmed the revised trim card for style A-104. Sample room will update the BOM by Friday. Merchandising will send the revised vendor timeline tomorrow. Logistics raised a risk that the fabric booking for color navy may slip by three days. Team agreed to escalate booking status in the next client update and prepare an alternative delivery scenario.'
-      },
-      'zh-Hant': {
-        skipToContent: '跳至主要內容',
-        navDemo: '即時示範',
-        navCta: '開啟工作區',
-        eyebrow: '專為會後執行而設計',
-        heroTitle: '把會議記錄轉成明確下一步。',
-        heroDesc: '在同一個工作區中，自動產出結構化摘要、決策重點、行動項目與 follow-up email，讓團隊更快從討論進入執行。',
-        heroPrimary: '開啟即時工作區',
-        heroSecondary: '查看輸出內容',
-        metricOneValue: '4 種輸出',
-        metricOneLabel: '摘要、待辦、決策與 email 草稿。',
-        metricTwoValue: '2 層語言設定',
-        metricTwoLabel: '介面語言與輸出語言彼此分離。',
-        metricThreeValue: '1 次提交',
-        metricThreeLabel: '一次送出即可產生完整 meeting pack。',
-        panelLabel: '工作流程預覽',
-        panelStatus: '已就緒',
-        flowOneTitle: '產出會議摘要',
-        flowOneDesc: '從原始 notes 擷取主要討論、決策與待釐清問題。',
-        flowTwoTitle: '建立行動項目',
-        flowTwoDesc: '把討論整理成 task、owner、due date、priority 與 source evidence。',
-        flowThreeTitle: '草擬 follow-up',
-        flowThreeDesc: '快速產生可直接編修或寄出的專業 follow-up email。',
-        problemTitle: '團隊為何會用它',
-        problemDesc: '多數會議最後只留下零散筆記與不明確的責任歸屬。這個 workflow 讓討論到執行的交接更標準化。',
-        problemCardOneTitle: '減少人工整理',
-        problemCardOneDesc: '不用再把會議筆記重寫到另一份文件，才開始整理 task 與狀態。',
-        problemCardTwoTitle: '責任更清楚',
-        problemCardTwoDesc: 'owner、due date 與 source evidence 都有結構化輸出，方便追蹤。',
-        problemCardThreeTitle: '後續更快落地',
-        problemCardThreeDesc: '直接可編修的 follow-up email，能縮短會後到執行的空窗時間。',
-        deliverablesTitle: '一次執行的輸出內容',
-        deliverablesDesc: '這個頁面有 SaaS workspace 的感覺，但輸出仍然以真實營運團隊可用為主。',
-        deliverableOneTitle: '結構化摘要',
-        deliverableOnePointOne: '先用短摘要快速掌握重點。',
-        deliverableOnePointTwo: '把 key points 與 decisions 分開呈現。',
-        deliverableOnePointThree: '把未解決問題一併拉出來。',
-        deliverableTwoTitle: '行動項目',
-        deliverableTwoPointOne: '包含 task、owner、due date、priority。',
-        deliverableTwoPointTwo: '可回溯到會議內容的 source evidence。',
-        deliverableTwoPointThree: '便於後續追蹤或匯出。',
-        deliverableThreeTitle: 'Follow-up email',
-        deliverableThreePointOne: '專業語氣，後續只需少量修飾。',
-        deliverableThreePointTwo: '適用於內部 recap 或客戶跟進。',
-        deliverableThreePointThree: '可直接在同頁複製使用。',
-        useCasesTitle: '常見使用情境',
-        useCasesDesc: '適合內部同步、客戶會議、專案檢討，以及工廠或營運協調場景。',
-        useCaseOneTitle: '專案檢討',
-        useCaseOneDesc: '快速整理 decisions、blockers 與 next steps，不必人工重排會議記錄。',
-        useCaseTwoTitle: '客戶跟進',
-        useCaseTwoDesc: '同時產出會後 email 與內部行動項目，減少雙重整理。',
-        useCaseThreeTitle: '營運交接',
-        useCaseThreeDesc: '把混合語言的 notes 轉成更清楚的執行包。',
-        uiLanguageTitle: '介面語言 vs 輸出語言',
-        uiLanguageDesc: '這份 index 支援中英介面切換，同時把結果輸出語言保留為表單中的獨立選項。也就是說，使用者可以用英文介面操作，但要求 workflow 回傳繁中結果，反之亦然。',
-        trustTitle: '這份 index 已支援的重點',
-        trustDesc: 'UI 語言與 API 用來生成內容的語言欄位彼此分開，產品邏輯更清楚。',
-        trustCardOneTitle: '介面切換器',
-        trustCardOneDesc: 'Header、區塊文案、labels、helper text 與狀態訊息都可在英文與繁中之間切換。',
-        trustCardTwoTitle: '穩定的 backend contract',
-        trustCardTwoDesc: '送出 payload 時仍使用 output language 給 agents，因此單純做 UI 雙語不需要改 backend。',
-        trustCardThreeTitle: 'Workspace-first 版型',
-        trustCardThreeDesc: '這頁同時可作為產品首頁與 Netlify function 的 live demo 頁面。',
-        workspaceTitle: '即時工作區',
-        workspaceDesc: '貼上會議記錄、選擇輸出語言，並在同一頁直接執行 workflow。',
-        fieldMeetingTitle: '會議標題',
-        fieldMeetingType: '會議類型',
-        fieldOutputLanguage: '輸出語言',
-        fieldOutputMode: '輸出模式',
-        fieldNotes: '會議記錄',
-        meetingTypeProject: '專案同步',
-        meetingTypeClient: '客戶跟進',
-        meetingTypeOperations: '營運檢討',
-        meetingTypeInternal: '內部對齊',
-        outputModeFull: '完整 meeting pack',
-        outputModeSummary: '僅摘要',
-        outputModeActions: '僅行動項目',
-        runWorkflow: '執行工作流',
-        loadSample: '載入範例',
-        clearForm: '清空',
-        workspaceHelper: '介面語言只影響本頁顯示；輸出語言才會控制生成結果。',
-        resultsTitle: '生成結果',
-        resultsDesc: 'Netlify function 回傳後，結果會顯示在這裡。',
-        copyMarkdown: '複製 Markdown',
-        copyEmail: '複製 Email',
-        calloutTitle: '預期的 function endpoint',
-        calloutDesc: '這份 index 會送出到 /.netlify/functions/multi-agent-run，並預期回傳 summary、decisions、action_items 與 follow_up_email 等 artifacts。',
-        summaryTitle: '摘要',
-        decisionsTitle: '決策重點',
-        actionsTitle: '行動項目',
-        emailTitle: 'Follow-up email',
-        footerLeft: 'Meeting Workspace — 具雙語介面與 live workflow demo 的 SaaS 首頁。',
-        footerRight: '把介面語言與結果語言拆開，產品邏輯會更乾淨。',
-        statusRunning: '工作流執行中...',
-        statusSuccess: '工作流完成。',
-        statusError: '工作流請求失敗。',
-        statusCopiedMarkdown: '已複製 Markdown。',
-        statusCopiedEmail: '已複製 Email。',
-        statusNothingToCopy: '目前沒有可複製的內容。',
-        statusFormCleared: '已清空表單。',
-        sampleMeetingTitle: '每週生產同步會議',
-        sampleNotes: '設計團隊確認 A-104 款式的新版 trim card。Sample room 會在星期五前更新 BOM。Merchandising 將於明天發出修訂後的 vendor timeline。Logistics 提出 navy 色布料 booking 可能延遲三天的風險。團隊決定在下一次客戶更新中主動說明 booking 狀態，並準備替代交期方案。'
-      }
-    };
-
-    const state = {
-      uiLanguage: 'en',
-      theme: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light',
-      latestArtifacts: {
-        summary: '',
-        decisions: [],
-        action_items: [],
-        follow_up_email: ''
-      }
-    };
-
-    const els = {
-      html: document.documentElement,
-      uiLangButtons: document.querySelectorAll('[data-ui-lang]'),
-      themeToggle: document.querySelector('[data-theme-toggle]'),
-      i18nNodes: document.querySelectorAll('[data-i18n]'),
-      form: document.getElementById('meetingForm'),
-      meetingTitle: document.getElementById('meetingTitle'),
-      meetingType: document.getElementById('meetingType'),
-      outputLanguage: document.getElementById('outputLanguage'),
-      outputMode: document.getElementById('outputMode'),
-      notes: document.getElementById('notes'),
-      status: document.getElementById('statusMessage'),
-      submitButton: document.getElementById('submitButton'),
-      loadSample: document.getElementById('loadSample'),
-      clearForm: document.getElementById('clearForm'),
-      copyMarkdown: document.getElementById('copyMarkdown'),
-      copyEmail: document.getElementById('copyEmail'),
-      summaryOutput: document.getElementById('summaryOutput'),
-      decisionsOutput: document.getElementById('decisionsOutput'),
-      actionsOutput: document.getElementById('actionsOutput'),
-      emailOutput: document.getElementById('emailOutput')
-    };
-
-    function t(key) {
-      return translations[state.uiLanguage][key] || translations.en[key] || key;
-    }
-
-    function setStatus(key, type) {
-      els.status.textContent = t(key);
-      els.status.className = 'status' + (type ? ' ' + type : '');
-    }
-
-    function renderTranslations() {
-      els.html.lang = state.uiLanguage === 'zh-Hant' ? 'zh-Hant' : 'en';
-      els.i18nNodes.forEach((node) => {
-        const key = node.dataset.i18n;
-        if (translations[state.uiLanguage][key]) {
-          node.textContent = translations[state.uiLanguage][key];
-        }
-      });
-      els.uiLangButtons.forEach((button) => {
-        button.classList.toggle('active', button.dataset.uiLang === state.uiLanguage);
-      });
-      if (!els.meetingTitle.value || els.meetingTitle.dataset.sampleFilled === 'true') {
-        els.meetingTitle.placeholder = t('sampleMeetingTitle');
-      }
-      if (!els.notes.value || els.notes.dataset.sampleFilled === 'true') {
-        els.notes.placeholder = t('fieldNotes');
-      }
-    }
-
-    function setTheme(theme) {
-      state.theme = theme;
-      els.html.setAttribute('data-theme', theme);
-      els.themeToggle.textContent = theme === 'dark' ? '☀' : '☾';
-      els.themeToggle.setAttribute('aria-label', theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
-    }
-
-    function renderList(container, items, formatter) {
-      container.innerHTML = '';
-      if (!Array.isArray(items) || !items.length) {
-        return;
-      }
-      items.forEach((item) => {
-        const li = document.createElement('li');
-        li.textContent = formatter(item);
-        container.appendChild(li);
-      });
-    }
-
-    function renderArtifacts(artifacts) {
-      state.latestArtifacts = {
-        summary: artifacts.summary || '',
-        decisions: Array.isArray(artifacts.decisions) ? artifacts.decisions : [],
-        action_items: Array.isArray(artifacts.action_items) ? artifacts.action_items : [],
-        follow_up_email: artifacts.follow_up_email || artifacts.email_body || ''
-      };
-
-      els.summaryOutput.textContent = state.latestArtifacts.summary;
-      els.emailOutput.textContent = state.latestArtifacts.follow_up_email;
-
-      renderList(els.decisionsOutput, state.latestArtifacts.decisions, (item) => item);
-      renderList(els.actionsOutput, state.latestArtifacts.action_items, (item) => {
-        if (typeof item === 'string') return item;
-        const parts = [item.task || ''];
-        if (item.owner) parts.push('Owner: ' + item.owner);
-        if (item.due_date) parts.push('Due: ' + item.due_date);
-        if (item.priority) parts.push('Priority: ' + item.priority);
-        return parts.filter(Boolean).join(' | ');
-      });
-    }
-
-    function buildMarkdown() {
-      const a = state.latestArtifacts;
-      const lines = [];
-      if (a.summary) {
-        lines.push('# ' + t('summaryTitle'));
-        lines.push(a.summary, '');
-      }
-      if (a.decisions.length) {
-        lines.push('# ' + t('decisionsTitle'));
-        a.decisions.forEach((item) => lines.push('- ' + item));
-        lines.push('');
-      }
-      if (a.action_items.length) {
-        lines.push('# ' + t('actionsTitle'));
-        a.action_items.forEach((item) => {
-          if (typeof item === 'string') {
-            lines.push('- ' + item);
-          } else {
-            const detail = [item.task || ''];
-            if (item.owner) detail.push('owner: ' + item.owner);
-            if (item.due_date) detail.push('due: ' + item.due_date);
-            if (item.priority) detail.push('priority: ' + item.priority);
-            lines.push('- ' + detail.join(' | '));
-          }
-        });
-        lines.push('');
-      }
-      if (a.follow_up_email) {
-        lines.push('# ' + t('emailTitle'));
-        lines.push(a.follow_up_email);
-      }
-      return lines.join('\n').trim();
-    }
-
-    async function copyText(text, successKey) {
-      if (!text) {
-        setStatus('statusNothingToCopy', 'error');
-        return;
-      }
-      try {
-        await navigator.clipboard.writeText(text);
-        setStatus(successKey, 'success');
-      } catch (error) {
-        setStatus('statusError', 'error');
-      }
-    }
-
-    function loadSampleData() {
-      els.meetingTitle.value = t('sampleMeetingTitle');
-      els.meetingTitle.dataset.sampleFilled = 'true';
-      els.notes.value = t('sampleNotes');
-      els.notes.dataset.sampleFilled = 'true';
-    }
-
-    function clearOutputs() {
-      renderArtifacts({});
-    }
-
-    els.uiLangButtons.forEach((button) => {
-      button.addEventListener('click', () => {
-        state.uiLanguage = button.dataset.uiLang;
-        renderTranslations();
-      });
-    });
-
-    els.themeToggle.addEventListener('click', () => {
-      setTheme(state.theme === 'dark' ? 'light' : 'dark');
-    });
-
-    els.loadSample.addEventListener('click', () => {
-      loadSampleData();
-    });
-
-    els.clearForm.addEventListener('click', () => {
-      els.form.reset();
-      els.outputLanguage.value = 'English';
-      els.outputMode.value = 'full_meeting_pack';
-      clearOutputs();
-      setStatus('statusFormCleared', 'success');
-    });
-
-    els.copyMarkdown.addEventListener('click', () => {
-      copyText(buildMarkdown(), 'statusCopiedMarkdown');
-    });
-
-    els.copyEmail.addEventListener('click', () => {
-      copyText(state.latestArtifacts.follow_up_email, 'statusCopiedEmail');
-    });
-
-    els.form.addEventListener('submit', async (event) => {
-      event.preventDefault();
-      setStatus('statusRunning');
-      els.submitButton.disabled = true;
-
-      const payload = {
-        meetingTitle: els.meetingTitle.value.trim(),
-        meetingType: els.meetingType.value,
-        outputMode: els.outputMode.value,
-        language: els.outputLanguage.value,
-        uiLanguage: state.uiLanguage,
-        notes: els.notes.value.trim()
-      };
-
-      try {
-        const response = await fetch('/.netlify/functions/multi-agent-run', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(payload)
-        });
-
-        if (!response.ok) {
-          throw new Error('Request failed');
-        }
-
-        const data = await response.json();
-        const artifacts = data.artifacts || data.fixed_output || {};
-        renderArtifacts(artifacts);
-        setStatus('statusSuccess', 'success');
-      } catch (error) {
-        clearOutputs();
-        setStatus('statusError', 'error');
-      } finally {
-        els.submitButton.disabled = false;
-      }
-    });
-
-    setTheme(state.theme);
-    renderTranslations();
-    clearOutputs();
-    loadSampleData();
+    const translations={en:{skipToContent:'Skip to content',navDemo:'Live demo',navCta:'Try the workspace',eyebrow:'Built for post-meeting execution',heroTitle:'Turn meeting notes into aligned next steps.',heroDesc:'Generate structured summaries, decisions, action items, and follow-up emails in one workspace so teams can move from discussion to delivery faster.',heroPrimary:'Open live workspace',heroSecondary:'See deliverables',metricOneValue:'4 outputs',metricOneLabel:'Summary, actions, decisions, and email draft.',metricTwoValue:'2 language layers',metricTwoLabel:'UI language and output language stay separate.',metricThreeValue:'1 workflow',metricThreeLabel:'One submission powers the full meeting pack.',panelLabel:'Workflow preview',panelStatus:'Ready',flowOneTitle:'Summarize the meeting',flowOneDesc:'Extract the main discussion, decisions, and unresolved questions from raw notes.',flowTwoTitle:'Create action items',flowTwoDesc:'Turn discussion into task, owner, due date, priority, and source evidence.',flowThreeTitle:'Draft the follow-up',flowThreeDesc:'Prepare a concise professional email that can be sent or edited right away.',problemTitle:'Why teams use it',problemDesc:'Most meetings end with scattered notes and unclear ownership. This workflow standardizes the handoff from conversation to execution.',problemCardOneTitle:'Less manual cleanup',problemCardOneDesc:'No more rewriting notes into another document just to extract tasks and status updates.',problemCardTwoTitle:'Clearer accountability',problemCardTwoDesc:'Owners, due dates, and source evidence are structured so teams know what to follow up on.',problemCardThreeTitle:'Faster follow-through',problemCardThreeDesc:'A ready-to-edit follow-up email reduces delay between the meeting and the next action.',deliverablesTitle:'Deliverables in one run',deliverablesDesc:'The page is designed like a SaaS workspace, but the output stays practical for real operating teams.',deliverableOneTitle:'Structured summary',deliverableOnePointOne:'Short summary for quick review.',deliverableOnePointTwo:'Key points and decisions separated for clarity.',deliverableOnePointThree:'Open questions surfaced for follow-up.',deliverableTwoTitle:'Action items',deliverableTwoPointOne:'Task, owner, due date, priority.',deliverableTwoPointTwo:'Evidence linked back to the meeting content.',deliverableTwoPointThree:'Designed for downstream tracking or export.',deliverableThreeTitle:'Follow-up email',deliverableThreePointOne:'Professional tone with minimal cleanup.',deliverableThreePointTwo:'Useful for internal recap or client follow-up.',deliverableThreePointThree:'Copy-ready from the same workspace.',useCasesTitle:'Typical use cases',useCasesDesc:'Useful for internal syncs, customer meetings, project reviews, and factory or operations coordination.',useCaseOneTitle:'Project reviews',useCaseOneDesc:'Capture decisions, blockers, and next steps without manually reformatting notes.',useCaseTwoTitle:'Client follow-up',useCaseTwoDesc:'Create a clean post-meeting email and align internal action items at the same time.',useCaseThreeTitle:'Operations handoff',useCaseThreeDesc:'Turn mixed-language notes into a clearer package for execution teams.',uiLanguageTitle:'UI language vs output language',uiLanguageDesc:'This index supports bilingual interface switching while keeping the result language as a separate option in the form. That means a user can browse in English and still ask the workflow to return Traditional Chinese output, or the other way around.',trustTitle:'What this index already supports',trustDesc:'The UI keeps language selection separate from the API payload used for generated meeting content.',trustCardOneTitle:'Interface switcher',trustCardOneDesc:'Header, section copy, labels, helper text, and status messages switch between English and Traditional Chinese.',trustCardTwoTitle:'Stable backend contract',trustCardTwoDesc:'The submit payload still uses the output language field for agents, so you do not need backend changes just for UI bilingual support.',trustCardThreeTitle:'Workspace-first layout',trustCardThreeDesc:'The page works as both a product homepage and a live demo surface for your Netlify function.',workspaceTitle:'Live workspace',workspaceDesc:'Paste meeting notes, choose the output language, and run the workflow from the same page.',fieldMeetingTitle:'Meeting title',fieldMeetingType:'Meeting type',fieldOutputLanguage:'Output language',fieldOutputMode:'Output mode',fieldNotes:'Meeting notes',meetingTypeProject:'Project sync',meetingTypeClient:'Client follow-up',meetingTypeOperations:'Operations review',meetingTypeInternal:'Internal alignment',outputModeFull:'Full meeting pack',outputModeSummary:'Summary only',outputModeActions:'Action items only',runWorkflow:'Run workflow',loadSample:'Load sample',clearForm:'Clear',workspaceHelper:'UI language affects this page only. Output language controls the generated result.',resultsTitle:'Generated results',resultsDesc:'Results appear here after the Netlify function returns.',copyMarkdown:'Copy markdown',copyEmail:'Copy email',calloutTitle:'Expected function endpoint',calloutDesc:'This index submits to /.netlify/functions/multi-agent-run and expects artifacts like summary, decisions, action_items, and follow_up_email.',summaryTitle:'Summary',decisionsTitle:'Decisions',actionsTitle:'Action items',emailTitle:'Follow-up email',footerLeft:'Meeting Workspace — bilingual SaaS landing page with live workflow demo.',footerRight:'Keep UI language and result language separate for cleaner product logic.',statusRunning:'Running workflow...',statusSuccess:'Workflow complete.',statusError:'The workflow request failed.',statusCopiedMarkdown:'Markdown copied.',statusCopiedEmail:'Email copied.',statusNothingToCopy:'There is no content to copy yet.',statusFormCleared:'Form cleared.',sampleMeetingTitle:'Weekly production sync',sampleNotes:'Design team confirmed the revised trim card for style A-104. Sample room will update the BOM by Friday. Merchandising will send the revised vendor timeline tomorrow. Logistics raised a risk that the fabric booking for color navy may slip by three days. Team agreed to escalate booking status in the next client update and prepare an alternative delivery scenario.'},'zh-Hant':{skipToContent:'跳至主要內容',navDemo:'即時示範',navCta:'開啟工作區',eyebrow:'專為會後執行而設計',heroTitle:'把會議記錄轉成明確下一步。',heroDesc:'在同一個工作區中，自動產出結構化摘要、決策重點、行動項目與 follow-up email，讓團隊更快從討論進入執行。',heroPrimary:'開啟即時工作區',heroSecondary:'查看輸出內容',metricOneValue:'4 種輸出',metricOneLabel:'摘要、待辦、決策與 email 草稿。',metricTwoValue:'2 層語言設定',metricTwoLabel:'介面語言與輸出語言彼此分離。',metricThreeValue:'1 次提交',metricThreeLabel:'一次送出即可產生完整 meeting pack。',panelLabel:'工作流程預覽',panelStatus:'已就緒',flowOneTitle:'產出會議摘要',flowOneDesc:'從原始 notes 擷取主要討論、決策與待釐清問題。',flowTwoTitle:'建立行動項目',flowTwoDesc:'把討論整理成 task、owner、due date、priority 與 source evidence。',flowThreeTitle:'草擬 follow-up',flowThreeDesc:'快速產生可直接編修或寄出的專業 follow-up email。',problemTitle:'團隊為何會用它',problemDesc:'多數會議最後只留下零散筆記與不明確的責任歸屬。這個 workflow 讓討論到執行的交接更標準化。',problemCardOneTitle:'減少人工整理',problemCardOneDesc:'不用再把會議筆記重寫到另一份文件，才開始整理 task 與狀態。',problemCardTwoTitle:'責任更清楚',problemCardTwoDesc:'owner、due date 與 source evidence 都有結構化輸出，方便追蹤。',problemCardThreeTitle:'後續更快落地',problemCardThreeDesc:'直接可編修的 follow-up email，能縮短會後到執行的空窗時間。',deliverablesTitle:'一次執行的輸出內容',deliverablesDesc:'這個頁面有 SaaS workspace 的感覺，但輸出仍然以真實營運團隊可用為主。',deliverableOneTitle:'結構化摘要',deliverableOnePointOne:'先用短摘要快速掌握重點。',deliverableOnePointTwo:'把 key points 與 decisions 分開呈現。',deliverableOnePointThree:'把未解決問題一併拉出來。',deliverableTwoTitle:'行動項目',deliverableTwoPointOne:'包含 task、owner、due date、priority。',deliverableTwoPointTwo:'可回溯到會議內容的 source evidence。',deliverableTwoPointThree:'便於後續追蹤或匯出。',deliverableThreeTitle:'Follow-up email',deliverableThreePointOne:'專業語氣，後續只需少量修飾。',deliverableThreePointTwo:'適用於內部 recap 或客戶跟進。',deliverableThreePointThree:'可直接在同頁複製使用。',useCasesTitle:'常見使用情境',useCasesDesc:'適合內部同步、客戶會議、專案檢討，以及工廠或營運協調場景。',useCaseOneTitle:'專案檢討',useCaseOneDesc:'快速整理 decisions、blockers 與 next steps，不必人工重排會議記錄。',useCaseTwoTitle:'客戶跟進',useCaseTwoDesc:'同時產出會後 email 與內部行動項目，減少雙重整理。',useCaseThreeTitle:'營運交接',useCaseThreeDesc:'把混合語言的 notes 轉成更清楚的執行包。',uiLanguageTitle:'介面語言 vs 輸出語言',uiLanguageDesc:'這份 index 支援中英介面切換，同時把結果輸出語言保留為表單中的獨立選項。也就是說，使用者可以用英文介面操作，但要求 workflow 回傳繁中結果，反之亦然。',trustTitle:'這份 index 已支援的重點',trustDesc:'UI 語言與 API 用來生成內容的語言欄位彼此分開，產品邏輯更清楚。',trustCardOneTitle:'介面切換器',trustCardOneDesc:'Header、區塊文案、labels、helper text 與狀態訊息都可在英文與繁中之間切換。',trustCardTwoTitle:'穩定的 backend contract',trustCardTwoDesc:'送出 payload 時仍使用 output language 給 agents，因此單純做 UI 雙語不需要改 backend。',trustCardThreeTitle:'Workspace-first 版型',trustCardThreeDesc:'這頁同時可作為產品首頁與 Netlify function 的 live demo 頁面。',workspaceTitle:'即時工作區',workspaceDesc:'貼上會議記錄、選擇輸出語言，並在同一頁直接執行 workflow。',fieldMeetingTitle:'會議標題',fieldMeetingType:'會議類型',fieldOutputLanguage:'輸出語言',fieldOutputMode:'輸出模式',fieldNotes:'會議記錄',meetingTypeProject:'專案同步',meetingTypeClient:'客戶跟進',meetingTypeOperations:'營運檢討',meetingTypeInternal:'內部對齊',outputModeFull:'完整 meeting pack',outputModeSummary:'僅摘要',outputModeActions:'僅行動項目',runWorkflow:'執行工作流',loadSample:'載入範例',clearForm:'清空',workspaceHelper:'介面語言只影響本頁顯示；輸出語言才會控制生成結果。',resultsTitle:'生成結果',resultsDesc:'Netlify function 回傳後，結果會顯示在這裡。',copyMarkdown:'複製 Markdown',copyEmail:'複製 Email',calloutTitle:'預期的 function endpoint',calloutDesc:'這份 index 會送出到 /.netlify/functions/multi-agent-run，並預期回傳 summary、decisions、action_items 與 follow_up_email 等 artifacts。',summaryTitle:'摘要',decisionsTitle:'決策重點',actionsTitle:'行動項目',emailTitle:'Follow-up email',footerLeft:'Meeting Workspace — 具雙語介面與 live workflow demo 的 SaaS 首頁。',footerRight:'把介面語言與結果語言拆開，產品邏輯會更乾淨。',statusRunning:'工作流執行中...',statusSuccess:'工作流完成。',statusError:'工作流請求失敗。',statusCopiedMarkdown:'已複製 Markdown。',statusCopiedEmail:'已複製 Email。',statusNothingToCopy:'目前沒有可複製的內容。',statusFormCleared:'已清空表單。',sampleMeetingTitle:'每週生產同步會議',sampleNotes:'設計團隊確認 A-104 款式的新版 trim card。Sample room 會在星期五前更新 BOM。Merchandising 將於明天發出修訂後的 vendor timeline。Logistics 提出 navy 色布料 booking 可能延遲三天的風險。團隊決定在下一次客戶更新中主動說明 booking 狀態，並準備替代交期方案。'}};
+    const state={uiLanguage:'en',theme:window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light',latestArtifacts:{summary:'',decisions:[],action_items:[],follow_up_email:''}};
+    const els={html:document.documentElement,uiLangButtons:document.querySelectorAll('[data-ui-lang]'),themeToggle:document.querySelector('[data-theme-toggle]'),i18nNodes:document.querySelectorAll('[data-i18n]'),form:document.getElementById('meetingForm'),meetingTitle:document.getElementById('meetingTitle'),meetingType:document.getElementById('meetingType'),outputLanguage:document.getElementById('outputLanguage'),outputMode:document.getElementById('outputMode'),notes:document.getElementById('notes'),status:document.getElementById('statusMessage'),submitButton:document.getElementById('submitButton'),loadSample:document.getElementById('loadSample'),clearForm:document.getElementById('clearForm'),copyMarkdown:document.getElementById('copyMarkdown'),copyEmail:document.getElementById('copyEmail'),summaryOutput:document.getElementById('summaryOutput'),decisionsOutput:document.getElementById('decisionsOutput'),actionsOutput:document.getElementById('actionsOutput'),emailOutput:document.getElementById('emailOutput')};
+    function t(key){return translations[state.uiLanguage][key]||translations.en[key]||key}
+    function setStatus(key,type){els.status.textContent=t(key);els.status.className='status'+(type?' '+type:'')}
+    function renderTranslations(){els.html.lang=state.uiLanguage==='zh-Hant'?'zh-Hant':'en';els.i18nNodes.forEach((node)=>{const key=node.dataset.i18n;if(translations[state.uiLanguage][key])node.textContent=translations[state.uiLanguage][key]});els.uiLangButtons.forEach((button)=>button.classList.toggle('active',button.dataset.uiLang===state.uiLanguage));if(!els.meetingTitle.value||els.meetingTitle.dataset.sampleFilled==='true')els.meetingTitle.placeholder=t('sampleMeetingTitle');if(!els.notes.value||els.notes.dataset.sampleFilled==='true')els.notes.placeholder=t('fieldNotes')}
+    function setTheme(theme){state.theme=theme;els.html.setAttribute('data-theme',theme);els.themeToggle.textContent=theme==='dark'?'☀':'☾';els.themeToggle.setAttribute('aria-label',theme==='dark'?'Switch to light mode':'Switch to dark mode')}
+    function renderList(container,items,formatter){container.innerHTML='';if(!Array.isArray(items)||!items.length)return;items.forEach((item)=>{const li=document.createElement('li');li.textContent=formatter(item);container.appendChild(li)})}
+    function normalizeArtifacts(data){const artifacts=data&&data.artifacts?data.artifacts:{};const review=data&&data.review?data.review:{};const fixed=review&&review.fixed_output?review.fixed_output:{};const merged={summary:fixed.summary||artifacts.summary||'',decisions:Array.isArray(fixed.decisions)?fixed.decisions:Array.isArray(artifacts.decisions)?artifacts.decisions:[],action_items:Array.isArray(fixed.action_items)?fixed.action_items:Array.isArray(artifacts.action_items)?artifacts.action_items:[],follow_up_email:fixed.follow_up_email||artifacts.follow_up_email||artifacts.email_body||''};if(!merged.follow_up_email&&data&&typeof data.email_body==='string')merged.follow_up_email=data.email_body;if(!merged.summary&&data&&typeof data.summary==='string')merged.summary=data.summary;if(!merged.decisions.length&&data&&Array.isArray(data.decisions))merged.decisions=data.decisions;if(!merged.action_items.length&&data&&Array.isArray(data.action_items))merged.action_items=data.action_items;return merged}
+    function renderArtifacts(artifacts){state.latestArtifacts={summary:artifacts.summary||'',decisions:Array.isArray(artifacts.decisions)?artifacts.decisions:[],action_items:Array.isArray(artifacts.action_items)?artifacts.action_items:[],follow_up_email:artifacts.follow_up_email||artifacts.email_body||''};els.summaryOutput.textContent=state.latestArtifacts.summary;els.emailOutput.textContent=state.latestArtifacts.follow_up_email;renderList(els.decisionsOutput,state.latestArtifacts.decisions,(item)=>item);renderList(els.actionsOutput,state.latestArtifacts.action_items,(item)=>{if(typeof item==='string')return item;const parts=[item.task||''];if(item.owner)parts.push('Owner: '+item.owner);if(item.due_date)parts.push('Due: '+item.due_date);if(item.priority)parts.push('Priority: '+item.priority);return parts.filter(Boolean).join(' | ')})}
+    function buildMarkdown(){const a=state.latestArtifacts;const lines=[];if(a.summary){lines.push('# '+t('summaryTitle'));lines.push(a.summary,'')}if(a.decisions.length){lines.push('# '+t('decisionsTitle'));a.decisions.forEach((item)=>lines.push('- '+item));lines.push('')}if(a.action_items.length){lines.push('# '+t('actionsTitle'));a.action_items.forEach((item)=>{if(typeof item==='string'){lines.push('- '+item)}else{const detail=[item.task||''];if(item.owner)detail.push('owner: '+item.owner);if(item.due_date)detail.push('due: '+item.due_date);if(item.priority)detail.push('priority: '+item.priority);lines.push('- '+detail.join(' | '))}});lines.push('')}if(a.follow_up_email){lines.push('# '+t('emailTitle'));lines.push(a.follow_up_email)}return lines.join('\n').trim()}
+    async function copyText(text,successKey){if(!text){setStatus('statusNothingToCopy','error');return}try{await navigator.clipboard.writeText(text);setStatus(successKey,'success')}catch(error){setStatus('statusError','error')}}
+    function loadSampleData(){els.meetingTitle.value=t('sampleMeetingTitle');els.meetingTitle.dataset.sampleFilled='true';els.notes.value=t('sampleNotes');els.notes.dataset.sampleFilled='true'}
+    function clearOutputs(){renderArtifacts({})}
+    els.uiLangButtons.forEach((button)=>button.addEventListener('click',()=>{state.uiLanguage=button.dataset.uiLang;renderTranslations()}));
+    els.themeToggle.addEventListener('click',()=>setTheme(state.theme==='dark'?'light':'dark'));
+    els.loadSample.addEventListener('click',()=>loadSampleData());
+    els.clearForm.addEventListener('click',()=>{els.form.reset();els.outputLanguage.value='English';els.outputMode.value='full_meeting_pack';clearOutputs();setStatus('statusFormCleared','success')});
+    els.copyMarkdown.addEventListener('click',()=>copyText(buildMarkdown(),'statusCopiedMarkdown'));
+    els.copyEmail.addEventListener('click',()=>copyText(state.latestArtifacts.follow_up_email,'statusCopiedEmail'));
+    els.form.addEventListener('submit',async(event)=>{event.preventDefault();setStatus('statusRunning');els.submitButton.disabled=true;const payload={meetingTitle:els.meetingTitle.value.trim(),meetingType:els.meetingType.value,outputMode:els.outputMode.value,language:els.outputLanguage.value,uiLanguage:state.uiLanguage,notes:els.notes.value.trim()};try{const response=await fetch('/.netlify/functions/multi-agent-run',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const data=await response.json();console.log('multi-agent-run response:',data);if(!response.ok)throw new Error('Request failed');const normalized=normalizeArtifacts(data);renderArtifacts(normalized);if(!normalized.summary&&!normalized.decisions.length&&!normalized.action_items.length&&!normalized.follow_up_email){setStatus('statusError','error')}else{setStatus('statusSuccess','success')}}catch(error){console.error(error);clearOutputs();setStatus('statusError','error')}finally{els.submitButton.disabled=false}});
+    setTheme(state.theme);renderTranslations();clearOutputs();loadSampleData();
   </script>
 </body>
 </html>
