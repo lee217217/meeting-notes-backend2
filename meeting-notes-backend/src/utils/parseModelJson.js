@@ -1,23 +1,41 @@
 function parseModelJson(text) {
   if (!text || typeof text !== 'string') {
-    throw new Error('Model response is empty or not a string');
+    return {
+      ok: false,
+      data: null,
+      error: 'Model response is empty or not a string'
+    };
   }
 
   const trimmed = text.trim();
 
   try {
-    return JSON.parse(trimmed);
+    return {
+      ok: true,
+      data: JSON.parse(trimmed)
+    };
   } catch (error) {
-    const match = trimmed.match(/\{[\s\S]*\}|\[[\s\S]*\]/);
+    try {
+      const match = trimmed.match(/\{[\s\S]*\}|\[[\s\S]*\]/);
 
-    if (!match) {
-      throw new Error('Unable to locate JSON in model response');
+      if (!match) {
+        return {
+          ok: false,
+          data: null,
+          error: 'Unable to locate JSON in model response'
+        };
+      }
+
+      return {
+        ok: true,
+        data: JSON.parse(match[0])
+      };
+    } catch (innerError) {
+      return {
+        ok: false,
+        data: null,
+        error: innerError.message || 'JSON parse failed'
+      };
     }
-
-    return JSON.parse(match[0]);
   }
 }
-
-module.exports = {
-  parseModelJson
-};

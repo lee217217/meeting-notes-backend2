@@ -41,9 +41,7 @@ async function runSummarizerAgent(payload) {
   });
 
   const parsed = parseModelJson(response.text);
-  const data = parsed.ok && parsed.data && typeof parsed.data === 'object'
-    ? parsed.data
-    : {};
+  const data = parsed && typeof parsed === 'object' ? parsed : {};
 
   return {
     agent: 'meeting_summarizer',

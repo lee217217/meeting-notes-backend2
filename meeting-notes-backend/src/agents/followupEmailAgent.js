@@ -44,9 +44,7 @@ async function runFollowupEmailAgent(payload, summarizerResult, actionItemResult
   });
 
   const parsed = parseModelJson(response.text);
-  const data = parsed.ok && parsed.data && typeof parsed.data === 'object'
-    ? parsed.data
-    : {};
+  const data = parsed && typeof parsed === 'object' ? parsed : {};
 
   return {
     agent: 'followup_email_agent',

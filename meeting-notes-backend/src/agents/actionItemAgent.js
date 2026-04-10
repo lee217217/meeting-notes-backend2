@@ -19,13 +19,13 @@ async function runActionItemAgent(payload, summarizerResult) {
         'Output format:',
         '{',
         ' "action_items": [',
-        '   {',
-        '     "task": "string",',
-        '     "owner": "string",',
-        '     "due_date": "string",',
-        '     "priority": "High|Medium|Low",',
-        '     "source_evidence": "string"',
-        '   }',
+        ' {',
+        ' "task": "string",',
+        ' "owner": "string",',
+        ' "due_date": "string",',
+        ' "priority": "High|Medium|Low",',
+        ' "source_evidence": "string"',
+        ' }',
         ' ]',
         '}'
       ].join(' ')
@@ -52,9 +52,7 @@ async function runActionItemAgent(payload, summarizerResult) {
   });
 
   const parsed = parseModelJson(response.text);
-  const data = parsed.ok && parsed.data && typeof parsed.data === 'object'
-    ? parsed.data
-    : {};
+  const data = parsed && typeof parsed === 'object' ? parsed : {};
 
   const actionItems = Array.isArray(data.action_items)
     ? data.action_items.map(function (item) {

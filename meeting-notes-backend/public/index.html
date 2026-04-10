@@ -235,7 +235,18 @@ if (
   throw new Error('Workflow returned empty artifacts');
 }
 
-setStatus('statusSuccess', 'success');}catch(error){console.error(error);clearOutputs();setStatus('statusError','error')}finally{els.submitButton.disabled=false}});
+setStatus('statusSuccess', 'success');} catch (error) {
+  console.error(error);
+  clearOutputs();
+  const message =
+    error && error.message
+      ? error.message
+      : 'The workflow request failed.';
+  els.statusMessage.textContent = message;
+  els.statusMessage.className = 'status error';
+} finally {
+  els.submitButton.disabled = false;
+}});
     setTheme(state.theme);renderTranslations();clearOutputs();loadSampleData();
   </script>
 </body>

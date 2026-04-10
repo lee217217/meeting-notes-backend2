@@ -20,17 +20,17 @@ async function runQaReviewAgent(payload, artifacts) {
         ' "review_status": "pass or fail",',
         ' "issues": ["string"],',
         ' "fixed_output": {',
-        '   "summary": "string",',
-        '   "action_items": [',
-        '     {',
-        '       "task": "string",',
-        '       "owner": "string",',
-        '       "due_date": "string",',
-        '       "priority": "High|Medium|Low",',
-        '       "source_evidence": "string"',
-        '     }',
-        '   ],',
-        '   "follow_up_email": "string"',
+        ' "summary": "string",',
+        ' "action_items": [',
+        ' {',
+        ' "task": "string",',
+        ' "owner": "string",',
+        ' "due_date": "string",',
+        ' "priority": "High|Medium|Low",',
+        ' "source_evidence": "string"',
+        ' }',
+        ' ],',
+        ' "follow_up_email": "string"',
         ' }',
         '}'
       ].join(' ')
@@ -62,9 +62,7 @@ async function runQaReviewAgent(payload, artifacts) {
   });
 
   const parsed = parseModelJson(response.text);
-  const data = parsed.ok && parsed.data && typeof parsed.data === 'object'
-    ? parsed.data
-    : {};
+  const data = parsed && typeof parsed === 'object' ? parsed : {};
   const fixedOutput =
     data.fixed_output && typeof data.fixed_output === 'object'
       ? data.fixed_output
