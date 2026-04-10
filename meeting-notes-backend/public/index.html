@@ -140,150 +140,596 @@
     <div class="container footer-row"><span data-i18n="footerLeft">Meeting Workspace — bilingual SaaS landing page with live workflow demo.</span><span data-i18n="footerRight">Keep UI language and result language separate for cleaner product logic.</span></div>
   </footer>
   <script>
-    const translations={en:{skipToContent:'Skip to content',navDemo:'Live demo',navCta:'Try the workspace',eyebrow:'Built for post-meeting execution',heroTitle:'Turn meeting notes into aligned next steps.',heroDesc:'Generate structured summaries, decisions, action items, and follow-up emails in one workspace so teams can move from discussion to delivery faster.',heroPrimary:'Open live workspace',heroSecondary:'See deliverables',metricOneValue:'4 outputs',metricOneLabel:'Summary, actions, decisions, and email draft.',metricTwoValue:'2 language layers',metricTwoLabel:'UI language and output language stay separate.',metricThreeValue:'1 workflow',metricThreeLabel:'One submission powers the full meeting pack.',panelLabel:'Workflow preview',panelStatus:'Ready',flowOneTitle:'Summarize the meeting',flowOneDesc:'Extract the main discussion, decisions, and unresolved questions from raw notes.',flowTwoTitle:'Create action items',flowTwoDesc:'Turn discussion into task, owner, due date, priority, and source evidence.',flowThreeTitle:'Draft the follow-up',flowThreeDesc:'Prepare a concise professional email that can be sent or edited right away.',problemTitle:'Why teams use it',problemDesc:'Most meetings end with scattered notes and unclear ownership. This workflow standardizes the handoff from conversation to execution.',problemCardOneTitle:'Less manual cleanup',problemCardOneDesc:'No more rewriting notes into another document just to extract tasks and status updates.',problemCardTwoTitle:'Clearer accountability',problemCardTwoDesc:'Owners, due dates, and source evidence are structured so teams know what to follow up on.',problemCardThreeTitle:'Faster follow-through',problemCardThreeDesc:'A ready-to-edit follow-up email reduces delay between the meeting and the next action.',deliverablesTitle:'Deliverables in one run',deliverablesDesc:'The page is designed like a SaaS workspace, but the output stays practical for real operating teams.',deliverableOneTitle:'Structured summary',deliverableOnePointOne:'Short summary for quick review.',deliverableOnePointTwo:'Key points and decisions separated for clarity.',deliverableOnePointThree:'Open questions surfaced for follow-up.',deliverableTwoTitle:'Action items',deliverableTwoPointOne:'Task, owner, due date, priority.',deliverableTwoPointTwo:'Evidence linked back to the meeting content.',deliverableTwoPointThree:'Designed for downstream tracking or export.',deliverableThreeTitle:'Follow-up email',deliverableThreePointOne:'Professional tone with minimal cleanup.',deliverableThreePointTwo:'Useful for internal recap or client follow-up.',deliverableThreePointThree:'Copy-ready from the same workspace.',useCasesTitle:'Typical use cases',useCasesDesc:'Useful for internal syncs, customer meetings, project reviews, and factory or operations coordination.',useCaseOneTitle:'Project reviews',useCaseOneDesc:'Capture decisions, blockers, and next steps without manually reformatting notes.',useCaseTwoTitle:'Client follow-up',useCaseTwoDesc:'Create a clean post-meeting email and align internal action items at the same time.',useCaseThreeTitle:'Operations handoff',useCaseThreeDesc:'Turn mixed-language notes into a clearer package for execution teams.',uiLanguageTitle:'UI language vs output language',uiLanguageDesc:'This index supports bilingual interface switching while keeping the result language as a separate option in the form. That means a user can browse in English and still ask the workflow to return Traditional Chinese output, or the other way around.',trustTitle:'What this index already supports',trustDesc:'The UI keeps language selection separate from the API payload used for generated meeting content.',trustCardOneTitle:'Interface switcher',trustCardOneDesc:'Header, section copy, labels, helper text, and status messages switch between English and Traditional Chinese.',trustCardTwoTitle:'Stable backend contract',trustCardTwoDesc:'The submit payload still uses the output language field for agents, so you do not need backend changes just for UI bilingual support.',trustCardThreeTitle:'Workspace-first layout',trustCardThreeDesc:'The page works as both a product homepage and a live demo surface for your Netlify function.',workspaceTitle:'Live workspace',workspaceDesc:'Paste meeting notes, choose the output language, and run the workflow from the same page.',fieldMeetingTitle:'Meeting title',fieldMeetingType:'Meeting type',fieldOutputLanguage:'Output language',fieldOutputMode:'Output mode',fieldNotes:'Meeting notes',meetingTypeProject:'Project sync',meetingTypeClient:'Client follow-up',meetingTypeOperations:'Operations review',meetingTypeInternal:'Internal alignment',outputModeFull:'Full meeting pack',outputModeSummary:'Summary only',outputModeActions:'Action items only',runWorkflow:'Run workflow',loadSample:'Load sample',clearForm:'Clear',workspaceHelper:'UI language affects this page only. Output language controls the generated result.',resultsTitle:'Generated results',resultsDesc:'Results appear here after the Netlify function returns.',copyMarkdown:'Copy markdown',copyEmail:'Copy email',calloutTitle:'Expected function endpoint',calloutDesc:'This index submits to /.netlify/functions/multi-agent-run and expects artifacts like summary, decisions, action_items, and follow_up_email.',summaryTitle:'Summary',decisionsTitle:'Decisions',actionsTitle:'Action items',emailTitle:'Follow-up email',footerLeft:'Meeting Workspace — bilingual SaaS landing page with live workflow demo.',footerRight:'Keep UI language and result language separate for cleaner product logic.',statusRunning:'Running workflow...',statusSuccess:'Workflow complete.',statusError:'The workflow request failed.',statusCopiedMarkdown:'Markdown copied.',statusCopiedEmail:'Email copied.',statusNothingToCopy:'There is no content to copy yet.',statusFormCleared:'Form cleared.',sampleMeetingTitle:'Weekly production sync',sampleNotes:'Design team confirmed the revised trim card for style A-104. Sample room will update the BOM by Friday. Merchandising will send the revised vendor timeline tomorrow. Logistics raised a risk that the fabric booking for color navy may slip by three days. Team agreed to escalate booking status in the next client update and prepare an alternative delivery scenario.'},'zh-Hant':{skipToContent:'跳至主要內容',navDemo:'即時示範',navCta:'開啟工作區',eyebrow:'專為會後執行而設計',heroTitle:'把會議記錄轉成明確下一步。',heroDesc:'在同一個工作區中，自動產出結構化摘要、決策重點、行動項目與 follow-up email，讓團隊更快從討論進入執行。',heroPrimary:'開啟即時工作區',heroSecondary:'查看輸出內容',metricOneValue:'4 種輸出',metricOneLabel:'摘要、待辦、決策與 email 草稿。',metricTwoValue:'2 層語言設定',metricTwoLabel:'介面語言與輸出語言彼此分離。',metricThreeValue:'1 次提交',metricThreeLabel:'一次送出即可產生完整 meeting pack。',panelLabel:'工作流程預覽',panelStatus:'已就緒',flowOneTitle:'產出會議摘要',flowOneDesc:'從原始 notes 擷取主要討論、決策與待釐清問題。',flowTwoTitle:'建立行動項目',flowTwoDesc:'把討論整理成 task、owner、due date、priority 與 source evidence。',flowThreeTitle:'草擬 follow-up',flowThreeDesc:'快速產生可直接編修或寄出的專業 follow-up email。',problemTitle:'團隊為何會用它',problemDesc:'多數會議最後只留下零散筆記與不明確的責任歸屬。這個 workflow 讓討論到執行的交接更標準化。',problemCardOneTitle:'減少人工整理',problemCardOneDesc:'不用再把會議筆記重寫到另一份文件，才開始整理 task 與狀態。',problemCardTwoTitle:'責任更清楚',problemCardTwoDesc:'owner、due date 與 source evidence 都有結構化輸出，方便追蹤。',problemCardThreeTitle:'後續更快落地',problemCardThreeDesc:'直接可編修的 follow-up email，能縮短會後到執行的空窗時間。',deliverablesTitle:'一次執行的輸出內容',deliverablesDesc:'這個頁面有 SaaS workspace 的感覺，但輸出仍然以真實營運團隊可用為主。',deliverableOneTitle:'結構化摘要',deliverableOnePointOne:'先用短摘要快速掌握重點。',deliverableOnePointTwo:'把 key points 與 decisions 分開呈現。',deliverableOnePointThree:'把未解決問題一併拉出來。',deliverableTwoTitle:'行動項目',deliverableTwoPointOne:'包含 task、owner、due date、priority。',deliverableTwoPointTwo:'可回溯到會議內容的 source evidence。',deliverableTwoPointThree:'便於後續追蹤或匯出。',deliverableThreeTitle:'Follow-up email',deliverableThreePointOne:'專業語氣，後續只需少量修飾。',deliverableThreePointTwo:'適用於內部 recap 或客戶跟進。',deliverableThreePointThree:'可直接在同頁複製使用。',useCasesTitle:'常見使用情境',useCasesDesc:'適合內部同步、客戶會議、專案檢討，以及工廠或營運協調場景。',useCaseOneTitle:'專案檢討',useCaseOneDesc:'快速整理 decisions、blockers 與 next steps，不必人工重排會議記錄。',useCaseTwoTitle:'客戶跟進',useCaseTwoDesc:'同時產出會後 email 與內部行動項目，減少雙重整理。',useCaseThreeTitle:'營運交接',useCaseThreeDesc:'把混合語言的 notes 轉成更清楚的執行包。',uiLanguageTitle:'介面語言 vs 輸出語言',uiLanguageDesc:'這份 index 支援中英介面切換，同時把結果輸出語言保留為表單中的獨立選項。也就是說，使用者可以用英文介面操作，但要求 workflow 回傳繁中結果，反之亦然。',trustTitle:'這份 index 已支援的重點',trustDesc:'UI 語言與 API 用來生成內容的語言欄位彼此分開，產品邏輯更清楚。',trustCardOneTitle:'介面切換器',trustCardOneDesc:'Header、區塊文案、labels、helper text 與狀態訊息都可在英文與繁中之間切換。',trustCardTwoTitle:'穩定的 backend contract',trustCardTwoDesc:'送出 payload 時仍使用 output language 給 agents，因此單純做 UI 雙語不需要改 backend。',trustCardThreeTitle:'Workspace-first 版型',trustCardThreeDesc:'這頁同時可作為產品首頁與 Netlify function 的 live demo 頁面。',workspaceTitle:'即時工作區',workspaceDesc:'貼上會議記錄、選擇輸出語言，並在同一頁直接執行 workflow。',fieldMeetingTitle:'會議標題',fieldMeetingType:'會議類型',fieldOutputLanguage:'輸出語言',fieldOutputMode:'輸出模式',fieldNotes:'會議記錄',meetingTypeProject:'專案同步',meetingTypeClient:'客戶跟進',meetingTypeOperations:'營運檢討',meetingTypeInternal:'內部對齊',outputModeFull:'完整 meeting pack',outputModeSummary:'僅摘要',outputModeActions:'僅行動項目',runWorkflow:'執行工作流',loadSample:'載入範例',clearForm:'清空',workspaceHelper:'介面語言只影響本頁顯示；輸出語言才會控制生成結果。',resultsTitle:'生成結果',resultsDesc:'Netlify function 回傳後，結果會顯示在這裡。',copyMarkdown:'複製 Markdown',copyEmail:'複製 Email',calloutTitle:'預期的 function endpoint',calloutDesc:'這份 index 會送出到 /.netlify/functions/multi-agent-run，並預期回傳 summary、decisions、action_items 與 follow_up_email 等 artifacts。',summaryTitle:'摘要',decisionsTitle:'決策重點',actionsTitle:'行動項目',emailTitle:'Follow-up email',footerLeft:'Meeting Workspace — 具雙語介面與 live workflow demo 的 SaaS 首頁。',footerRight:'把介面語言與結果語言拆開，產品邏輯會更乾淨。',statusRunning:'工作流執行中...',statusSuccess:'工作流完成。',statusError:'工作流請求失敗。',statusCopiedMarkdown:'已複製 Markdown。',statusCopiedEmail:'已複製 Email。',statusNothingToCopy:'目前沒有可複製的內容。',statusFormCleared:'已清空表單。',sampleMeetingTitle:'每週生產同步會議',sampleNotes:'設計團隊確認 A-104 款式的新版 trim card。Sample room 會在星期五前更新 BOM。Merchandising 將於明天發出修訂後的 vendor timeline。Logistics 提出 navy 色布料 booking 可能延遲三天的風險。團隊決定在下一次客戶更新中主動說明 booking 狀態，並準備替代交期方案。'}};
-    const state={uiLanguage:'en',theme:window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light',latestArtifacts:{summary:'',decisions:[],action_items:[],follow_up_email:''}};
-    const els={html:document.documentElement,uiLangButtons:document.querySelectorAll('[data-ui-lang]'),themeToggle:document.querySelector('[data-theme-toggle]'),i18nNodes:document.querySelectorAll('[data-i18n]'),form:document.getElementById('meetingForm'),meetingTitle:document.getElementById('meetingTitle'),meetingType:document.getElementById('meetingType'),outputLanguage:document.getElementById('outputLanguage'),outputMode:document.getElementById('outputMode'),notes:document.getElementById('notes'),status:document.getElementById('statusMessage'),submitButton:document.getElementById('submitButton'),loadSample:document.getElementById('loadSample'),clearForm:document.getElementById('clearForm'),copyMarkdown:document.getElementById('copyMarkdown'),copyEmail:document.getElementById('copyEmail'),summaryOutput:document.getElementById('summaryOutput'),decisionsOutput:document.getElementById('decisionsOutput'),actionsOutput:document.getElementById('actionsOutput'),emailOutput:document.getElementById('emailOutput')};
-    function t(key){return translations[state.uiLanguage][key]||translations.en[key]||key}
-    function setStatus(key,type){els.status.textContent=t(key);els.status.className='status'+(type?' '+type:'')}
-    function renderTranslations(){els.html.lang=state.uiLanguage==='zh-Hant'?'zh-Hant':'en';els.i18nNodes.forEach((node)=>{const key=node.dataset.i18n;if(translations[state.uiLanguage][key])node.textContent=translations[state.uiLanguage][key]});els.uiLangButtons.forEach((button)=>button.classList.toggle('active',button.dataset.uiLang===state.uiLanguage));if(!els.meetingTitle.value||els.meetingTitle.dataset.sampleFilled==='true')els.meetingTitle.placeholder=t('sampleMeetingTitle');if(!els.notes.value||els.notes.dataset.sampleFilled==='true')els.notes.placeholder=t('fieldNotes')}
-    function setTheme(theme){state.theme=theme;els.html.setAttribute('data-theme',theme);els.themeToggle.textContent=theme==='dark'?'☀':'☾';els.themeToggle.setAttribute('aria-label',theme==='dark'?'Switch to light mode':'Switch to dark mode')}
-    function renderList(container,items,formatter){container.innerHTML='';if(!Array.isArray(items)||!items.length)return;items.forEach((item)=>{const li=document.createElement('li');li.textContent=formatter(item);container.appendChild(li)})}
-    function normalizeArtifacts(responseJson) {
-  const root =
-    responseJson && responseJson.data && typeof responseJson.data === 'object'
-      ? responseJson.data
-      : responseJson || {};
-
-  const artifacts =
-    root && root.artifacts && typeof root.artifacts === 'object'
-      ? root.artifacts
-      : {};
-
-  const review =
-    root && root.review && typeof root.review === 'object'
-      ? root.review
-      : {};
-
-  const fixed =
-    review && review.fixed_output && typeof review.fixed_output === 'object'
-      ? review.fixed_output
-      : {};
-
-  const merged = {
-    summary:
-      fixed.summary ||
-      artifacts.summary ||
-      (typeof root.summary === 'string' ? root.summary : '') ||
-      '',
-    decisions: Array.isArray(fixed.decisions)
-      ? fixed.decisions
-      : Array.isArray(artifacts.decisions)
-        ? artifacts.decisions
-        : Array.isArray(root.decisions)
-          ? root.decisions
-          : [],
-    action_items: Array.isArray(fixed.action_items)
-      ? fixed.action_items
-      : Array.isArray(artifacts.action_items)
-        ? artifacts.action_items
-        : Array.isArray(root.action_items)
-          ? root.action_items
-          : [],
-    follow_up_email:
-      fixed.follow_up_email ||
-      artifacts.follow_up_email ||
-      artifacts.email_body ||
-      (typeof root.follow_up_email === 'string' ? root.follow_up_email : '') ||
-      (typeof root.email_body === 'string' ? root.email_body : '') ||
-      ''
+  const translations = {
+    en: {
+      skipToContent: 'Skip to content',
+      navDemo: 'Live demo',
+      navCta: 'Try the workspace',
+      eyebrow: 'Built for post-meeting execution',
+      heroTitle: 'Turn meeting notes into aligned next steps.',
+      heroDesc: 'Generate structured summaries, decisions, action items, and follow-up emails in one workspace so teams can move from discussion to delivery faster.',
+      heroPrimary: 'Open live workspace',
+      heroSecondary: 'See deliverables',
+      metricOneValue: '4 outputs',
+      metricOneLabel: 'Summary, actions, decisions, and email draft.',
+      metricTwoValue: '2 language layers',
+      metricTwoLabel: 'UI language and output language stay separate.',
+      metricThreeValue: '1 workflow',
+      metricThreeLabel: 'One submission powers the full meeting pack.',
+      panelLabel: 'Workflow preview',
+      panelStatus: 'Ready',
+      flowOneTitle: 'Summarize the meeting',
+      flowOneDesc: 'Extract the main discussion, decisions, and unresolved questions from raw notes.',
+      flowTwoTitle: 'Create action items',
+      flowTwoDesc: 'Turn discussion into task, owner, due date, priority, and source evidence.',
+      flowThreeTitle: 'Draft the follow-up',
+      flowThreeDesc: 'Prepare a concise professional email that can be sent or edited right away.',
+      problemTitle: 'Why teams use it',
+      problemDesc: 'Most meetings end with scattered notes and unclear ownership. This workflow standardizes the handoff from conversation to execution.',
+      problemCardOneTitle: 'Less manual cleanup',
+      problemCardOneDesc: 'No more rewriting notes into another document just to extract tasks and status updates.',
+      problemCardTwoTitle: 'Clearer accountability',
+      problemCardTwoDesc: 'Owners, due dates, and source evidence are structured so teams know what to follow up on.',
+      problemCardThreeTitle: 'Faster follow-through',
+      problemCardThreeDesc: 'A ready-to-edit follow-up email reduces delay between the meeting and the next action.',
+      deliverablesTitle: 'Deliverables in one run',
+      deliverablesDesc: 'The page is designed like a SaaS workspace, but the output stays practical for real operating teams.',
+      deliverableOneTitle: 'Structured summary',
+      deliverableOnePointOne: 'Short summary for quick review.',
+      deliverableOnePointTwo: 'Key points and decisions separated for clarity.',
+      deliverableOnePointThree: 'Open questions surfaced for follow-up.',
+      deliverableTwoTitle: 'Action items',
+      deliverableTwoPointOne: 'Task, owner, due date, priority.',
+      deliverableTwoPointTwo: 'Evidence linked back to the meeting content.',
+      deliverableTwoPointThree: 'Designed for downstream tracking or export.',
+      deliverableThreeTitle: 'Follow-up email',
+      deliverableThreePointOne: 'Professional tone with minimal cleanup.',
+      deliverableThreePointTwo: 'Useful for internal recap or client follow-up.',
+      deliverableThreePointThree: 'Copy-ready from the same workspace.',
+      useCasesTitle: 'Typical use cases',
+      useCasesDesc: 'Useful for internal syncs, customer meetings, project reviews, and factory or operations coordination.',
+      useCaseOneTitle: 'Project reviews',
+      useCaseOneDesc: 'Capture decisions, blockers, and next steps without manually reformatting notes.',
+      useCaseTwoTitle: 'Client follow-up',
+      useCaseTwoDesc: 'Create a clean post-meeting email and align internal action items at the same time.',
+      useCaseThreeTitle: 'Operations handoff',
+      useCaseThreeDesc: 'Turn mixed-language notes into a clearer package for execution teams.',
+      uiLanguageTitle: 'UI language vs output language',
+      uiLanguageDesc: 'This index supports bilingual interface switching while keeping the result language as a separate option in the form.',
+      trustTitle: 'What this index already supports',
+      trustDesc: 'The UI keeps language selection separate from the API payload used for generated meeting content.',
+      trustCardOneTitle: 'Interface switcher',
+      trustCardOneDesc: 'Header, section copy, labels, helper text, and status messages switch between English and Traditional Chinese.',
+      trustCardTwoTitle: 'Stable backend contract',
+      trustCardTwoDesc: 'The submit payload still uses the output language field for agents, so you do not need backend changes just for UI bilingual support.',
+      trustCardThreeTitle: 'Workspace-first layout',
+      trustCardThreeDesc: 'The page works as both a product homepage and a live demo surface for your Netlify function.',
+      workspaceTitle: 'Live workspace',
+      workspaceDesc: 'Paste meeting notes, choose the output language, and run the workflow from the same page.',
+      fieldMeetingTitle: 'Meeting title',
+      fieldMeetingType: 'Meeting type',
+      fieldOutputLanguage: 'Output language',
+      fieldOutputMode: 'Output mode',
+      fieldNotes: 'Meeting notes',
+      meetingTypeProject: 'Project sync',
+      meetingTypeClient: 'Client follow-up',
+      meetingTypeOperations: 'Operations review',
+      meetingTypeInternal: 'Internal alignment',
+      outputModeFull: 'Full meeting pack',
+      outputModeSummary: 'Summary only',
+      outputModeActions: 'Action items only',
+      runWorkflow: 'Run workflow',
+      loadSample: 'Load sample',
+      clearForm: 'Clear',
+      workspaceHelper: 'UI language affects this page only. Output language controls the generated result.',
+      resultsTitle: 'Generated results',
+      resultsDesc: 'Results appear here after the Netlify function returns.',
+      copyMarkdown: 'Copy markdown',
+      copyEmail: 'Copy email',
+      calloutTitle: 'Expected function endpoint',
+      calloutDesc: 'This index submits to /.netlify/functions/multi-agent-run and expects artifacts like summary, decisions, action_items, and follow_up_email.',
+      summaryTitle: 'Summary',
+      decisionsTitle: 'Decisions',
+      actionsTitle: 'Action items',
+      emailTitle: 'Follow-up email',
+      footerLeft: 'Meeting Workspace — bilingual SaaS landing page with live workflow demo.',
+      footerRight: 'Keep UI language and result language separate for cleaner product logic.',
+      statusRunning: 'Running workflow...',
+      statusSuccess: 'Workflow complete.',
+      statusError: 'The workflow request failed.',
+      statusCopiedMarkdown: 'Markdown copied.',
+      statusCopiedEmail: 'Email copied.',
+      statusNothingToCopy: 'There is no content to copy yet.',
+      statusFormCleared: 'Form cleared.',
+      sampleMeetingTitle: 'Weekly production sync',
+      sampleNotes: 'Design team confirmed the revised trim card for style A-104. Sample room will update the BOM by Friday. Merchandising will send the revised vendor timeline tomorrow. Logistics raised a risk that the fabric booking for color navy may slip by three days. Team agreed to escalate booking status in the next client update and prepare an alternative delivery scenario.'
+    },
+    'zh-Hant': {
+      skipToContent: '跳至主要內容',
+      navDemo: '即時示範',
+      navCta: '開啟工作區',
+      eyebrow: '專為會後執行而設計',
+      heroTitle: '把會議記錄轉成明確下一步。',
+      heroDesc: '在同一個工作區中，自動產出結構化摘要、決策重點、行動項目與 follow-up email，讓團隊更快從討論進入執行。',
+      heroPrimary: '開啟即時工作區',
+      heroSecondary: '查看輸出內容',
+      metricOneValue: '4 種輸出',
+      metricOneLabel: '摘要、待辦、決策與 email 草稿。',
+      metricTwoValue: '2 層語言設定',
+      metricTwoLabel: '介面語言與輸出語言彼此分離。',
+      metricThreeValue: '1 次提交',
+      metricThreeLabel: '一次送出即可產生完整 meeting pack。',
+      panelLabel: '工作流程預覽',
+      panelStatus: '已就緒',
+      flowOneTitle: '產出會議摘要',
+      flowOneDesc: '從原始 notes 擷取主要討論、決策與待釐清問題。',
+      flowTwoTitle: '建立行動項目',
+      flowTwoDesc: '把討論整理成 task、owner、due date、priority 與 source evidence。',
+      flowThreeTitle: '草擬 follow-up',
+      flowThreeDesc: '快速產生可直接編修或寄出的專業 follow-up email。',
+      problemTitle: '團隊為何會用它',
+      problemDesc: '多數會議最後只留下零散筆記與不明確的責任歸屬。這個 workflow 讓討論到執行的交接更標準化。',
+      problemCardOneTitle: '減少人工整理',
+      problemCardOneDesc: '不用再把會議筆記重寫到另一份文件，才開始整理 task 與狀態。',
+      problemCardTwoTitle: '責任更清楚',
+      problemCardTwoDesc: 'owner、due date 與 source evidence 都有結構化輸出，方便追蹤。',
+      problemCardThreeTitle: '後續更快落地',
+      problemCardThreeDesc: '直接可編修的 follow-up email，能縮短會後到執行的空窗時間。',
+      deliverablesTitle: '一次執行的輸出內容',
+      deliverablesDesc: '這個頁面有 SaaS workspace 的感覺，但輸出仍然以真實營運團隊可用為主。',
+      deliverableOneTitle: '結構化摘要',
+      deliverableOnePointOne: '先用短摘要快速掌握重點。',
+      deliverableOnePointTwo: '把 key points 與 decisions 分開呈現。',
+      deliverableOnePointThree: '把未解決問題一併拉出來。',
+      deliverableTwoTitle: '行動項目',
+      deliverableTwoPointOne: '包含 task、owner、due date、priority。',
+      deliverableTwoPointTwo: '可回溯到會議內容的 source evidence。',
+      deliverableTwoPointThree: '便於後續追蹤或匯出。',
+      deliverableThreeTitle: 'Follow-up email',
+      deliverableThreePointOne: '專業語氣，後續只需少量修飾。',
+      deliverableThreePointTwo: '適用於內部 recap 或客戶跟進。',
+      deliverableThreePointThree: '可直接在同頁複製使用。',
+      useCasesTitle: '常見使用情境',
+      useCasesDesc: '適合內部同步、客戶會議、專案檢討，以及工廠或營運協調場景。',
+      useCaseOneTitle: '專案檢討',
+      useCaseOneDesc: '快速整理 decisions、blockers 與 next steps，不必人工重排會議記錄。',
+      useCaseTwoTitle: '客戶跟進',
+      useCaseTwoDesc: '同時產出會後 email 與內部行動項目，減少雙重整理。',
+      useCaseThreeTitle: '營運交接',
+      useCaseThreeDesc: '把混合語言的 notes 轉成更清楚的執行包。',
+      uiLanguageTitle: '介面語言 vs 輸出語言',
+      uiLanguageDesc: '這份 index 支援中英介面切換，同時把結果輸出語言保留為表單中的獨立選項。',
+      trustTitle: '這份 index 已支援的重點',
+      trustDesc: 'UI 語言與 API 用來生成內容的語言欄位彼此分開，產品邏輯更清楚。',
+      trustCardOneTitle: '介面切換器',
+      trustCardOneDesc: 'Header、區塊文案、labels、helper text 與狀態訊息都可在英文與繁中之間切換。',
+      trustCardTwoTitle: '穩定的 backend contract',
+      trustCardTwoDesc: '送出 payload 時仍使用 output language 給 agents，因此單純做 UI 雙語不需要改 backend。',
+      trustCardThreeTitle: 'Workspace-first 版型',
+      trustCardThreeDesc: '這頁同時可作為產品首頁與 Netlify function 的 live demo 頁面。',
+      workspaceTitle: '即時工作區',
+      workspaceDesc: '貼上會議記錄、選擇輸出語言，並在同一頁直接執行 workflow。',
+      fieldMeetingTitle: '會議標題',
+      fieldMeetingType: '會議類型',
+      fieldOutputLanguage: '輸出語言',
+      fieldOutputMode: '輸出模式',
+      fieldNotes: '會議記錄',
+      meetingTypeProject: '專案同步',
+      meetingTypeClient: '客戶跟進',
+      meetingTypeOperations: '營運檢討',
+      meetingTypeInternal: '內部對齊',
+      outputModeFull: '完整 meeting pack',
+      outputModeSummary: '僅摘要',
+      outputModeActions: '僅行動項目',
+      runWorkflow: '執行工作流',
+      loadSample: '載入範例',
+      clearForm: '清空',
+      workspaceHelper: '介面語言只影響本頁顯示；輸出語言才會控制生成結果。',
+      resultsTitle: '生成結果',
+      resultsDesc: 'Netlify function 回傳後，結果會顯示在這裡。',
+      copyMarkdown: '複製 Markdown',
+      copyEmail: '複製 Email',
+      calloutTitle: '預期的 function endpoint',
+      calloutDesc: '這份 index 會送出到 /.netlify/functions/multi-agent-run，並預期回傳 summary、decisions、action_items 與 follow_up_email 等 artifacts。',
+      summaryTitle: '摘要',
+      decisionsTitle: '決策重點',
+      actionsTitle: '行動項目',
+      emailTitle: 'Follow-up email',
+      footerLeft: 'Meeting Workspace — 具雙語介面與 live workflow demo 的 SaaS 首頁。',
+      footerRight: '把介面語言與結果語言拆開，產品邏輯會更乾淨。',
+      statusRunning: '工作流執行中...',
+      statusSuccess: '工作流完成。',
+      statusError: '工作流請求失敗。',
+      statusCopiedMarkdown: '已複製 Markdown。',
+      statusCopiedEmail: '已複製 Email。',
+      statusNothingToCopy: '目前沒有可複製的內容。',
+      statusFormCleared: '已清空表單。',
+      sampleMeetingTitle: '每週生產同步會議',
+      sampleNotes: '設計團隊確認 A-104 款式的新版 trim card。Sample room 會在星期五前更新 BOM。Merchandising 將於明天發出修訂後的 vendor timeline。Logistics 提出 navy 色布料 booking 可能延遲三天的風險。團隊決定在下一次客戶更新中主動說明 booking 狀態，並準備替代交期方案。'
+    }
   };
 
-  return merged;
-}
-    function renderArtifacts(artifacts){state.latestArtifacts={summary:artifacts.summary||'',decisions:Array.isArray(artifacts.decisions)?artifacts.decisions:[],action_items:Array.isArray(artifacts.action_items)?artifacts.action_items:[],follow_up_email:artifacts.follow_up_email||artifacts.email_body||''};els.summaryOutput.textContent=state.latestArtifacts.summary;els.emailOutput.textContent=state.latestArtifacts.follow_up_email;renderList(els.decisionsOutput,state.latestArtifacts.decisions,(item)=>item);renderList(els.actionsOutput,state.latestArtifacts.action_items,(item)=>{if(typeof item==='string')return item;const parts=[item.task||''];if(item.owner)parts.push('Owner: '+item.owner);if(item.due_date)parts.push('Due: '+item.due_date);if(item.priority)parts.push('Priority: '+item.priority);return parts.filter(Boolean).join(' | ')})}
-    function buildMarkdown(){const a=state.latestArtifacts;const lines=[];if(a.summary){lines.push('# '+t('summaryTitle'));lines.push(a.summary,'')}if(a.decisions.length){lines.push('# '+t('decisionsTitle'));a.decisions.forEach((item)=>lines.push('- '+item));lines.push('')}if(a.action_items.length){lines.push('# '+t('actionsTitle'));a.action_items.forEach((item)=>{if(typeof item==='string'){lines.push('- '+item)}else{const detail=[item.task||''];if(item.owner)detail.push('owner: '+item.owner);if(item.due_date)detail.push('due: '+item.due_date);if(item.priority)detail.push('priority: '+item.priority);lines.push('- '+detail.join(' | '))}});lines.push('')}if(a.follow_up_email){lines.push('# '+t('emailTitle'));lines.push(a.follow_up_email)}return lines.join('\n').trim()}
-    async function copyText(text,successKey){if(!text){setStatus('statusNothingToCopy','error');return}try{await navigator.clipboard.writeText(text);setStatus(successKey,'success')}catch(error){setStatus('statusError','error')}}
-    function loadSampleData(){els.meetingTitle.value=t('sampleMeetingTitle');els.meetingTitle.dataset.sampleFilled='true';els.notes.value=t('sampleNotes');els.notes.dataset.sampleFilled='true'}
-    function clearOutputs(){renderArtifacts({})}
-    els.uiLangButtons.forEach((button)=>button.addEventListener('click',()=>{state.uiLanguage=button.dataset.uiLang;renderTranslations()}));
-    els.themeToggle.addEventListener('click',()=>setTheme(state.theme==='dark'?'light':'dark'));
-    els.loadSample.addEventListener('click',()=>loadSampleData());
-    els.clearForm.addEventListener('click',()=>{els.form.reset();els.outputLanguage.value='English';els.outputMode.value='full_meeting_pack';clearOutputs();setStatus('statusFormCleared','success')});
-    els.copyMarkdown.addEventListener('click',()=>copyText(buildMarkdown(),'statusCopiedMarkdown'));
-    els.copyEmail.addEventListener('click',()=>copyText(state.latestArtifacts.follow_up_email,'statusCopiedEmail'));
-    els.form.addEventListener('submit', async (event) => {
-  event.preventDefault();
-  setStatus('statusRunning');
-  els.submitButton.disabled = true;
-
-  const payload = {
-    meetingTitle: els.meetingTitle.value.trim(),
-    meetingType: els.meetingType.value,
-    outputMode: els.outputMode.value,
-    language: els.outputLanguage.value,
-    uiLanguage: state.uiLanguage,
-    notes: els.notes.value.trim()
+  const state = {
+    uiLanguage: 'en',
+    theme: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light',
+    latestArtifacts: {
+      summary: '',
+      decisions: [],
+      action_items: [],
+      follow_up_email: ''
+    }
   };
 
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 60000);
+  const els = {
+    html: document.documentElement,
+    uiLangButtons: document.querySelectorAll('[data-ui-lang]'),
+    themeToggle: document.querySelector('[data-theme-toggle]'),
+    i18nNodes: document.querySelectorAll('[data-i18n]'),
+    form: document.getElementById('meetingForm'),
+    meetingTitle: document.getElementById('meetingTitle'),
+    meetingType: document.getElementById('meetingType'),
+    outputLanguage: document.getElementById('outputLanguage'),
+    outputMode: document.getElementById('outputMode'),
+    notes: document.getElementById('notes'),
+    status: document.getElementById('statusMessage'),
+    submitButton: document.getElementById('submitButton'),
+    loadSample: document.getElementById('loadSample'),
+    clearForm: document.getElementById('clearForm'),
+    copyMarkdown: document.getElementById('copyMarkdown'),
+    copyEmail: document.getElementById('copyEmail'),
+    summaryOutput: document.getElementById('summaryOutput'),
+    decisionsOutput: document.getElementById('decisionsOutput'),
+    actionsOutput: document.getElementById('actionsOutput'),
+    emailOutput: document.getElementById('emailOutput')
+  };
 
-  try {
-    const response = await fetch('/.netlify/functions/multi-agent-run', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-      signal: controller.signal
+  function t(key) {
+    return translations[state.uiLanguage][key] || translations.en[key] || key;
+  }
+
+  function setStatus(key, type) {
+    els.status.textContent = t(key);
+    els.status.className = 'status' + (type ? ' ' + type : '');
+  }
+
+  function setStatusText(text, type) {
+    els.status.textContent = text;
+    els.status.className = 'status' + (type ? ' ' + type : '');
+  }
+
+  function renderTranslations() {
+    els.html.lang = state.uiLanguage === 'zh-Hant' ? 'zh-Hant' : 'en';
+
+    els.i18nNodes.forEach(function (node) {
+      const key = node.dataset.i18n;
+      if (translations[state.uiLanguage][key]) {
+        node.textContent = translations[state.uiLanguage][key];
+      }
     });
 
-    const data = await response.json();
-    console.log('multi-agent-run response:', data);
+    els.uiLangButtons.forEach(function (button) {
+      button.classList.toggle('active', button.dataset.uiLang === state.uiLanguage);
+    });
 
-    if (!response.ok) {
-      throw new Error(
-        data && data.error ? data.error : 'Request failed'
-      );
+    if (!els.meetingTitle.value || els.meetingTitle.dataset.sampleFilled === 'true') {
+      els.meetingTitle.placeholder = t('sampleMeetingTitle');
     }
 
-    if (data && data.success === false) {
-      throw new Error(
-        data.error || 'Workflow returned unsuccessful status'
-      );
+    if (!els.notes.value || els.notes.dataset.sampleFilled === 'true') {
+      els.notes.placeholder = t('fieldNotes');
     }
-
-    const normalized = normalizeArtifacts(data);
-    renderArtifacts(normalized);
-
-    if (
-      !normalized.summary &&
-      !normalized.decisions.length &&
-      !normalized.action_items.length &&
-      !normalized.follow_up_email
-    ) {
-      throw new Error('Workflow returned empty artifacts');
-    }
-
-    setStatus('statusSuccess', 'success');
-  } catch (error) {
-    console.error(error);
-    clearOutputs();
-
-    if (error && error.name === 'AbortError') {
-      els.status.textContent = 'Request timed out after 60 seconds.';
-      els.status.className = 'status error';
-    } else {
-      els.status.textContent =
-        error && error.message
-          ? error.message
-          : 'The workflow request failed.';
-      els.status.className = 'status error';
-    }
-  } finally {
-    clearTimeout(timeoutId);
-    els.submitButton.disabled = false;
   }
-});
-    setTheme(state.theme);renderTranslations();clearOutputs();loadSampleData();
-  </script>
+
+  function setTheme(theme) {
+    state.theme = theme;
+    els.html.setAttribute('data-theme', theme);
+    els.themeToggle.textContent = theme === 'dark' ? '☀' : '☾';
+    els.themeToggle.setAttribute(
+      'aria-label',
+      theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'
+    );
+  }
+
+  function renderList(el, items, mapper, emptyText) {
+    el.innerHTML = '';
+    const list = Array.isArray(items) ? items : [];
+
+    if (!list.length) {
+      if (emptyText) {
+        const li = document.createElement('li');
+        li.textContent = emptyText;
+        el.appendChild(li);
+      }
+      return;
+    }
+
+    list.forEach(function (item) {
+      const li = document.createElement('li');
+      li.textContent = mapper(item);
+      el.appendChild(li);
+    });
+  }
+
+  function normalizeArtifacts(root) {
+    if (!root || typeof root !== 'object') {
+      return {
+        summary: '',
+        decisions: [],
+        action_items: [],
+        follow_up_email: ''
+      };
+    }
+
+    const artifacts =
+      root.artifacts && typeof root.artifacts === 'object'
+        ? root.artifacts
+        : {};
+
+    const review =
+      root.review && typeof root.review === 'object'
+        ? root.review
+        : {};
+
+    const fixed =
+      review.fixed_output && typeof review.fixed_output === 'object'
+        ? review.fixed_output
+        : {};
+
+    return {
+      summary:
+        (typeof fixed.summary === 'string' && fixed.summary) ||
+        (typeof artifacts.summary === 'string' && artifacts.summary) ||
+        (typeof root.summary === 'string' && root.summary) ||
+        '',
+      decisions: Array.isArray(fixed.decisions)
+        ? fixed.decisions
+        : Array.isArray(artifacts.decisions)
+          ? artifacts.decisions
+          : Array.isArray(root.decisions)
+            ? root.decisions
+            : [],
+      action_items: Array.isArray(fixed.action_items)
+        ? fixed.action_items
+        : Array.isArray(artifacts.action_items)
+          ? artifacts.action_items
+          : Array.isArray(root.action_items)
+            ? root.action_items
+            : [],
+      follow_up_email:
+        (typeof fixed.follow_up_email === 'string' && fixed.follow_up_email) ||
+        (typeof artifacts.follow_up_email === 'string' && artifacts.follow_up_email) ||
+        (typeof artifacts.email_body === 'string' && artifacts.email_body) ||
+        (typeof root.follow_up_email === 'string' && root.follow_up_email) ||
+        (typeof root.email_body === 'string' && root.email_body) ||
+        ''
+    };
+  }
+
+  function renderArtifacts(artifacts) {
+    const safe = artifacts && typeof artifacts === 'object' ? artifacts : {};
+
+    state.latestArtifacts = {
+      summary: typeof safe.summary === 'string' ? safe.summary : '',
+      decisions: Array.isArray(safe.decisions) ? safe.decisions : [],
+      action_items: Array.isArray(safe.action_items) ? safe.action_items : [],
+      follow_up_email:
+        typeof safe.follow_up_email === 'string'
+          ? safe.follow_up_email
+          : typeof safe.email_body === 'string'
+            ? safe.email_body
+            : ''
+    };
+
+    els.summaryOutput.textContent =
+      state.latestArtifacts.summary || '(no summary returned)';
+
+    els.emailOutput.textContent =
+      state.latestArtifacts.follow_up_email || '(no follow-up email returned)';
+
+    renderList(
+      els.decisionsOutput,
+      state.latestArtifacts.decisions,
+      function (item) {
+        return typeof item === 'string' ? item : String(item);
+      },
+      '(no decisions returned)'
+    );
+
+    renderList(
+      els.actionsOutput,
+      state.latestArtifacts.action_items,
+      function (item) {
+        if (typeof item === 'string') {
+          return item;
+        }
+        const parts = [item.task || ''];
+        if (item.owner) parts.push('Owner: ' + item.owner);
+        if (item.due_date) parts.push('Due: ' + item.due_date);
+        if (item.priority) parts.push('Priority: ' + item.priority);
+        return parts.filter(Boolean).join(' | ');
+      },
+      '(no action items returned)'
+    );
+  }
+
+  function clearOutputs() {
+    renderArtifacts({
+      summary: '',
+      decisions: [],
+      action_items: [],
+      follow_up_email: ''
+    });
+  }
+
+  function buildMarkdown() {
+    const a = state.latestArtifacts;
+    const lines = [];
+
+    if (a.summary) {
+      lines.push('# ' + t('summaryTitle'));
+      lines.push(a.summary, '');
+    }
+
+    if (a.decisions && a.decisions.length) {
+      lines.push('# ' + t('decisionsTitle'));
+      a.decisions.forEach(function (item) {
+        lines.push('- ' + (typeof item === 'string' ? item : String(item)));
+      });
+      lines.push('');
+    }
+
+    if (a.action_items && a.action_items.length) {
+      lines.push('# ' + t('actionsTitle'));
+      a.action_items.forEach(function (item) {
+        if (typeof item === 'string') {
+          lines.push('- ' + item);
+        } else {
+          const detail = [item.task || ''];
+          if (item.owner) detail.push('owner: ' + item.owner);
+          if (item.due_date) detail.push('due: ' + item.due_date);
+          if (item.priority) detail.push('priority: ' + item.priority);
+          lines.push('- ' + detail.filter(Boolean).join(' | '));
+        }
+      });
+      lines.push('');
+    }
+
+    if (a.follow_up_email) {
+      lines.push('# ' + t('emailTitle'));
+      lines.push(a.follow_up_email);
+    }
+
+    return lines.join('\n').trim();
+  }
+
+  async function copyText(text, successKey) {
+    if (!text) {
+      setStatus('statusNothingToCopy', 'error');
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(text);
+      setStatus(successKey, 'success');
+    } catch (error) {
+      setStatus('statusError', 'error');
+    }
+  }
+
+  function loadSampleData() {
+    els.meetingTitle.value = t('sampleMeetingTitle');
+    els.meetingTitle.dataset.sampleFilled = 'true';
+    els.notes.value = t('sampleNotes');
+    els.notes.dataset.sampleFilled = 'true';
+  }
+
+  els.uiLangButtons.forEach(function (button) {
+    button.addEventListener('click', function () {
+      state.uiLanguage = button.dataset.uiLang;
+      renderTranslations();
+    });
+  });
+
+  els.themeToggle.addEventListener('click', function () {
+    setTheme(state.theme === 'dark' ? 'light' : 'dark');
+  });
+
+  els.loadSample.addEventListener('click', function () {
+    loadSampleData();
+  });
+
+  els.clearForm.addEventListener('click', function () {
+    els.form.reset();
+    els.outputLanguage.value = 'English';
+    els.outputMode.value = 'full_meeting_pack';
+    clearOutputs();
+    setStatus('statusFormCleared', 'success');
+  });
+
+  els.copyMarkdown.addEventListener('click', function () {
+    copyText(buildMarkdown(), 'statusCopiedMarkdown');
+  });
+
+  els.copyEmail.addEventListener('click', function () {
+    copyText(state.latestArtifacts.follow_up_email, 'statusCopiedEmail');
+  });
+
+  els.form.addEventListener('submit', async function (event) {
+    event.preventDefault();
+    setStatus('statusRunning');
+    els.submitButton.disabled = true;
+
+    const payload = {
+      meetingTitle: els.meetingTitle.value.trim(),
+      meetingType: els.meetingType.value,
+      outputMode: els.outputMode.value,
+      language: els.outputLanguage.value,
+      uiLanguage: state.uiLanguage,
+      notes: els.notes.value.trim()
+    };
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(function () {
+      controller.abort();
+    }, 60000);
+
+    try {
+      const response = await fetch('/.netlify/functions/multi-agent-run', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        signal: controller.signal
+      });
+
+      const data = await response.json();
+      console.log('multi-agent-run response:', data);
+
+      if (!response.ok) {
+        throw new Error(
+          data && data.error ? data.error : 'Request failed'
+        );
+      }
+
+      if (data && data.success === false) {
+        throw new Error(
+          data.error || 'Workflow returned unsuccessful status'
+        );
+      }
+
+      if (
+        !data ||
+        typeof data !== 'object' ||
+        !data.artifacts ||
+        typeof data.artifacts !== 'object'
+      ) {
+        throw new Error('Workflow returned empty artifacts');
+      }
+
+      const normalized = normalizeArtifacts(data);
+      renderArtifacts(normalized);
+      setStatus('statusSuccess', 'success');
+    } catch (error) {
+      console.error(error);
+      clearOutputs();
+
+      if (error && error.name === 'AbortError') {
+        setStatusText('Request timed out after 60 seconds.', 'error');
+      } else {
+        setStatusText(
+          error && error.message ? error.message : t('statusError'),
+          'error'
+        );
+      }
+    } finally {
+      clearTimeout(timeoutId);
+      els.submitButton.disabled = false;
+    }
+  });
+
+  setTheme(state.theme);
+  renderTranslations();
+  clearOutputs();
+  loadSampleData();
+</script>
 </body>
 </html>
