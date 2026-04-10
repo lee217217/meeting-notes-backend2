@@ -74,14 +74,19 @@ exports.handler = async function (event) {
 
     const result = await runWorkflow(payload);
 
-    return {
-      statusCode: 200,
-      headers: CORS_HEADERS,
-      body: JSON.stringify({
-        success: true,
-        data: result
-      })
-    };
+return {
+  statusCode: 200,
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    ok: true,
+    status: result.status,
+    artifacts: result.artifacts,
+    review: result.review,
+    trace: result.trace
+  })
+};
   } catch (error) {
     console.error('multi-agent-run error:', error);
 
