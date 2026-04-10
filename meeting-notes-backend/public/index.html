@@ -211,42 +211,78 @@
     els.clearForm.addEventListener('click',()=>{els.form.reset();els.outputLanguage.value='English';els.outputMode.value='full_meeting_pack';clearOutputs();setStatus('statusFormCleared','success')});
     els.copyMarkdown.addEventListener('click',()=>copyText(buildMarkdown(),'statusCopiedMarkdown'));
     els.copyEmail.addEventListener('click',()=>copyText(state.latestArtifacts.follow_up_email,'statusCopiedEmail'));
-    els.form.addEventListener('submit',async(event)=>{event.preventDefault();setStatus('statusRunning');els.submitButton.disabled=true;const payload={meetingTitle:els.meetingTitle.value.trim(),meetingType:els.meetingType.value,outputMode:els.outputMode.value,language:els.outputLanguage.value,uiLanguage:state.uiLanguage,notes:els.notes.value.trim()};try{const response=await fetch('/.netlify/functions/multi-agent-run',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const data=await response.json();console.log('multi-agent-run response:',data);if (!response.ok) {
-  throw new Error(
-    data && data.error ? data.error : 'Request failed'
-  );
-}
+    els.form.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  setStatus('statusRunning');
+  els.submitButton.disabled = true;
 
-if (data && data.success === false) {
-  throw new Error(
-    data.error || 'Workflow returned unsuccessful status'
-  );
-}
+  const payload = {
+    meetingTitle: els.meetingTitle.value.trim(),
+    meetingType: els.meetingType.value,
+    outputMode: els.outputMode.value,
+    language: els.outputLanguage.value,
+    uiLanguage: state.uiLanguage,
+    notes: els.notes.value.trim()
+  };
 
-const normalized = normalizeArtifacts(data);
-renderArtifacts(normalized);
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 60000);
 
-if (
-  !normalized.summary &&
-  !normalized.decisions.length &&
-  !normalized.action_items.length &&
-  !normalized.follow_up_email
-) {
-  throw new Error('Workflow returned empty artifacts');
-}
+  try {
+    const response = await fetch('/.netlify/functions/multi-agent-run', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      signal: controller.signal
+    });
 
-setStatus('statusSuccess', 'success');} catch (error) {
-  console.error(error);
-  clearOutputs();
-  const message =
-    error && error.message
-      ? error.message
-      : 'The workflow request failed.';
-  els.statusMessage.textContent = message;
-  els.statusMessage.className = 'status error';
-} finally {
-  els.submitButton.disabled = false;
-}});
+    const data = await response.json();
+    console.log('multi-agent-run response:', data);
+
+    if (!response.ok) {
+      throw new Error(
+        data && data.error ? data.error : 'Request failed'
+      );
+    }
+
+    if (data && data.success === false) {
+      throw new Error(
+        data.error || 'Workflow returned unsuccessful status'
+      );
+    }
+
+    const normalized = normalizeArtifacts(data);
+    renderArtifacts(normalized);
+
+    if (
+      !normalized.summary &&
+      !normalized.decisions.length &&
+      !normalized.action_items.length &&
+      !normalized.follow_up_email
+    ) {
+      throw new Error('Workflow returned empty artifacts');
+    }
+
+    setStatus('statusSuccess', 'success');
+  } catch (error) {
+    console.error(error);
+    clearOutputs();
+
+    if (error && error.name === 'AbortError') {
+      els.status.textContent = 'Request timed out after 60 seconds.';
+      els.status.className = 'status error';
+    } else {
+      els.status.textContent =
+        error && error.message
+          ? error.message
+          : 'The workflow request failed.';
+      els.status.className = 'status error';
+    }
+  } finally {
+    clearTimeout(timeoutId);
+    els.submitButton.disabled = false;
+  }
+});
     setTheme(state.theme);renderTranslations();clearOutputs();loadSampleData();
   </script>
 </body>
