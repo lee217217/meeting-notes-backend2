@@ -15,10 +15,10 @@ async function runSummarizerAgent(payload) {
         'Do not wrap JSON in markdown code fences.',
         'Output format:',
         '{',
-        '  "summary": "string",',
-        '  "key_points": ["string"],',
-        '  "decisions": ["string"],',
-        '  "risks_or_open_questions": ["string"]',
+        ' "summary": "string",',
+        ' "key_points": ["string"],',
+        ' "decisions": ["string"],',
+        ' "risks_or_open_questions": ["string"]',
         '}'
       ].join(' ')
     },
@@ -41,15 +41,18 @@ async function runSummarizerAgent(payload) {
   });
 
   const parsed = parseModelJson(response.text);
+  const data = parsed.ok && parsed.data && typeof parsed.data === 'object'
+    ? parsed.data
+    : {};
 
   return {
     agent: 'meeting_summarizer',
     system_prompt_name: summarizerSystemPrompt.name,
-    summary: typeof parsed.summary === 'string' ? parsed.summary : '',
-    key_points: Array.isArray(parsed.key_points) ? parsed.key_points : [],
-    decisions: Array.isArray(parsed.decisions) ? parsed.decisions : [],
-    risks_or_open_questions: Array.isArray(parsed.risks_or_open_questions)
-      ? parsed.risks_or_open_questions
+    summary: typeof data.summary === 'string' ? data.summary : '',
+    key_points: Array.isArray(data.key_points) ? data.key_points : [],
+    decisions: Array.isArray(data.decisions) ? data.decisions : [],
+    risks_or_open_questions: Array.isArray(data.risks_or_open_questions)
+      ? data.risks_or_open_questions
       : []
   };
 }

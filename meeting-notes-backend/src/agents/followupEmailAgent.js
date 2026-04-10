@@ -16,9 +16,9 @@ async function runFollowupEmailAgent(payload, summarizerResult, actionItemResult
         'Write a concise, professional meeting follow-up email.',
         'Output format:',
         '{',
-        '  "email_subject": "string",',
-        '  "email_body": "string",',
-        '  "tone": "professional"',
+        ' "email_subject": "string",',
+        ' "email_body": "string",',
+        ' "tone": "professional"',
         '}'
       ].join(' ')
     },
@@ -44,13 +44,16 @@ async function runFollowupEmailAgent(payload, summarizerResult, actionItemResult
   });
 
   const parsed = parseModelJson(response.text);
+  const data = parsed.ok && parsed.data && typeof parsed.data === 'object'
+    ? parsed.data
+    : {};
 
   return {
     agent: 'followup_email_agent',
     system_prompt_name: followupEmailSystemPrompt.name,
-    email_subject: typeof parsed.email_subject === 'string' ? parsed.email_subject : '',
-    email_body: typeof parsed.email_body === 'string' ? parsed.email_body : '',
-    tone: typeof parsed.tone === 'string' ? parsed.tone : 'professional'
+    email_subject: typeof data.email_subject === 'string' ? data.email_subject : '',
+    email_body: typeof data.email_body === 'string' ? data.email_body : '',
+    tone: typeof data.tone === 'string' ? data.tone : 'professional'
   };
 }
 

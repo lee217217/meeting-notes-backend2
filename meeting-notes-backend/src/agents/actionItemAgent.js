@@ -18,15 +18,15 @@ async function runActionItemAgent(payload, summarizerResult) {
         'Priority must be one of: High, Medium, Low.',
         'Output format:',
         '{',
-        '  "action_items": [',
-        '    {',
-        '      "task": "string",',
-        '      "owner": "string",',
-        '      "due_date": "string",',
-        '      "priority": "High|Medium|Low",',
-        '      "source_evidence": "string"',
-        '    }',
-        '  ]',
+        ' "action_items": [',
+        '   {',
+        '     "task": "string",',
+        '     "owner": "string",',
+        '     "due_date": "string",',
+        '     "priority": "High|Medium|Low",',
+        '     "source_evidence": "string"',
+        '   }',
+        ' ]',
         '}'
       ].join(' ')
     },
@@ -52,15 +52,20 @@ async function runActionItemAgent(payload, summarizerResult) {
   });
 
   const parsed = parseModelJson(response.text);
+  const data = parsed.ok && parsed.data && typeof parsed.data === 'object'
+    ? parsed.data
+    : {};
 
-  const actionItems = Array.isArray(parsed.action_items)
-    ? parsed.action_items.map(function (item) {
+  const actionItems = Array.isArray(data.action_items)
+    ? data.action_items.map(function (item) {
         return {
           task: typeof item.task === 'string' ? item.task : '',
           owner: typeof item.owner === 'string' ? item.owner : '',
           due_date: typeof item.due_date === 'string' ? item.due_date : '',
           priority:
-            item.priority === 'High' || item.priority === 'Low'
+            item.priority === 'High' ||
+            item.priority === 'Medium' ||
+            item.priority === 'Low'
               ? item.priority
               : 'Medium',
           source_evidence:
