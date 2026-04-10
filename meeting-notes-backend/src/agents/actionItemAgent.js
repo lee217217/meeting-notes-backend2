@@ -1,6 +1,8 @@
 const { actionItemSystemPrompt } = require('../prompts/actionItemPrompt');
 const { callLlm } = require('../services/llmClient');
-const { parseModelJson } = require('../utils/parseModelJson');
+const parseModelJsonModule = require('../utils/parseModelJson');
+
+const parseModelJson = parseModelJsonModule.parseModelJson;
 
 async function runActionItemAgent(payload, summarizerResult) {
   const language = payload.language || 'English';
@@ -52,7 +54,10 @@ async function runActionItemAgent(payload, summarizerResult) {
   });
 
   const parsed = parseModelJson(response.text);
-  const data = parsed && typeof parsed === 'object' ? parsed : {};
+  const data =
+    parsed && parsed.ok && parsed.data && typeof parsed.data === 'object'
+      ? parsed.data
+      : {};
 
   const actionItems = Array.isArray(data.action_items)
     ? data.action_items.map(function (item) {

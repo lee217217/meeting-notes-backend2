@@ -1,6 +1,8 @@
 const { summarizerSystemPrompt } = require('../prompts/summarizerPrompt');
 const { callLlm } = require('../services/llmClient');
-const { parseModelJson } = require('../utils/parseModelJson');
+const parseModelJsonModule = require('../utils/parseModelJson');
+
+const parseModelJson = parseModelJsonModule.parseModelJson;
 
 async function runSummarizerAgent(payload) {
   const language = payload.language || 'English';
@@ -41,7 +43,10 @@ async function runSummarizerAgent(payload) {
   });
 
   const parsed = parseModelJson(response.text);
-  const data = parsed && typeof parsed === 'object' ? parsed : {};
+  const data =
+    parsed && parsed.ok && parsed.data && typeof parsed.data === 'object'
+      ? parsed.data
+      : {};
 
   return {
     agent: 'meeting_summarizer',

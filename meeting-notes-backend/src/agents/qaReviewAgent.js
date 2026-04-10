@@ -1,6 +1,8 @@
 const { qaReviewSystemPrompt } = require('../prompts/qaReviewPrompt');
 const { callLlm } = require('../services/llmClient');
-const { parseModelJson } = require('../utils/parseModelJson');
+const parseModelJsonModule = require('../utils/parseModelJson');
+
+const parseModelJson = parseModelJsonModule.parseModelJson;
 
 async function runQaReviewAgent(payload, artifacts) {
   const language = payload.language || 'English';
@@ -62,7 +64,11 @@ async function runQaReviewAgent(payload, artifacts) {
   });
 
   const parsed = parseModelJson(response.text);
-  const data = parsed && typeof parsed === 'object' ? parsed : {};
+  const data =
+    parsed && parsed.ok && parsed.data && typeof parsed.data === 'object'
+      ? parsed.data
+      : {};
+
   const fixedOutput =
     data.fixed_output && typeof data.fixed_output === 'object'
       ? data.fixed_output

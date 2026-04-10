@@ -1,6 +1,8 @@
 const { followupEmailSystemPrompt } = require('../prompts/followupEmailPrompt');
 const { callLlm } = require('../services/llmClient');
-const { parseModelJson } = require('../utils/parseModelJson');
+const parseModelJsonModule = require('../utils/parseModelJson');
+
+const parseModelJson = parseModelJsonModule.parseModelJson;
 
 async function runFollowupEmailAgent(payload, summarizerResult, actionItemResult) {
   const language = payload.language || 'English';
@@ -33,7 +35,13 @@ async function runFollowupEmailAgent(payload, summarizerResult, actionItemResult
         summarizerResult.summary || '',
         '',
         'Action items JSON:',
-        JSON.stringify(actionItemResult.action_items || [], null, 2)
+        JSON.stringify(
+          Array.isArray(actionItemResult.action_items)
+            ? actionItemResult.action_items
+            : [],
+          null,
+          2
+        )
       ].join('\n')
     }
   ];
@@ -44,7 +52,10 @@ async function runFollowupEmailAgent(payload, summarizerResult, actionItemResult
   });
 
   const parsed = parseModelJson(response.text);
-  const data = parsed && typeof parsed === 'object' ? parsed : {};
+  const data =
+    parsed && parsed.ok && parsed.data && typeof parsed.data === 'object'
+      ? parsed.data
+      : {};
 
   return {
     agent: 'followup_email_agent',

@@ -17,14 +17,15 @@ async function runCoordinatorAgent(payload, context) {
       'qa_review_agent'
     ],
     reason:
-      'Phase 1 default workflow: run summarizer, action extraction, email draft, then QA review.',
+      'Phase 1 default workflow: run summarizer, action extraction, follow-up email drafting, then QA review.',
     requires_human_confirmation: false,
     input_snapshot: {
-      meetingTitle: payload.meetingTitle,
-      meetingType: payload.meetingType,
-      language: payload.language
+      meetingTitle: payload.meetingTitle || '',
+      meetingType: payload.meetingType || '',
+      language: payload.language || 'English'
     },
-    context_snapshot: context
+    context_snapshot:
+      context && typeof context === 'object' ? context : {}
   };
 }
 
