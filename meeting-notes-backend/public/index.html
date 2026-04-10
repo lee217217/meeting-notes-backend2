@@ -148,7 +148,58 @@
     function renderTranslations(){els.html.lang=state.uiLanguage==='zh-Hant'?'zh-Hant':'en';els.i18nNodes.forEach((node)=>{const key=node.dataset.i18n;if(translations[state.uiLanguage][key])node.textContent=translations[state.uiLanguage][key]});els.uiLangButtons.forEach((button)=>button.classList.toggle('active',button.dataset.uiLang===state.uiLanguage));if(!els.meetingTitle.value||els.meetingTitle.dataset.sampleFilled==='true')els.meetingTitle.placeholder=t('sampleMeetingTitle');if(!els.notes.value||els.notes.dataset.sampleFilled==='true')els.notes.placeholder=t('fieldNotes')}
     function setTheme(theme){state.theme=theme;els.html.setAttribute('data-theme',theme);els.themeToggle.textContent=theme==='dark'?'☀':'☾';els.themeToggle.setAttribute('aria-label',theme==='dark'?'Switch to light mode':'Switch to dark mode')}
     function renderList(container,items,formatter){container.innerHTML='';if(!Array.isArray(items)||!items.length)return;items.forEach((item)=>{const li=document.createElement('li');li.textContent=formatter(item);container.appendChild(li)})}
-    function normalizeArtifacts(data){const artifacts=data&&data.artifacts?data.artifacts:{};const review=data&&data.review?data.review:{};const fixed=review&&review.fixed_output?review.fixed_output:{};const merged={summary:fixed.summary||artifacts.summary||'',decisions:Array.isArray(fixed.decisions)?fixed.decisions:Array.isArray(artifacts.decisions)?artifacts.decisions:[],action_items:Array.isArray(fixed.action_items)?fixed.action_items:Array.isArray(artifacts.action_items)?artifacts.action_items:[],follow_up_email:fixed.follow_up_email||artifacts.follow_up_email||artifacts.email_body||''};if(!merged.follow_up_email&&data&&typeof data.email_body==='string')merged.follow_up_email=data.email_body;if(!merged.summary&&data&&typeof data.summary==='string')merged.summary=data.summary;if(!merged.decisions.length&&data&&Array.isArray(data.decisions))merged.decisions=data.decisions;if(!merged.action_items.length&&data&&Array.isArray(data.action_items))merged.action_items=data.action_items;return merged}
+    function normalizeArtifacts(responseJson) {
+  const root =
+    responseJson && responseJson.data && typeof responseJson.data === 'object'
+      ? responseJson.data
+      : responseJson || {};
+
+  const artifacts =
+    root && root.artifacts && typeof root.artifacts === 'object'
+      ? root.artifacts
+      : {};
+
+  const review =
+    root && root.review && typeof root.review === 'object'
+      ? root.review
+      : {};
+
+  const fixed =
+    review && review.fixed_output && typeof review.fixed_output === 'object'
+      ? review.fixed_output
+      : {};
+
+  const merged = {
+    summary:
+      fixed.summary ||
+      artifacts.summary ||
+      (typeof root.summary === 'string' ? root.summary : '') ||
+      '',
+    decisions: Array.isArray(fixed.decisions)
+      ? fixed.decisions
+      : Array.isArray(artifacts.decisions)
+        ? artifacts.decisions
+        : Array.isArray(root.decisions)
+          ? root.decisions
+          : [],
+    action_items: Array.isArray(fixed.action_items)
+      ? fixed.action_items
+      : Array.isArray(artifacts.action_items)
+        ? artifacts.action_items
+        : Array.isArray(root.action_items)
+          ? root.action_items
+          : [],
+    follow_up_email:
+      fixed.follow_up_email ||
+      artifacts.follow_up_email ||
+      artifacts.email_body ||
+      (typeof root.follow_up_email === 'string' ? root.follow_up_email : '') ||
+      (typeof root.email_body === 'string' ? root.email_body : '') ||
+      ''
+  };
+
+  return merged;
+}
     function renderArtifacts(artifacts){state.latestArtifacts={summary:artifacts.summary||'',decisions:Array.isArray(artifacts.decisions)?artifacts.decisions:[],action_items:Array.isArray(artifacts.action_items)?artifacts.action_items:[],follow_up_email:artifacts.follow_up_email||artifacts.email_body||''};els.summaryOutput.textContent=state.latestArtifacts.summary;els.emailOutput.textContent=state.latestArtifacts.follow_up_email;renderList(els.decisionsOutput,state.latestArtifacts.decisions,(item)=>item);renderList(els.actionsOutput,state.latestArtifacts.action_items,(item)=>{if(typeof item==='string')return item;const parts=[item.task||''];if(item.owner)parts.push('Owner: '+item.owner);if(item.due_date)parts.push('Due: '+item.due_date);if(item.priority)parts.push('Priority: '+item.priority);return parts.filter(Boolean).join(' | ')})}
     function buildMarkdown(){const a=state.latestArtifacts;const lines=[];if(a.summary){lines.push('# '+t('summaryTitle'));lines.push(a.summary,'')}if(a.decisions.length){lines.push('# '+t('decisionsTitle'));a.decisions.forEach((item)=>lines.push('- '+item));lines.push('')}if(a.action_items.length){lines.push('# '+t('actionsTitle'));a.action_items.forEach((item)=>{if(typeof item==='string'){lines.push('- '+item)}else{const detail=[item.task||''];if(item.owner)detail.push('owner: '+item.owner);if(item.due_date)detail.push('due: '+item.due_date);if(item.priority)detail.push('priority: '+item.priority);lines.push('- '+detail.join(' | '))}});lines.push('')}if(a.follow_up_email){lines.push('# '+t('emailTitle'));lines.push(a.follow_up_email)}return lines.join('\n').trim()}
     async function copyText(text,successKey){if(!text){setStatus('statusNothingToCopy','error');return}try{await navigator.clipboard.writeText(text);setStatus(successKey,'success')}catch(error){setStatus('statusError','error')}}
@@ -160,7 +211,31 @@
     els.clearForm.addEventListener('click',()=>{els.form.reset();els.outputLanguage.value='English';els.outputMode.value='full_meeting_pack';clearOutputs();setStatus('statusFormCleared','success')});
     els.copyMarkdown.addEventListener('click',()=>copyText(buildMarkdown(),'statusCopiedMarkdown'));
     els.copyEmail.addEventListener('click',()=>copyText(state.latestArtifacts.follow_up_email,'statusCopiedEmail'));
-    els.form.addEventListener('submit',async(event)=>{event.preventDefault();setStatus('statusRunning');els.submitButton.disabled=true;const payload={meetingTitle:els.meetingTitle.value.trim(),meetingType:els.meetingType.value,outputMode:els.outputMode.value,language:els.outputLanguage.value,uiLanguage:state.uiLanguage,notes:els.notes.value.trim()};try{const response=await fetch('/.netlify/functions/multi-agent-run',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const data=await response.json();console.log('multi-agent-run response:',data);if(!response.ok)throw new Error('Request failed');const normalized=normalizeArtifacts(data);renderArtifacts(normalized);if(!normalized.summary&&!normalized.decisions.length&&!normalized.action_items.length&&!normalized.follow_up_email){setStatus('statusError','error')}else{setStatus('statusSuccess','success')}}catch(error){console.error(error);clearOutputs();setStatus('statusError','error')}finally{els.submitButton.disabled=false}});
+    els.form.addEventListener('submit',async(event)=>{event.preventDefault();setStatus('statusRunning');els.submitButton.disabled=true;const payload={meetingTitle:els.meetingTitle.value.trim(),meetingType:els.meetingType.value,outputMode:els.outputMode.value,language:els.outputLanguage.value,uiLanguage:state.uiLanguage,notes:els.notes.value.trim()};try{const response=await fetch('/.netlify/functions/multi-agent-run',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const data=await response.json();console.log('multi-agent-run response:',data);if (!response.ok) {
+  throw new Error(
+    data && data.error ? data.error : 'Request failed'
+  );
+}
+
+if (data && data.success === false) {
+  throw new Error(
+    data.error || 'Workflow returned unsuccessful status'
+  );
+}
+
+const normalized = normalizeArtifacts(data);
+renderArtifacts(normalized);
+
+if (
+  !normalized.summary &&
+  !normalized.decisions.length &&
+  !normalized.action_items.length &&
+  !normalized.follow_up_email
+) {
+  throw new Error('Workflow returned empty artifacts');
+}
+
+setStatus('statusSuccess', 'success');}catch(error){console.error(error);clearOutputs();setStatus('statusError','error')}finally{els.submitButton.disabled=false}});
     setTheme(state.theme);renderTranslations();clearOutputs();loadSampleData();
   </script>
 </body>
