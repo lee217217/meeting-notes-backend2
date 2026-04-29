@@ -68,9 +68,6 @@
   "sampleNotes": "Attendees: Alice (PM), Bob (Eng), Carol (Design)\n- Bob reported backend API v2 is on track, will deploy Wed.\n- Carol showed new onboarding mockups; team agreed to adopt option B.\n- Decision: Freeze scope for v2.0 after this week.\n- Risk: Mobile testing device shortage; Alice to order 2 more iPads by Friday.\n- Action: Bob to finalise migration script by Tue EOD.\n- Action: Carol to deliver final icons by Thu.",
 
   "footerTag": "Built with Perplexity Sonar · Netlify Functions"
-}
-
-{
   "landingPageTitle": "Meeting Workspace — Turn meeting notes into outcomes",
   "landingPageDesc": "AI-powered meeting workspace. Turn raw notes or transcripts into summary, decisions, action items and a ready-to-send follow-up email in seconds.",
   "navFeatures": "Features",

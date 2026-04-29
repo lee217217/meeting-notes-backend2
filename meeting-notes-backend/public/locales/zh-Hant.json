@@ -68,9 +68,6 @@
   "sampleNotes": "出席:Alice (PM)、Bob (工程)、Carol (設計)\n- Bob 回報後端 API v2 進度正常,週三可部署。\n- Carol 展示新的 Onboarding 設計稿,團隊同意採用方案 B。\n- 決定:本週後凍結 v2.0 範圍。\n- 風險:行動測試裝置不足,Alice 週五前再訂 2 台 iPad。\n- 行動:Bob 週二下班前完成資料庫遷移腳本。\n- 行動:Carol 週四前交出最終圖示。",
 
   "footerTag": "由 Perplexity Sonar · Netlify Functions 打造"
-}
-
-{
   "landingPageTitle": "Meeting Workspace — 把會議筆記變成可分享成果",
   "landingPageDesc": "AI 驅動的會議工作區,數秒內將原始筆記或逐字稿轉為摘要、決策、行動項目和可寄出的跟進 Email。",
   "navFeatures": "功能",
