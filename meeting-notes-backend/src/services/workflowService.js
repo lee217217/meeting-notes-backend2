@@ -12,6 +12,30 @@ function createTaskId() {
   return 'wf_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
 }
 
+function isUsefulString(value, minLength) {
+  return (
+    typeof value === 'string' &&
+    value.trim().length >= (typeof minLength === 'number' ? minLength : 1)
+  );
+}
+
+function pickBetter(candidate, fallback, minLength) {
+  return isUsefulString(candidate, minLength) ? candidate : fallback;
+}
+
+function emptyArtifacts() {
+  return {
+    summary: '',
+    key_points: [],
+    decisions: [],
+    risks_or_open_questions: [],
+    action_items: [],
+    follow_up_email: '',
+    follow_up_email_subject: '',
+    follow_up_email_tone: 'professional'
+  };
+}
+
 async function runWorkflow(payload) {
   const taskId = createTaskId();
   const startedAt = nowIso();
@@ -54,23 +78,54 @@ async function runWorkflow(payload) {
 
     const summarizerResult = await runSummarizerAgent(normalizedInput);
 
-    pushTrace('summarizer', 'completed', {
-      has_summary: Boolean(summarizerResult.summary),
-      key_points_count: Array.isArray(summarizerResult.key_points)
-        ? summarizerResult.key_points.length
-        : 0
-    });
+    pushTrace(
+      'summarizer',
+      summarizerResult &&
+        summarizerResult._meta &&
+        summarizerResult._meta.parse_ok === false
+        ? 'parse_failed'
+        : 'completed',
+      {
+        has_summary: Boolean(summarizerResult.summary),
+        key_points_count: Array.isArray(summarizerResult.key_points)
+          ? summarizerResult.key_points.length
+          : 0,
+        decisions_count: Array.isArray(summarizerResult.decisions)
+          ? summarizerResult.decisions.length
+          : 0,
+        parse_error:
+          summarizerResult &&
+          summarizerResult._meta &&
+          summarizerResult._meta.parse_error
+            ? summarizerResult._meta.parse_error
+            : null
+      }
+    );
 
     const actionItemResult = await runActionItemAgent(
       normalizedInput,
       summarizerResult
     );
 
-    pushTrace('action_item_agent', 'completed', {
-      action_items_count: Array.isArray(actionItemResult.action_items)
-        ? actionItemResult.action_items.length
-        : 0
-    });
+    pushTrace(
+      'action_item_agent',
+      actionItemResult &&
+        actionItemResult._meta &&
+        actionItemResult._meta.parse_ok === false
+        ? 'parse_failed'
+        : 'completed',
+      {
+        action_items_count: Array.isArray(actionItemResult.action_items)
+          ? actionItemResult.action_items.length
+          : 0,
+        parse_error:
+          actionItemResult &&
+          actionItemResult._meta &&
+          actionItemResult._meta.parse_error
+            ? actionItemResult._meta.parse_error
+            : null
+      }
+    );
 
     const followupEmailResult = await runFollowupEmailAgent(
       normalizedInput,
@@ -78,10 +133,24 @@ async function runWorkflow(payload) {
       actionItemResult
     );
 
-    pushTrace('followup_email_agent', 'completed', {
-      has_email_subject: Boolean(followupEmailResult.email_subject),
-      has_email_body: Boolean(followupEmailResult.email_body)
-    });
+    pushTrace(
+      'followup_email_agent',
+      followupEmailResult &&
+        followupEmailResult._meta &&
+        followupEmailResult._meta.parse_ok === false
+        ? 'parse_failed'
+        : 'completed',
+      {
+        has_email_subject: Boolean(followupEmailResult.email_subject),
+        has_email_body: Boolean(followupEmailResult.email_body),
+        parse_error:
+          followupEmailResult &&
+          followupEmailResult._meta &&
+          followupEmailResult._meta.parse_error
+            ? followupEmailResult._meta.parse_error
+            : null
+      }
+    );
 
     const artifacts = {
       summary: summarizerResult.summary || '',
@@ -113,30 +182,42 @@ async function runWorkflow(payload) {
         : 0
     });
 
-    const finalArtifacts =
-      qaReviewResult.review_status === 'fail' &&
+    // QA 保底邏輯：只有當 fixed_output 明顯更好（更長/非空）時才覆蓋
+    const fixed =
       qaReviewResult.fixed_output &&
       typeof qaReviewResult.fixed_output === 'object'
-        ? {
-            summary:
-              qaReviewResult.fixed_output.summary || artifacts.summary || '',
-            key_points: artifacts.key_points,
-            decisions: artifacts.decisions,
-            risks_or_open_questions: artifacts.risks_or_open_questions,
-            action_items: Array.isArray(qaReviewResult.fixed_output.action_items)
-              ? qaReviewResult.fixed_output.action_items
+        ? qaReviewResult.fixed_output
+        : {};
+
+    const shouldApplyFix =
+      qaReviewResult.review_status === 'fail' &&
+      (isUsefulString(fixed.summary, 10) ||
+        (Array.isArray(fixed.action_items) && fixed.action_items.length > 0) ||
+        isUsefulString(fixed.follow_up_email, 20));
+
+    const finalArtifacts = shouldApplyFix
+      ? {
+          summary: pickBetter(fixed.summary, artifacts.summary, 10),
+          key_points: artifacts.key_points,
+          decisions: artifacts.decisions,
+          risks_or_open_questions: artifacts.risks_or_open_questions,
+          action_items:
+            Array.isArray(fixed.action_items) && fixed.action_items.length > 0
+              ? fixed.action_items
               : artifacts.action_items,
-            follow_up_email:
-              qaReviewResult.fixed_output.follow_up_email ||
-              artifacts.follow_up_email ||
-              '',
-            follow_up_email_subject: artifacts.follow_up_email_subject,
-            follow_up_email_tone: artifacts.follow_up_email_tone
-          }
-        : artifacts;
+          follow_up_email: pickBetter(
+            fixed.follow_up_email,
+            artifacts.follow_up_email,
+            20
+          ),
+          follow_up_email_subject: artifacts.follow_up_email_subject,
+          follow_up_email_tone: artifacts.follow_up_email_tone
+        }
+      : artifacts;
 
     pushTrace('workflow', 'completed', {
-      final_review_status: qaReviewResult.review_status || 'pass'
+      final_review_status: qaReviewResult.review_status || 'pass',
+      applied_qa_fix: shouldApplyFix
     });
 
     return {
@@ -149,7 +230,8 @@ async function runWorkflow(payload) {
       workflow: {
         current_step: 'completed',
         selected_agents: coordinatorResult.selected_agents || [],
-        task_type: coordinatorResult.task_type || 'full_meeting_pack'
+        task_type:
+          coordinatorResult.task_type || 'full_meeting_pack'
       },
       artifacts: finalArtifacts,
       review: qaReviewResult,
@@ -173,16 +255,7 @@ async function runWorkflow(payload) {
         selected_agents: [],
         task_type: normalizedInput.outputMode || 'full_meeting_pack'
       },
-      artifacts: {
-        summary: '',
-        key_points: [],
-        decisions: [],
-        risks_or_open_questions: [],
-        action_items: [],
-        follow_up_email: '',
-        follow_up_email_subject: '',
-        follow_up_email_tone: 'professional'
-      },
+      artifacts: emptyArtifacts(),
       review: {
         agent: 'qa_review_agent',
         system_prompt_name: '',
