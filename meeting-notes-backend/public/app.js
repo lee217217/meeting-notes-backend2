@@ -1,6 +1,9 @@
 (function () {
   const STEPS = ['coordinator', 'summarizer', 'action_item_agent', 'followup_email_agent', 'qa_review_agent'];
   const SUPPORTED = ['en', 'zh-Hant'];
+  const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
+  const MAX_NOTES = 20000;
+  const MIN_NOTES = 30;
 
   const state = {
     lang: localStorage.getItem('lang') || (navigator.language.startsWith('zh') ? 'zh-Hant' : 'en'),
@@ -34,13 +37,20 @@
     errorBannerText: $('errorBannerText'),
     retryButton: $('retryButton'),
     notesCounter: $('notesCounter'),
-    notesCount: $('notesCount')
+    notesCount: $('notesCount'),
+    dropZone: $('dropZone'),
+    fileInput: $('fileInput'),
+    shortcutKbd: $('shortcutKbd')
   };
 
-  // ==== i18n ====
-  function t(key) {
-    return (state.dict && state.dict[key]) || key;
+  // ===== OS detection for shortcut =====
+  const isMac = /Mac|iPhone|iPad|iPod/.test(navigator.platform || navigator.userAgent || '');
+  if (els.shortcutKbd) {
+    els.shortcutKbd.textContent = isMac ? '⌘ + ↵' : 'Ctrl + Enter';
   }
+
+  // ===== i18n =====
+  function t(k) { return (state.dict && state.dict[k]) || k; }
   async function loadLocale(lang) {
     if (!SUPPORTED.includes(lang)) lang = 'en';
     try {
@@ -52,9 +62,7 @@
       applyTranslations();
       updateLangButtons();
       clearOutputs();
-    } catch (e) {
-      console.error('Failed to load locale', e);
-    }
+    } catch (e) { console.error('Failed to load locale', e); }
   }
   function applyTranslations() {
     document.querySelectorAll('[data-i18n]').forEach((el) => {
@@ -74,7 +82,7 @@
     b.addEventListener('click', () => loadLocale(b.dataset.lang));
   });
 
-  // ==== Theme ====
+  // ===== Theme =====
   function setTheme(th) {
     state.theme = th;
     document.documentElement.setAttribute('data-theme', th);
@@ -83,15 +91,15 @@
   setTheme(state.theme);
   els.themeToggle.addEventListener('click', () => setTheme(state.theme === 'dark' ? 'light' : 'dark'));
 
-  // ==== Counter ====
+  // ===== Counter =====
   function updateCounter() {
     const len = els.notes.value.length;
     els.notesCount.textContent = len.toLocaleString();
-    els.notesCounter.classList.toggle('warn', len > 19500 || (len > 0 && len < 30));
+    els.notesCounter.classList.toggle('warn', len > 19500 || (len > 0 && len < MIN_NOTES));
   }
   els.notes.addEventListener('input', updateCounter);
 
-  // ==== Status / Error ====
+  // ===== Status / Error =====
   function setStatus(key, cls) {
     els.status.textContent = key ? t(key) : '';
     els.status.className = 'status' + (cls ? ' ' + cls : '');
@@ -113,7 +121,7 @@
     if (state.lastPayload) submitWorkflow(state.lastPayload);
   });
 
-  // ==== Stepper ====
+  // ===== Stepper =====
   function resetStepper() {
     els.stepper.hidden = false;
     STEPS.forEach((name) => {
@@ -135,7 +143,7 @@
     });
   }
 
-  // ==== Render ====
+  // ===== Render =====
   function renderList(el, items, formatter, emptyKey) {
     el.innerHTML = '';
     if (!items || items.length === 0) {
@@ -173,25 +181,20 @@
     setBody(els.summaryOutput, a.summary, 'emptySummary');
     setBody(els.emailOutput, a.follow_up_email, 'emptyEmail');
     renderList(els.decisionsOutput, a.decisions, (it) => (typeof it === 'string' ? it : String(it)), 'emptyDecisions');
-    renderList(
-      els.actionsOutput,
-      a.action_items,
-      (it) => {
-        if (typeof it === 'string') return it;
-        const parts = [it.task || ''];
-        if (it.owner) parts.push('Owner: ' + it.owner);
-        if (it.due_date) parts.push('Due: ' + it.due_date);
-        if (it.priority) parts.push('Priority: ' + it.priority);
-        return parts.filter(Boolean).join(' | ');
-      },
-      'emptyActions'
-    );
+    renderList(els.actionsOutput, a.action_items, (it) => {
+      if (typeof it === 'string') return it;
+      const parts = [it.task || ''];
+      if (it.owner) parts.push('Owner: ' + it.owner);
+      if (it.due_date) parts.push('Due: ' + it.due_date);
+      if (it.priority) parts.push('Priority: ' + it.priority);
+      return parts.filter(Boolean).join(' | ');
+    }, 'emptyActions');
   }
   function clearOutputs() {
     renderArtifacts({ summary: '', decisions: [], action_items: [], follow_up_email: '' });
   }
 
-  // ==== Copy ====
+  // ===== Copy =====
   function buildMarkdown() {
     const a = state.lastArtifacts;
     if (!a) return '';
@@ -221,17 +224,77 @@
   }
   async function copyText(text, okKey) {
     if (!text) { setStatus('statusNothingToCopy', 'error'); return; }
-    try {
-      await navigator.clipboard.writeText(text);
-      setStatus(okKey, 'success');
-    } catch {
-      setStatus('statusCopyFailed', 'error');
-    }
+    try { await navigator.clipboard.writeText(text); setStatus(okKey, 'success'); }
+    catch { setStatus('statusCopyFailed', 'error'); }
   }
   els.copyMarkdown.addEventListener('click', () => copyText(buildMarkdown(), 'statusCopiedMd'));
   els.copyEmail.addEventListener('click', () => copyText((state.lastArtifacts && state.lastArtifacts.follow_up_email) || '', 'statusCopiedEmail'));
 
-  // ==== Sample / Clear ====
+  // ===== File import =====
+  function cleanVtt(text) {
+    // 去掉 WEBVTT header、時間戳、cue index
+    return text
+      .replace(/^WEBVTT.*$/m, '')
+      .replace(/^\d+$/gm, '')
+      .replace(/^\d\d:\d\d:\d\d\.\d{3} --> \d\d:\d\d:\d\d\.\d{3}.*$/gm, '')
+      .replace(/<[^>]+>/g, '')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
+  }
+  async function handleFile(file) {
+    if (!file) return;
+    if (file.size > MAX_FILE_SIZE) {
+      showError(t('errFileTooBig') + ' (' + Math.round(file.size / 1024) + 'KB)');
+      return;
+    }
+    const name = (file.name || '').toLowerCase();
+    const isText = /\.(txt|md|vtt)$/.test(name) || /^text\//.test(file.type || '');
+    if (!isText) {
+      showError(t('errFileType'));
+      return;
+    }
+    try {
+      const raw = await file.text();
+      let content = raw;
+      if (name.endsWith('.vtt')) content = cleanVtt(raw);
+      if (content.length > MAX_NOTES) {
+        content = content.slice(0, MAX_NOTES);
+        setStatusText(t('statusTruncated'), 'success');
+      } else {
+        setStatusText(t('statusImported').replace('{name}', file.name), 'success');
+      }
+      els.notes.value = content;
+      updateCounter();
+      hideError();
+    } catch (e) {
+      showError(t('errFileRead'));
+    }
+  }
+  els.fileInput.addEventListener('change', (e) => {
+    const file = e.target.files && e.target.files[0];
+    handleFile(file);
+    e.target.value = '';
+  });
+
+  // drag & drop
+  ['dragenter', 'dragover'].forEach((ev) => {
+    els.dropZone.addEventListener(ev, (e) => {
+      e.preventDefault(); e.stopPropagation();
+      els.dropZone.classList.add('dragging');
+    });
+  });
+  ['dragleave', 'drop'].forEach((ev) => {
+    els.dropZone.addEventListener(ev, (e) => {
+      e.preventDefault(); e.stopPropagation();
+      els.dropZone.classList.remove('dragging');
+    });
+  });
+  els.dropZone.addEventListener('drop', (e) => {
+    const file = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+    if (file) handleFile(file);
+  });
+
+  // ===== Sample / Clear =====
   els.loadSample.addEventListener('click', () => {
     els.meetingTitle.value = t('sampleTitle');
     els.notes.value = t('sampleNotes');
@@ -247,7 +310,7 @@
     setStatus('statusFormCleared', 'success');
   });
 
-  // ==== Submit ====
+  // ===== Submit =====
   async function submitWorkflow(payload) {
     setStatus('statusRunning');
     hideError();
@@ -272,13 +335,8 @@
         signal: controller.signal
       });
       const data = await res.json();
-
-      if (!res.ok || (data && data.success === false)) {
-        throw new Error((data && data.error) || ('Request failed (' + res.status + ')'));
-      }
-      if (!data || !data.artifacts) {
-        throw new Error(t('errEmpty'));
-      }
+      if (!res.ok || (data && data.success === false)) throw new Error((data && data.error) || ('Request failed (' + res.status + ')'));
+      if (!data || !data.artifacts) throw new Error(t('errEmpty'));
 
       applyTraceToStepper(data.trace);
       const normalized = normalizeArtifacts(data);
@@ -305,9 +363,8 @@
   els.form.addEventListener('submit', (e) => {
     e.preventDefault();
     const notes = els.notes.value.trim();
-    if (notes.length < 30) { showError(t('errNotesShort')); return; }
-    if (notes.length > 20000) { showError(t('errNotesLong')); return; }
-
+    if (notes.length < MIN_NOTES) { showError(t('errNotesShort')); return; }
+    if (notes.length > MAX_NOTES) { showError(t('errNotesLong')); return; }
     const payload = {
       meetingTitle: els.meetingTitle.value.trim(),
       meetingType: els.meetingType.value,
@@ -326,7 +383,7 @@
     }
   });
 
-  // ==== Init ====
+  // ===== Init =====
   loadLocale(state.lang);
   updateCounter();
 })();
