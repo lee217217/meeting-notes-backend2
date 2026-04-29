@@ -3,482 +3,179 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Meeting Workspace — AI Summary, Actions & Follow-up</title>
-  <meta name="description" content="Turn raw meeting notes into summary, decisions, action items and a ready-to-send follow-up email in seconds." />
-  <meta name="robots" content="index,follow" />
-  <link rel="canonical" href="https://your-domain.com/" />
+  <title data-i18n="pageTitle">Meeting Workspace</title>
+  <meta name="description" data-i18n-attr="content" data-i18n="pageDesc"
+        content="Turn raw meeting notes into summary, decisions, action items and a follow-up email." />
 
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Meeting Workspace" />
   <meta property="og:description" content="AI-powered meeting notes to summary, decisions, actions and follow-up email." />
   <meta property="og:image" content="/og-image.png" />
-  <meta property="og:url" content="https://your-domain.com/" />
   <meta name="twitter:card" content="summary_large_image" />
-
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
   <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
   <link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&f[]=cabinet-grotesk@500,700,800&display=swap" rel="stylesheet" />
 
-  <style>
-    :root,[data-theme="light"]{--color-bg:#f7f6f2;--color-surface:#fbfaf7;--color-surface-2:#f3f0ec;--color-border:rgba(40,37,29,.12);--color-text:#28251d;--color-text-muted:#66645d;--color-text-faint:#98958d;--color-text-inverse:#f8f7f4;--color-primary:#01696f;--color-primary-hover:#0c4e54;--color-primary-soft:rgba(1,105,111,.1);--color-success:#2f6b3f;--color-danger:#8b3d39;--shadow-sm:0 1px 2px rgba(20,18,12,.06);--shadow-md:0 12px 30px rgba(20,18,12,.08);--radius-sm:10px;--radius-md:16px;--radius-lg:24px;--content:1180px;--font-body:'General Sans','Inter',sans-serif;--font-display:'Cabinet Grotesk','General Sans',sans-serif}
-    [data-theme="dark"]{--color-bg:#121313;--color-surface:#171918;--color-surface-2:#1e211f;--color-border:rgba(236,235,231,.12);--color-text:#ecebe7;--color-text-muted:#b3b1aa;--color-text-faint:#7e7b74;--color-text-inverse:#11120f;--color-primary:#63aab3;--color-primary-hover:#87c0c7;--color-primary-soft:rgba(99,170,179,.16);--color-success:#8ac29b;--color-danger:#e3a19a}
-
-    *{box-sizing:border-box}
-    body{margin:0;font-family:var(--font-body);background:var(--color-bg);color:var(--color-text);line-height:1.55}
-    h1,h2,h3{font-family:var(--font-display);margin:0 0 .5rem}
-    a{color:var(--color-primary);text-decoration:none}
-
-    .container{max-width:var(--content);margin:0 auto;padding:2rem 1.25rem}
-    header.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;gap:1rem;flex-wrap:wrap}
-    .brand{font-family:var(--font-display);font-weight:800;font-size:1.3rem}
-    .top-actions{display:flex;gap:.5rem;align-items:center}
-    .btn{border:1px solid var(--color-border);background:var(--color-surface);color:var(--color-text);padding:.5rem .9rem;border-radius:var(--radius-sm);cursor:pointer;font-family:inherit;font-size:.9rem}
-    .btn:hover{background:var(--color-surface-2)}
-    .btn-primary{background:var(--color-primary);color:var(--color-text-inverse);border-color:transparent}
-    .btn-primary:hover{background:var(--color-primary-hover)}
-    .btn-primary:disabled{opacity:.6;cursor:not-allowed}
-
-    .grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
-    @media (max-width:960px){.grid{grid-template-columns:1fr}}
-
-    .card{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-md);padding:1.25rem;box-shadow:var(--shadow-sm)}
-    .card h2{font-size:1.05rem;margin-bottom:.75rem}
-
-    .field{margin-bottom:1rem}
-    label{display:block;font-weight:600;font-size:.9rem;margin-bottom:.35rem}
-    input,select,textarea{width:100%;padding:.6rem .75rem;border:1px solid var(--color-border);border-radius:var(--radius-sm);background:var(--color-surface);color:var(--color-text);font-family:inherit;font-size:.95rem}
-    textarea{resize:vertical;min-height:220px;font-family:monospace}
-    .field-help{font-size:.8rem;color:var(--color-text-faint);margin-top:.25rem}
-
-    .char-counter{display:flex;justify-content:flex-end;font-size:.8rem;color:var(--color-text-faint);margin-top:.25rem}
-    .char-counter.warn{color:var(--color-danger);font-weight:600}
-
-    .actions{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.5rem}
-
-    .status{margin-top:.75rem;font-size:.9rem;color:var(--color-text-muted);min-height:1.25rem}
-    .status.success{color:var(--color-success)}
-    .status.error{color:var(--color-danger)}
-
-    .stepper{display:flex;gap:.5rem;flex-wrap:wrap;margin:1rem 0;padding:.75rem 1rem;background:var(--color-surface-2);border:1px solid var(--color-border);border-radius:var(--radius-md);list-style:none}
-    .step{display:flex;align-items:center;gap:.4rem;font-size:.85rem;color:var(--color-text-faint)}
-    .step .dot{width:10px;height:10px;border-radius:50%;background:var(--color-text-faint);transition:all .2s}
-    .step.active{color:var(--color-text)}
-    .step.active .dot{background:var(--color-primary);box-shadow:0 0 0 4px var(--color-primary-soft)}
-    .step.done{color:var(--color-success)}
-    .step.done .dot{background:var(--color-success)}
-    .step.failed{color:var(--color-danger)}
-    .step.failed .dot{background:var(--color-danger)}
-
-    .skeleton{background:linear-gradient(90deg,var(--color-surface-2) 0%,var(--color-border) 50%,var(--color-surface-2) 100%);background-size:200% 100%;animation:shimmer 1.3s infinite;border-radius:6px;height:14px;margin:.5rem 0}
-    @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-
-    .error-banner{display:none;margin:1rem 0;padding:1rem;background:rgba(139,61,57,.08);border:1px solid var(--color-danger);border-radius:var(--radius-md);color:var(--color-danger)}
-    .error-banner.show{display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap}
-
-    .output-section{margin-bottom:1.5rem}
-    .output-section h3{font-size:.95rem;margin-bottom:.5rem;color:var(--color-text-muted)}
-    .output-content{background:var(--color-surface-2);border-radius:var(--radius-sm);padding:.9rem;white-space:pre-wrap;font-size:.9rem;min-height:2.5rem}
-    .output-list{list-style:disc;padding-left:1.3rem;margin:0}
-    .output-list li{margin-bottom:.35rem}
-
-    kbd{background:var(--color-surface-2);border:1px solid var(--color-border);border-radius:4px;padding:.1rem .35rem;font-size:.75rem;font-family:monospace;margin-left:.35rem}
-    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
-  </style>
+  <link rel="stylesheet" href="/styles.css" />
 </head>
 <body>
-  <div class="container">
+  <div class="app">
     <header class="top">
-      <div class="brand">Meeting Workspace</div>
+      <div class="brand">
+        <span class="brand-mark">◈</span>
+        <span class="brand-text" data-i18n="brand">Meeting Workspace</span>
+      </div>
+
       <div class="top-actions">
-        <button class="btn" id="themeToggle" aria-label="Toggle theme">🌓</button>
+        <div class="lang-switch" role="group" aria-label="Language">
+          <button type="button" class="lang-btn" data-lang="en">EN</button>
+          <button type="button" class="lang-btn" data-lang="zh-Hant">繁中</button>
+        </div>
+        <button type="button" class="icon-btn" id="themeToggle" aria-label="Toggle theme" title="Toggle theme">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
       </div>
     </header>
 
-    <div class="grid">
-      <!-- 左側：輸入 -->
-      <section class="card" aria-labelledby="inputTitle">
-        <h2 id="inputTitle">Input</h2>
+    <section class="hero">
+      <h1 data-i18n="heroTitle">Turn messy notes into shareable meeting outcomes</h1>
+      <p class="hero-sub" data-i18n="heroSub">Summary, decisions, action items and a ready-to-send email — in one click.</p>
+    </section>
+
+    <main class="grid">
+      <!-- Input -->
+      <section class="card input-card" aria-labelledby="inputTitle">
+        <div class="card-head">
+          <h2 id="inputTitle" data-i18n="inputTitle">Meeting input</h2>
+          <span class="tag" data-i18n="inputTag">Step 1</span>
+        </div>
+
         <form id="form" novalidate>
-          <div class="field">
-            <label for="meetingTitle">Meeting title</label>
-            <input type="text" id="meetingTitle" name="meetingTitle" />
+          <div class="row-2">
+            <div class="field">
+              <label for="meetingTitle" data-i18n="fieldTitle">Meeting title</label>
+              <input type="text" id="meetingTitle" name="meetingTitle" autocomplete="off" />
+            </div>
+            <div class="field">
+              <label for="meetingType" data-i18n="fieldType">Meeting type</label>
+              <select id="meetingType" name="meetingType">
+                <option value="General" data-i18n="typeGeneral">General</option>
+                <option value="project_sync" data-i18n="typeProject">Project sync</option>
+                <option value="sales_call" data-i18n="typeSales">Sales call</option>
+                <option value="design_review" data-i18n="typeDesign">Design review</option>
+                <option value="retro" data-i18n="typeRetro">Retrospective</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row-2">
+            <div class="field">
+              <label for="outputLanguage" data-i18n="fieldOutLang">Output language</label>
+              <select id="outputLanguage" name="outputLanguage">
+                <option value="English">English</option>
+                <option value="Traditional Chinese">繁體中文</option>
+                <option value="Simplified Chinese">简体中文</option>
+                <option value="Japanese">日本語</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="outputMode" data-i18n="fieldMode">Output mode</label>
+              <select id="outputMode" name="outputMode">
+                <option value="full_meeting_pack" data-i18n="modeFull">Full pack</option>
+                <option value="summary_only" data-i18n="modeSummary">Summary only</option>
+                <option value="action_items_only" data-i18n="modeActions">Action items only</option>
+                <option value="email_only" data-i18n="modeEmail">Follow-up email only</option>
+              </select>
+            </div>
           </div>
 
           <div class="field">
-            <label for="meetingType">Meeting type</label>
-            <select id="meetingType" name="meetingType">
-              <option value="General">General</option>
-              <option value="project_sync">Project sync</option>
-              <option value="sales_call">Sales call</option>
-              <option value="design_review">Design review</option>
-              <option value="retro">Retrospective</option>
-            </select>
-          </div>
-
-          <div class="field">
-            <label for="outputLanguage">Output language</label>
-            <select id="outputLanguage" name="outputLanguage">
-              <option value="English">English</option>
-              <option value="Traditional Chinese">繁體中文</option>
-              <option value="Simplified Chinese">简体中文</option>
-              <option value="Japanese">日本語</option>
-            </select>
-          </div>
-
-          <div class="field">
-            <label for="outputMode">Output mode</label>
-            <select id="outputMode" name="outputMode">
-              <option value="full_meeting_pack">Full pack (summary + actions + email)</option>
-              <option value="summary_only">Summary only</option>
-              <option value="action_items_only">Action items only</option>
-              <option value="email_only">Follow-up email only</option>
-            </select>
-          </div>
-
-          <div class="field">
-            <label for="notes">Meeting notes</label>
-            <textarea
-              id="notes" name="notes" rows="12"
-              maxlength="20000" minlength="30" required
+            <label for="notes" data-i18n="fieldNotes">Meeting notes</label>
+            <textarea id="notes" name="notes" rows="14" maxlength="20000" minlength="30" required
               aria-describedby="notesHelp notesCounter"
+              data-i18n-attr="placeholder" data-i18n="notesPlaceholder"
               placeholder="Paste raw notes or transcript here..."></textarea>
-            <div id="notesHelp" class="field-help">Paste raw notes or transcript. Min 30, max 20,000 characters.</div>
-            <div class="char-counter" id="notesCounter" aria-live="polite">
-              <span id="notesCount">0</span> / 20,000
+            <div class="field-foot">
+              <span id="notesHelp" class="field-help" data-i18n="notesHelp">Min 30, max 20,000 characters.</span>
+              <span class="char-counter" id="notesCounter" aria-live="polite">
+                <span id="notesCount">0</span> / 20,000
+              </span>
             </div>
           </div>
 
           <div class="actions">
             <button type="submit" id="submitButton" class="btn btn-primary">
-              Run workflow <kbd>⌘/Ctrl + ↵</kbd>
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              <span data-i18n="btnRun">Run workflow</span>
+              <kbd>⌘/Ctrl + ↵</kbd>
             </button>
-            <button type="button" id="loadSample" class="btn">Load sample</button>
-            <button type="button" id="clearForm" class="btn">Clear</button>
+            <button type="button" id="loadSample" class="btn" data-i18n="btnSample">Load sample</button>
+            <button type="button" id="clearForm" class="btn" data-i18n="btnClear">Clear</button>
           </div>
 
           <div id="status" role="status" aria-live="polite" class="status"></div>
 
           <ol id="stepper" class="stepper" aria-label="Workflow progress" hidden>
-            <li class="step" data-step="coordinator"><span class="dot"></span>Coordinator</li>
-            <li class="step" data-step="summarizer"><span class="dot"></span>Summary</li>
-            <li class="step" data-step="action_item_agent"><span class="dot"></span>Actions</li>
-            <li class="step" data-step="followup_email_agent"><span class="dot"></span>Email</li>
-            <li class="step" data-step="qa_review_agent"><span class="dot"></span>QA</li>
+            <li class="step" data-step="coordinator"><span class="dot"></span><span data-i18n="stepCoord">Coordinator</span></li>
+            <li class="step" data-step="summarizer"><span class="dot"></span><span data-i18n="stepSum">Summary</span></li>
+            <li class="step" data-step="action_item_agent"><span class="dot"></span><span data-i18n="stepAct">Actions</span></li>
+            <li class="step" data-step="followup_email_agent"><span class="dot"></span><span data-i18n="stepEmail">Email</span></li>
+            <li class="step" data-step="qa_review_agent"><span class="dot"></span><span data-i18n="stepQA">QA</span></li>
           </ol>
 
           <div id="errorBanner" class="error-banner" role="alert">
             <span id="errorBannerText"></span>
-            <button type="button" id="retryButton" class="btn btn-primary">Try again</button>
+            <button type="button" id="retryButton" class="btn btn-primary" data-i18n="btnRetry">Try again</button>
           </div>
         </form>
       </section>
 
-      <!-- 右側：輸出 -->
-      <section class="card" aria-labelledby="outputTitle">
-        <h2 id="outputTitle">Output</h2>
-
-        <div class="actions" style="margin-bottom:1rem">
-          <button type="button" class="btn" id="copyMarkdown">Copy as Markdown</button>
-          <button type="button" class="btn" id="copyEmail">Copy email</button>
+      <!-- Output -->
+      <section class="card output-card" aria-labelledby="outputTitle">
+        <div class="card-head">
+          <h2 id="outputTitle" data-i18n="outputTitle">Meeting pack</h2>
+          <span class="tag tag-accent" data-i18n="outputTag">Step 2</span>
         </div>
 
-        <div class="output-section">
-          <h3>Summary</h3>
-          <div class="output-content" id="summaryOutput" aria-live="polite">(no summary yet)</div>
+        <div class="out-actions">
+          <button type="button" class="btn" id="copyMarkdown">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            <span data-i18n="btnCopyMd">Copy Markdown</span>
+          </button>
+          <button type="button" class="btn" id="copyEmail">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            <span data-i18n="btnCopyEmail">Copy email</span>
+          </button>
         </div>
 
-        <div class="output-section">
-          <h3>Decisions</h3>
-          <ul class="output-list" id="decisionsOutput" aria-live="polite"></ul>
+        <div class="out-block">
+          <h3 data-i18n="outSummary">Summary</h3>
+          <div class="out-body" id="summaryOutput" aria-live="polite"></div>
         </div>
 
-        <div class="output-section">
-          <h3>Action items</h3>
-          <ul class="output-list" id="actionsOutput" aria-live="polite"></ul>
+        <div class="out-block">
+          <h3 data-i18n="outDecisions">Decisions</h3>
+          <ul class="out-list" id="decisionsOutput" aria-live="polite"></ul>
         </div>
 
-        <div class="output-section">
-          <h3>Follow-up email</h3>
-          <div class="output-content" id="emailOutput" aria-live="polite">(no email yet)</div>
+        <div class="out-block">
+          <h3 data-i18n="outActions">Action items</h3>
+          <ul class="out-list" id="actionsOutput" aria-live="polite"></ul>
+        </div>
+
+        <div class="out-block">
+          <h3 data-i18n="outEmail">Follow-up email</h3>
+          <div class="out-body" id="emailOutput" aria-live="polite"></div>
         </div>
       </section>
-    </div>
+    </main>
+
+    <footer class="foot">
+      <span data-i18n="footerTag">Built with Perplexity Sonar · Netlify Functions</span>
+    </footer>
   </div>
 
-  <script>
-    const els = {
-      form: document.getElementById('form'),
-      meetingTitle: document.getElementById('meetingTitle'),
-      meetingType: document.getElementById('meetingType'),
-      outputLanguage: document.getElementById('outputLanguage'),
-      outputMode: document.getElementById('outputMode'),
-      notes: document.getElementById('notes'),
-      submitButton: document.getElementById('submitButton'),
-      loadSample: document.getElementById('loadSample'),
-      clearForm: document.getElementById('clearForm'),
-      copyMarkdown: document.getElementById('copyMarkdown'),
-      copyEmail: document.getElementById('copyEmail'),
-      themeToggle: document.getElementById('themeToggle'),
-      status: document.getElementById('status'),
-      summaryOutput: document.getElementById('summaryOutput'),
-      decisionsOutput: document.getElementById('decisionsOutput'),
-      actionsOutput: document.getElementById('actionsOutput'),
-      emailOutput: document.getElementById('emailOutput')
-    };
-
-    const stepperEl = document.getElementById('stepper');
-    const errorBanner = document.getElementById('errorBanner');
-    const errorBannerText = document.getElementById('errorBannerText');
-    const retryButton = document.getElementById('retryButton');
-    const notesCounter = document.getElementById('notesCounter');
-    const notesCountEl = document.getElementById('notesCount');
-
-    const STEPS = ['coordinator','summarizer','action_item_agent','followup_email_agent','qa_review_agent'];
-    const state = {
-      theme: localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'),
-      lastPayload: null,
-      lastArtifacts: null
-    };
-
-    // ===== Theme =====
-    function setTheme(t){
-      state.theme = t;
-      document.documentElement.setAttribute('data-theme', t);
-      localStorage.setItem('theme', t);
-    }
-    setTheme(state.theme);
-    els.themeToggle.addEventListener('click', () => setTheme(state.theme === 'dark' ? 'light' : 'dark'));
-
-    // ===== Counter =====
-    function updateNotesCounter(){
-      const len = els.notes.value.length;
-      notesCountEl.textContent = len.toLocaleString();
-      notesCounter.classList.toggle('warn', len > 19500 || (len > 0 && len < 30));
-    }
-    els.notes.addEventListener('input', updateNotesCounter);
-    updateNotesCounter();
-
-    // ===== Status / Error =====
-    function setStatus(text, cls){
-      els.status.textContent = text || '';
-      els.status.className = 'status' + (cls ? ' ' + cls : '');
-    }
-    function showError(msg){
-      errorBannerText.textContent = msg;
-      errorBanner.classList.add('show');
-    }
-    function hideError(){
-      errorBanner.classList.remove('show');
-      errorBannerText.textContent = '';
-    }
-    retryButton.addEventListener('click', () => {
-      hideError();
-      if (state.lastPayload) submitWorkflow(state.lastPayload);
-    });
-
-    // ===== Stepper =====
-    function resetStepper(){
-      stepperEl.hidden = false;
-      STEPS.forEach(name => {
-        const el = stepperEl.querySelector(`[data-step="${name}"]`);
-        if (el) el.className = 'step';
-      });
-    }
-    function markStep(name, cls){
-      const el = stepperEl.querySelector(`[data-step="${name}"]`);
-      if (el) el.className = 'step ' + cls;
-    }
-    function applyTraceToStepper(trace){
-      if (!Array.isArray(trace)) return;
-      trace.forEach(t => {
-        if (!t || !t.step) return;
-        if (t.status === 'completed') markStep(t.step, 'done');
-        else if (t.status === 'failed' || t.status === 'parse_failed') markStep(t.step, 'failed');
-        else if (t.status === 'started') markStep(t.step, 'active');
-      });
-    }
-
-    // ===== Render =====
-    function renderList(el, items, formatter, emptyText){
-      el.innerHTML = '';
-      if (!items || items.length === 0){
-        const li = document.createElement('li');
-        li.textContent = emptyText;
-        li.style.color = 'var(--color-text-faint)';
-        el.appendChild(li);
-        return;
-      }
-      items.forEach(item => {
-        const li = document.createElement('li');
-        li.textContent = formatter(item);
-        el.appendChild(li);
-      });
-    }
-    function normalizeArtifacts(data){
-      const a = (data && data.artifacts) || {};
-      return {
-        summary: typeof a.summary === 'string' ? a.summary : '',
-        decisions: Array.isArray(a.decisions) ? a.decisions : [],
-        action_items: Array.isArray(a.action_items) ? a.action_items : [],
-        follow_up_email: typeof a.follow_up_email === 'string' ? a.follow_up_email : ''
-      };
-    }
-    function renderArtifacts(a){
-      els.summaryOutput.textContent = a.summary || '(no summary returned)';
-      els.emailOutput.textContent = a.follow_up_email || '(no follow-up email returned)';
-      renderList(els.decisionsOutput, a.decisions, it => typeof it === 'string' ? it : String(it), '(no decisions returned)');
-      renderList(els.actionsOutput, a.action_items, it => {
-        if (typeof it === 'string') return it;
-        const parts = [it.task || ''];
-        if (it.owner) parts.push('Owner: ' + it.owner);
-        if (it.due_date) parts.push('Due: ' + it.due_date);
-        if (it.priority) parts.push('Priority: ' + it.priority);
-        return parts.filter(Boolean).join(' | ');
-      }, '(no action items returned)');
-    }
-    function clearOutputs(){
-      renderArtifacts({ summary:'', decisions:[], action_items:[], follow_up_email:'' });
-    }
-    clearOutputs();
-
-    // ===== Copy =====
-    function buildMarkdown(){
-      const a = state.lastArtifacts;
-      if (!a) return '';
-      const lines = [];
-      if (a.summary){ lines.push('# Summary', a.summary, ''); }
-      if (a.decisions?.length){ lines.push('# Decisions'); a.decisions.forEach(d => lines.push('- ' + d)); lines.push(''); }
-      if (a.action_items?.length){
-        lines.push('# Action items');
-        a.action_items.forEach(it => {
-          if (typeof it === 'string') lines.push('- ' + it);
-          else {
-            const d = [it.task || ''];
-            if (it.owner) d.push('owner: ' + it.owner);
-            if (it.due_date) d.push('due: ' + it.due_date);
-            if (it.priority) d.push('priority: ' + it.priority);
-            lines.push('- ' + d.filter(Boolean).join(' | '));
-          }
-        });
-        lines.push('');
-      }
-      if (a.follow_up_email){ lines.push('# Follow-up email', a.follow_up_email); }
-      return lines.join('\n').trim();
-    }
-    async function copyText(text, okMsg){
-      if (!text){ setStatus('Nothing to copy.', 'error'); return; }
-      try { await navigator.clipboard.writeText(text); setStatus(okMsg, 'success'); }
-      catch { setStatus('Copy failed.', 'error'); }
-    }
-    els.copyMarkdown.addEventListener('click', () => copyText(buildMarkdown(), 'Copied as Markdown.'));
-    els.copyEmail.addEventListener('click', () => copyText(state.lastArtifacts?.follow_up_email || '', 'Email copied.'));
-
-    // ===== Sample / Clear =====
-    els.loadSample.addEventListener('click', () => {
-      els.meetingTitle.value = 'Weekly production sync';
-      els.meetingType.value = 'project_sync';
-      els.notes.value = [
-        'Attendees: Alice (PM), Bob (Eng), Carol (Design)',
-        '- Bob reported backend API v2 is on track, will deploy Wed.',
-        '- Carol showed new onboarding mockups; team agreed to adopt option B.',
-        '- Decision: Freeze scope for v2.0 after this week.',
-        '- Risk: Mobile testing device shortage; Alice to order 2 more iPads by Friday.',
-        '- Action: Bob to finalise migration script by Tue EOD.',
-        '- Action: Carol to deliver final icons by Thu.'
-      ].join('\n');
-      updateNotesCounter();
-    });
-    els.clearForm.addEventListener('click', () => {
-      els.form.reset();
-      updateNotesCounter();
-      clearOutputs();
-      hideError();
-      stepperEl.hidden = true;
-      state.lastArtifacts = null;
-      setStatus('Form cleared.', 'success');
-    });
-
-    // ===== Submit =====
-    async function submitWorkflow(payload){
-      setStatus('Running workflow...');
-      hideError();
-      resetStepper();
-      markStep('coordinator', 'active');
-
-      if (!state.lastArtifacts){
-        els.summaryOutput.innerHTML =
-          '<div class="skeleton" style="width:90%"></div>' +
-          '<div class="skeleton" style="width:70%"></div>' +
-          '<div class="skeleton" style="width:80%"></div>';
-      }
-
-      els.submitButton.disabled = true;
-
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 60000);
-
-      try {
-        const res = await fetch('/.netlify/functions/multi-agent-run', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-          signal: controller.signal
-        });
-        const data = await res.json();
-
-        if (!res.ok || (data && data.success === false)){
-          throw new Error((data && data.error) || `Request failed (${res.status})`);
-        }
-        if (!data || !data.artifacts){
-          throw new Error('Workflow returned empty artifacts');
-        }
-
-        applyTraceToStepper(data.trace);
-        const normalized = normalizeArtifacts(data);
-        state.lastArtifacts = normalized;
-        renderArtifacts(normalized);
-        setStatus('Workflow completed.', 'success');
-      } catch (err){
-        console.error(err);
-        const msg = err?.name === 'AbortError' ? 'Request timed out after 60 seconds.' : (err?.message || 'Unknown error');
-        showError(msg);
-        setStatus(msg, 'error');
-        if (state.lastArtifacts) renderArtifacts(state.lastArtifacts);
-        else clearOutputs();
-        STEPS.forEach(s => {
-          const el = stepperEl.querySelector(`[data-step="${s}"]`);
-          if (el && !el.classList.contains('done')) el.className = 'step failed';
-        });
-      } finally {
-        clearTimeout(timeoutId);
-        els.submitButton.disabled = false;
-      }
-    }
-
-    els.form.addEventListener('submit', e => {
-      e.preventDefault();
-      const notes = els.notes.value.trim();
-      if (notes.length < 30){ showError('Notes too short. Please provide at least 30 characters.'); return; }
-      if (notes.length > 20000){ showError('Notes too long. Maximum 20,000 characters.'); return; }
-
-      const payload = {
-        meetingTitle: els.meetingTitle.value.trim(),
-        meetingType: els.meetingType.value,
-        outputMode: els.outputMode.value,
-        language: els.outputLanguage.value,
-        notes
-      };
-      state.lastPayload = payload;
-      submitWorkflow(payload);
-    });
-
-    // Cmd/Ctrl + Enter 送出
-    document.addEventListener('keydown', e => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter'){
-        e.preventDefault();
-        els.form.requestSubmit();
-      }
-    });
-  </script>
+  <script src="/app.js" defer></script>
 </body>
 </html>

@@ -1,0 +1,71 @@
+{
+  "pageTitle": "Meeting Workspace — AI Summary, Actions & Follow-up",
+  "pageDesc": "Turn raw meeting notes into summary, decisions, action items and a ready-to-send follow-up email in seconds.",
+  "brand": "Meeting Workspace",
+  "heroTitle": "Turn messy notes into shareable meeting outcomes",
+  "heroSub": "Summary, decisions, action items and a ready-to-send email — in one click.",
+
+  "inputTitle": "Meeting input",
+  "inputTag": "Step 1",
+  "outputTitle": "Meeting pack",
+  "outputTag": "Step 2",
+
+  "fieldTitle": "Meeting title",
+  "fieldType": "Meeting type",
+  "fieldOutLang": "Output language",
+  "fieldMode": "Output mode",
+  "fieldNotes": "Meeting notes",
+  "notesPlaceholder": "Paste raw notes or transcript here...",
+  "notesHelp": "Min 30, max 20,000 characters.",
+
+  "typeGeneral": "General",
+  "typeProject": "Project sync",
+  "typeSales": "Sales call",
+  "typeDesign": "Design review",
+  "typeRetro": "Retrospective",
+
+  "modeFull": "Full pack (summary + actions + email)",
+  "modeSummary": "Summary only",
+  "modeActions": "Action items only",
+  "modeEmail": "Follow-up email only",
+
+  "btnRun": "Run workflow",
+  "btnSample": "Load sample",
+  "btnClear": "Clear",
+  "btnRetry": "Try again",
+  "btnCopyMd": "Copy Markdown",
+  "btnCopyEmail": "Copy email",
+
+  "stepCoord": "Coordinator",
+  "stepSum": "Summary",
+  "stepAct": "Actions",
+  "stepEmail": "Email",
+  "stepQA": "QA",
+
+  "outSummary": "Summary",
+  "outDecisions": "Decisions",
+  "outActions": "Action items",
+  "outEmail": "Follow-up email",
+
+  "emptySummary": "(no summary yet)",
+  "emptyDecisions": "(no decisions yet)",
+  "emptyActions": "(no action items yet)",
+  "emptyEmail": "(no email yet)",
+
+  "statusRunning": "Running workflow...",
+  "statusSuccess": "Workflow completed.",
+  "statusFormCleared": "Form cleared.",
+  "statusCopiedMd": "Copied as Markdown.",
+  "statusCopiedEmail": "Email copied.",
+  "statusNothingToCopy": "Nothing to copy.",
+  "statusCopyFailed": "Copy failed.",
+  "statusTimeout": "Request timed out after 60 seconds.",
+  "errNotesShort": "Notes too short. Please provide at least 30 characters.",
+  "errNotesLong": "Notes too long. Maximum 20,000 characters.",
+  "errEmpty": "Workflow returned empty artifacts.",
+
+  "sampleTitle": "Weekly production sync",
+  "sampleNotes": "Attendees: Alice (PM), Bob (Eng), Carol (Design)\n- Bob reported backend API v2 is on track, will deploy Wed.\n- Carol showed new onboarding mockups; team agreed to adopt option B.\n- Decision: Freeze scope for v2.0 after this week.\n- Risk: Mobile testing device shortage; Alice to order 2 more iPads by Friday.\n- Action: Bob to finalise migration script by Tue EOD.\n- Action: Carol to deliver final icons by Thu.",
+
+  "footerTag": "Built with Perplexity Sonar · Netlify Functions"
+}

@@ -1,0 +1,71 @@
+{
+  "pageTitle": "Meeting Workspace — AI 會議摘要、行動項目與跟進信",
+  "pageDesc": "一鍵將會議筆記轉為摘要、決策、行動項目，以及可直接寄出的跟進 Email。",
+  "brand": "Meeting Workspace",
+  "heroTitle": "把雜亂的會議筆記，變成可分享的會議成果",
+  "heroSub": "摘要、決策、行動項目與跟進 Email，一鍵完成。",
+
+  "inputTitle": "會議輸入",
+  "inputTag": "步驟 1",
+  "outputTitle": "會議成果",
+  "outputTag": "步驟 2",
+
+  "fieldTitle": "會議主題",
+  "fieldType": "會議類型",
+  "fieldOutLang": "輸出語言",
+  "fieldMode": "輸出模式",
+  "fieldNotes": "會議筆記",
+  "notesPlaceholder": "將原始會議筆記或逐字稿貼於此處...",
+  "notesHelp": "最少 30 字元,最多 20,000 字元。",
+
+  "typeGeneral": "一般會議",
+  "typeProject": "專案同步",
+  "typeSales": "業務會議",
+  "typeDesign": "設計檢討",
+  "typeRetro": "回顧會議",
+
+  "modeFull": "完整包(摘要 + 行動 + Email)",
+  "modeSummary": "只要摘要",
+  "modeActions": "只要行動項目",
+  "modeEmail": "只要跟進 Email",
+
+  "btnRun": "開始執行",
+  "btnSample": "載入範例",
+  "btnClear": "清除",
+  "btnRetry": "重試",
+  "btnCopyMd": "複製為 Markdown",
+  "btnCopyEmail": "複製 Email",
+
+  "stepCoord": "協調",
+  "stepSum": "摘要",
+  "stepAct": "行動",
+  "stepEmail": "信件",
+  "stepQA": "品質檢查",
+
+  "outSummary": "摘要",
+  "outDecisions": "決策",
+  "outActions": "行動項目",
+  "outEmail": "跟進 Email",
+
+  "emptySummary": "(尚無摘要)",
+  "emptyDecisions": "(尚無決策)",
+  "emptyActions": "(尚無行動項目)",
+  "emptyEmail": "(尚無 Email)",
+
+  "statusRunning": "工作流執行中...",
+  "statusSuccess": "工作流已完成。",
+  "statusFormCleared": "表單已清除。",
+  "statusCopiedMd": "已複製為 Markdown。",
+  "statusCopiedEmail": "Email 已複製。",
+  "statusNothingToCopy": "沒有可複製的內容。",
+  "statusCopyFailed": "複製失敗。",
+  "statusTimeout": "請求已超時(60 秒)。",
+  "errNotesShort": "會議筆記過短,請至少提供 30 個字元。",
+  "errNotesLong": "會議筆記過長,最多 20,000 字元。",
+  "errEmpty": "工作流沒有回傳任何結果。",
+
+  "sampleTitle": "每週生產同步會議",
+  "sampleNotes": "出席:Alice (PM)、Bob (工程)、Carol (設計)\n- Bob 回報後端 API v2 進度正常,週三可部署。\n- Carol 展示新的 Onboarding 設計稿,團隊同意採用方案 B。\n- 決定:本週後凍結 v2.0 範圍。\n- 風險:行動測試裝置不足,Alice 週五前再訂 2 台 iPad。\n- 行動:Bob 週二下班前完成資料庫遷移腳本。\n- 行動:Carol 週四前交出最終圖示。",
+
+  "footerTag": "由 Perplexity Sonar · Netlify Functions 打造"
+}
