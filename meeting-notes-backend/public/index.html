@@ -3,267 +3,148 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title data-i18n="pageTitle">Meeting Workspace</title>
-  <meta
-    name="description"
-    data-i18n-attr="content"
-    data-i18n="pageDesc"
-    content="Turn raw meeting notes into summary, decisions, action items and a follow-up email."
-  />
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-
-  <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
-  <link
-    href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&f[]=cabinet-grotesk@500,700,800&display=swap"
-    rel="stylesheet"
-  />
-
+  <title>Meeting Workspace — Turn meetings into action, not just notes</title>
+  <meta name="description" content="AI Meeting Notes & Action Items. Paste your transcript, get a summary, action items, and a follow-up email in seconds." />
   <link rel="stylesheet" href="/styles.css" />
+  <style>
+    /* Landing-only styles */
+    .landing { max-width: 1080px; margin: 0 auto; padding: 32px 20px 80px; }
+    .nav { display:flex; justify-content:space-between; align-items:center; padding: 8px 0 32px; }
+    .nav .brand { font-weight:700; font-size:18px; }
+    .nav .nav-links a { margin-left: 18px; text-decoration:none; color:inherit; opacity:.8; }
+    .nav .nav-links a:hover { opacity:1; }
+    .hero { text-align:center; padding: 48px 0 32px; }
+    .hero h1 { font-size: clamp(32px, 5vw, 52px); line-height:1.1; margin: 0 0 16px; }
+    .hero p.sub { font-size: 18px; opacity:.8; max-width: 680px; margin: 0 auto 28px; }
+    .cta-row { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+    .btn-primary { background:#111; color:#fff; padding:14px 26px; border-radius:10px; text-decoration:none; font-weight:600; }
+    .btn-ghost { background:transparent; color:inherit; padding:14px 26px; border-radius:10px; text-decoration:none; font-weight:600; border:1px solid rgba(0,0,0,.15); }
+    .note { font-size:13px; opacity:.65; margin-top:14px; }
+    .features { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px; margin:56px 0; }
+    .feat { padding:22px; border:1px solid rgba(0,0,0,.08); border-radius:14px; background:rgba(255,255,255,.5); }
+    .feat h3 { margin:0 0 8px; font-size:18px; }
+    .feat p { margin:0; opacity:.8; font-size:14px; line-height:1.55; }
+    .how { margin:56px 0; }
+    .how h2, .pricing h2 { text-align:center; font-size:28px; margin-bottom:24px; }
+    .steps { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; }
+    .step { padding:20px; border-radius:12px; background:rgba(0,0,0,.03); }
+    .step .num { font-weight:700; font-size:13px; opacity:.6; letter-spacing:.1em; }
+    .pricing { margin:56px 0; }
+    .plans { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px; max-width:720px; margin:0 auto; }
+    .plan { padding:26px; border-radius:14px; border:1px solid rgba(0,0,0,.1); background:#fff; }
+    .plan.pro { border-color:#111; box-shadow:0 8px 28px rgba(0,0,0,.08); }
+    .plan h3 { margin:0 0 6px; }
+    .plan .price { font-size:30px; font-weight:700; margin:8px 0 14px; }
+    .plan ul { margin:0 0 18px; padding-left:20px; }
+    .plan ul li { margin:6px 0; font-size:14px; }
+    footer { text-align:center; padding:32px 0 0; font-size:13px; opacity:.65; }
+    footer a { color:inherit; margin:0 8px; }
+    [data-theme="dark"] .feat { background:rgba(255,255,255,.04); border-color:rgba(255,255,255,.08); }
+    [data-theme="dark"] .plan { background:#1a1a1a; border-color:rgba(255,255,255,.12); }
+    [data-theme="dark"] .plan.pro { border-color:#fff; }
+    [data-theme="dark"] .btn-ghost { border-color:rgba(255,255,255,.2); }
+    [data-theme="dark"] .step { background:rgba(255,255,255,.05); }
+  </style>
 </head>
 <body>
-  <div class="app">
-    <header class="top">
-      <a href="/" class="brand">
-        <span class="brand-mark">◈</span>
-        <span class="brand-text" data-i18n="brand">Meeting Workspace</span>
-      </a>
+  <div class="landing">
 
-      <div class="top-actions">
-        <div class="lang-switch" role="group" aria-label="Language">
-          <button type="button" class="lang-btn" data-lang="en">EN</button>
-          <button type="button" class="lang-btn" data-lang="zh-Hant">繁中</button>
-        </div>
-
-        <button type="button" class="quota-pill" id="quotaPill" title="Daily quota">
-          <span id="quotaCount">0</span>/<span id="quotaLimit">3</span>
-          <span class="quota-label" data-i18n="quotaToday">today</span>
-        </button>
-
-        <button type="button" class="icon-btn" id="historyBtn" aria-label="History" title="History">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 12a9 9 0 1 0 3-6.7"></path>
-            <polyline points="3 4 3 10 9 10"></polyline>
-            <path d="M12 7v5l3 2"></path>
-          </svg>
-        </button>
-
-        <button type="button" class="icon-btn" id="themeToggle" aria-label="Toggle theme" title="Toggle theme">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-          </svg>
-        </button>
+    <nav class="nav">
+      <div class="brand">📝 Meeting Workspace</div>
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#how">How it works</a>
+        <a href="#pricing">Pricing</a>
+        <a href="/app/">Open App</a>
       </div>
-    </header>
+    </nav>
 
     <section class="hero">
-      <h1 data-i18n="heroTitle">Turn messy notes into shareable meeting outcomes</h1>
-      <p class="hero-sub" data-i18n="heroSub">Summary, decisions, action items and a ready-to-send email — in one click.</p>
+      <h1>Turn meetings into action,<br/>not just notes.</h1>
+      <p class="sub">Paste your transcript — get a clean summary, owner-tagged action items, and a ready-to-send follow-up email in seconds. Built for teams who care about what happens <em>after</em> the meeting.</p>
+      <div class="cta-row">
+        <a class="btn-primary" href="/app/">Try it free →</a>
+        <a class="btn-ghost" href="#how">See how it works</a>
+      </div>
+      <div class="note">No signup. 3 free runs per day. English &amp; 繁體中文.</div>
     </section>
 
-    <main class="grid">
-      <section class="card input-card" aria-labelledby="inputTitle">
-        <div class="card-head">
-          <h2 id="inputTitle" data-i18n="inputTitle">Meeting input</h2>
-          <span class="tag" data-i18n="inputTag">Step 1</span>
-        </div>
-
-        <form id="form" novalidate>
-          <div class="row-2">
-            <div class="field">
-              <label for="meetingTitle" data-i18n="fieldTitle">Meeting title</label>
-              <input type="text" id="meetingTitle" name="meetingTitle" autocomplete="off" />
-            </div>
-            <div class="field">
-              <label for="meetingType" data-i18n="fieldType">Meeting type</label>
-              <select id="meetingType" name="meetingType">
-                <option value="General" data-i18n="typeGeneral">General</option>
-                <option value="project_sync" data-i18n="typeProject">Project sync</option>
-                <option value="sales_call" data-i18n="typeSales">Sales call</option>
-                <option value="design_review" data-i18n="typeDesign">Design review</option>
-                <option value="retro" data-i18n="typeRetro">Retrospective</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="row-2">
-            <div class="field">
-              <label for="outputLanguage" data-i18n="fieldOutLang">Output language</label>
-              <select id="outputLanguage" name="outputLanguage">
-                <option value="English">English</option>
-                <option value="Traditional Chinese">繁體中文</option>
-                <option value="Simplified Chinese">简体中文</option>
-                <option value="Japanese">日本語</option>
-              </select>
-            </div>
-            <div class="field">
-              <label for="outputMode" data-i18n="fieldMode">Output mode</label>
-              <select id="outputMode" name="outputMode">
-                <option value="full_meeting_pack" data-i18n="modeFull">Full pack</option>
-                <option value="summary_only" data-i18n="modeSummary">Summary only</option>
-                <option value="action_items_only" data-i18n="modeActions">Action items only</option>
-                <option value="email_only" data-i18n="modeEmail">Follow-up email only</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="field">
-            <label for="notes" data-i18n="fieldNotes">Meeting notes</label>
-
-            <div id="dropZone" class="drop-zone">
-              <textarea
-                id="notes"
-                name="notes"
-                rows="14"
-                maxlength="20000"
-                minlength="30"
-                required
-                aria-describedby="notesHelp notesCounter"
-                data-i18n-attr="placeholder"
-                data-i18n="notesPlaceholder"
-                placeholder="Paste raw notes, or drop a .txt / .md / .vtt file here..."
-              ></textarea>
-              <div class="drop-hint" data-i18n="dropHint">Drop a .txt, .md or .vtt file to import</div>
-            </div>
-
-            <div class="field-foot">
-              <span id="notesHelp" class="field-help" data-i18n="notesHelp">Min 30, max 20,000 characters.</span>
-              <div class="foot-right">
-                <button type="button" class="chip-btn" id="autoCleanBtn" title="Auto-clean" data-i18n="btnAutoClean">Auto-clean</button>
-                <label class="upload-btn">
-                  <input type="file" id="fileInput" accept=".txt,.md,.vtt,text/plain,text/markdown,text/vtt" hidden />
-                  <span data-i18n="btnUpload">Upload file</span>
-                </label>
-                <span class="char-counter" id="notesCounter" aria-live="polite">
-                  <span id="notesCount">0</span> / 20,000
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div class="actions">
-            <button type="submit" id="submitButton" class="btn btn-primary">
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                <polygon points="5 3 19 12 5 21 5 3"></polygon>
-              </svg>
-              <span data-i18n="btnRun">Run workflow</span>
-              <kbd id="shortcutKbd">Ctrl + Enter</kbd>
-            </button>
-            <button type="button" id="loadSample" class="btn" data-i18n="btnSample">Load sample</button>
-            <button type="button" id="clearForm" class="btn" data-i18n="btnClear">Clear</button>
-          </div>
-
-          <div id="status" role="status" aria-live="polite" class="status"></div>
-
-          <ol id="stepper" class="stepper idle" aria-label="Workflow progress">
-            <li class="step" data-step="coordinator"><span class="dot"></span><span data-i18n="stepCoord">Coordinator</span></li>
-            <li class="step" data-step="summarizer"><span class="dot"></span><span data-i18n="stepSum">Summary</span></li>
-            <li class="step" data-step="action_item_agent"><span class="dot"></span><span data-i18n="stepAct">Actions</span></li>
-            <li class="step" data-step="followup_email_agent"><span class="dot"></span><span data-i18n="stepEmail">Email</span></li>
-            <li class="step" data-step="qa_review_agent"><span class="dot"></span><span data-i18n="stepQA">QA</span></li>
-          </ol>
-
-          <div id="etaLine" class="eta-line" hidden>
-            <span data-i18n="etaPrefix">Estimated</span> <span id="etaSec">30</span>s
-          </div>
-
-          <div id="errorBanner" class="error-banner" role="alert">
-            <span id="errorBannerText"></span>
-            <button type="button" id="retryButton" class="btn btn-primary" data-i18n="btnRetry">Try again</button>
-          </div>
-        </form>
-      </section>
-
-      <section class="card output-card" aria-labelledby="outputTitle">
-        <div class="card-head">
-          <h2 id="outputTitle" data-i18n="outputTitle">Meeting pack</h2>
-          <span class="tag tag-accent" data-i18n="outputTag">Step 2</span>
-        </div>
-
-        <div class="out-actions">
-          <button type="button" class="btn" id="copyMarkdown">
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="9" y="9" width="13" height="13" rx="2"></rect>
-              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-            </svg>
-            <span data-i18n="btnCopyMd">Copy Markdown</span>
-          </button>
-
-          <button type="button" class="btn" id="copyEmail">
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-              <polyline points="22,6 12,13 2,6"></polyline>
-            </svg>
-            <span data-i18n="btnCopyEmail">Copy email</span>
-          </button>
-
-          <button type="button" class="btn" id="downloadMd">
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-              <polyline points="7 10 12 15 17 10"></polyline>
-              <line x1="12" y1="15" x2="12" y2="3"></line>
-            </svg>
-            <span data-i18n="btnDownload">Download .md</span>
-          </button>
-        </div>
-
-        <div class="out-block"><h3 data-i18n="outSummary">Summary</h3><div class="out-body" id="summaryOutput" aria-live="polite"></div></div>
-        <div class="out-block"><h3 data-i18n="outDecisions">Decisions</h3><ul class="out-list" id="decisionsOutput" aria-live="polite"></ul></div>
-        <div class="out-block"><h3 data-i18n="outActions">Action items</h3><ul class="out-list" id="actionsOutput" aria-live="polite"></ul></div>
-        <div class="out-block"><h3 data-i18n="outEmail">Follow-up email</h3><div class="out-body" id="emailOutput" aria-live="polite"></div></div>
-      </section>
-    </main>
-
-    <aside id="historyDrawer" class="drawer" hidden aria-hidden="true">
-      <div class="drawer-head">
-        <h3 data-i18n="historyTitle">Recent meetings</h3>
-        <button type="button" class="icon-btn" id="closeDrawer" aria-label="Close">✕</button>
+    <section id="features" class="features">
+      <div class="feat">
+        <h3>⚡ Summary in seconds</h3>
+        <p>Drop a Zoom/Teams transcript, get a structured recap — decisions, risks, open questions — in one click.</p>
       </div>
-      <div class="drawer-body">
-        <ul id="historyList" class="history-list"></ul>
-        <p id="historyEmpty" class="history-empty" data-i18n="historyEmpty" hidden>No meetings yet.</p>
-        <button type="button" class="btn" id="clearHistory" data-i18n="btnClearHistory">Clear all</button>
+      <div class="feat">
+        <h3>✅ Action items with owners</h3>
+        <p>Every task is tagged with who, what, and by when. No more "I thought you were doing that."</p>
       </div>
-    </aside>
-    <div id="drawerOverlay" class="drawer-overlay" hidden></div>
+      <div class="feat">
+        <h3>✉️ Follow-up email, drafted</h3>
+        <p>A polished recap email ready to paste into Outlook or Gmail — tone and language auto-matched.</p>
+      </div>
+      <div class="feat">
+        <h3>🌐 Bilingual output</h3>
+        <p>Switch between English and 繁體中文 on the fly. Great for HK / Asia-based teams.</p>
+      </div>
+      <div class="feat">
+        <h3>🕘 History &amp; re-run</h3>
+        <p>Last 20 meetings stored locally. Re-open, re-export, or tweak the output mode anytime.</p>
+      </div>
+      <div class="feat">
+        <h3>🔒 Privacy-first</h3>
+        <p>Your transcript is processed on demand and not stored on our servers. History lives only in your browser.</p>
+      </div>
+    </section>
 
-    <footer class="foot">
-      <span data-i18n="footerTag">Built with Perplexity Sonar · Netlify Functions</span>
+    <section id="how" class="how">
+      <h2>How it works</h2>
+      <div class="steps">
+        <div class="step"><div class="num">STEP 1</div><p>Paste your meeting transcript or notes.</p></div>
+        <div class="step"><div class="num">STEP 2</div><p>Pick output language &amp; mode (summary, action items, full pack).</p></div>
+        <div class="step"><div class="num">STEP 3</div><p>Hit Run. Get your recap, tasks, and email in ~15 seconds.</p></div>
+        <div class="step"><div class="num">STEP 4</div><p>Copy, download .md, or send it off. Done.</p></div>
+      </div>
+    </section>
+
+    <section id="pricing" class="pricing">
+      <h2>Simple pricing</h2>
+      <div class="plans">
+        <div class="plan">
+          <h3>Free</h3>
+          <div class="price">$0</div>
+          <ul>
+            <li>3 runs per day</li>
+            <li>Summary + action items + email</li>
+            <li>EN / 繁體中文</li>
+            <li>Local history (20 items)</li>
+          </ul>
+          <a class="btn-ghost" href="/app/">Start free</a>
+        </div>
+        <div class="plan pro">
+          <h3>Pro ✨</h3>
+          <div class="price">$9<span style="font-size:14px;opacity:.6">/mo</span></div>
+          <ul>
+            <li>Unlimited runs</li>
+            <li>Priority processing</li>
+            <li>Longer transcript limit</li>
+            <li>Email support</li>
+          </ul>
+          <a class="btn-primary" href="https://aimeetingnote.lemonsqueezy.com/checkout/buy/f50cef81-bc3d-40a2-bbab-8bc850a9af80" target="_blank" rel="noopener">Upgrade to Pro</a>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      © <span id="yr"></span> Meeting Workspace ·
+      <a href="/privacy.html">Privacy</a> ·
+      <a href="/terms.html">Terms</a> ·
+      <a href="/app/">Open App</a>
     </footer>
 
-    <div id="upgradeModal" class="modal" hidden aria-hidden="true" role="dialog">
-      <div class="modal-backdrop" data-close-modal></div>
-      <div class="modal-card" role="document">
-        <button type="button" class="modal-close" data-close-modal aria-label="Close">✕</button>
-        <div class="modal-icon">🎯</div>
-        <h3 class="modal-title" data-i18n="upgradeTitle">Daily free limit reached</h3>
-        <p class="modal-sub" data-i18n="upgradeSub">Resets tomorrow at 00:00 local time.</p>
-        <ul class="modal-perks">
-          <li data-i18n="upgradePerk1">✓ Unlimited runs</li>
-          <li data-i18n="upgradePerk2">✓ Export PDF / DOCX</li>
-          <li data-i18n="upgradePerk3">✓ Cloud history (coming soon)</li>
-          <li data-i18n="upgradePerk4">✓ Priority AI response</li>
-        </ul>
-        <div class="modal-actions">
-          <a
-            href="https://aimeetingnote.lemonsqueezy.com/checkout/buy/f50cef81-bc3d-40a2-bbab-8bc850a9af80"
-            target="_blank"
-            rel="noopener"
-            class="btn btn-primary btn-block"
-            id="upgradeCta"
-          >
-            <span data-i18n="upgradeCta">Upgrade Pro — $9/mo</span>
-          </a>
-          <button type="button" class="btn btn-block" id="haveLicenseBtn" disabled title="Coming in next update">
-            <span data-i18n="haveLicense">I have a license key</span>
-          </button>
-          <button type="button" class="btn-link" data-close-modal>
-            <span data-i18n="comeBackTomorrow">Come back tomorrow</span>
-          </button>
-        </div>
-      </div>
-    </div>
   </div>
 
-  <script src="/app.js" defer></script>
+  <script>
+    document.getElementById('yr').textContent = new Date().getFullYear();
+  </script>
 </body>
 </html>
