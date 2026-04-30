@@ -193,3 +193,5 @@ textarea{resize:vertical; min-height:240px; font-family:ui-monospace,Menlo,Conso
 .history-item-del{float:right; background:transparent; border:0; color:var(--faint); cursor:pointer; font-size:1rem; padding:0 .25rem}
 .history-item-del:hover{color:var(--danger)}
 .history-empty{color:var(--faint); font-size:.9rem; text-align:center; padding:2rem 0}
+.drawer[hidden]{display:none !important}
+.drawer-overlay[hidden]{display:none !important}
