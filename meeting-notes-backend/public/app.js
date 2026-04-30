@@ -11,15 +11,15 @@
   const PRO_KEY = 'pro';
 
   const FALLBACK_SAMPLE = {
-    en: {
-      title: 'Weekly production sync',
-      notes: 'Attendees: Alice (PM), Bob (Eng), Carol (Design)\n- Bob reported backend API v2 is on track, will deploy Wed.\n- Carol showed new onboarding mockups; team agreed to adopt option B.\n- Decision: Freeze scope for v2.0 after this week.\n- Risk: Mobile testing device shortage; Alice to order 2 more iPads by Friday.\n- Action: Bob to finalise migration script by Tue EOD.\n- Action: Carol to deliver final icons by Thu.'
-    },
-    'zh-Hant': {
-      title: '每週生產同步會議',
-      notes: '出席：Alice (PM)、Bob (工程)、Carol (設計)\n- Bob 回報後端 API v2 進度正常，週三可部署。\n- Carol 展示新的 Onboarding 設計稿，團隊同意採用方案 B。\n- 決定：本週後凍結 v2.0 範圍。\n- 風險：行動測試裝置不足，Alice 週五前再訂 2 台 iPad。\n- 行動：Bob 週二下班前完成資料庫遷移腳本。\n- 行動：Carol 週四前交出最終圖示。'
-    }
-  };
+  en: {
+    title: 'Weekly production sync',
+    notes: 'Attendees: Alice (PM), Bob (Eng), Carol (Design)\n- Bob reported backend API v2 is on track, will deploy Wed.\n- Carol showed new onboarding mockups; team agreed to adopt option B.\n- Decision: Freeze scope for v2.0 after this week.\n- Risk: Mobile testing device shortage; Alice to order 2 more iPads by Friday.\n- Action: Bob to finalise migration script by Tue EOD.\n- Action: Carol to deliver final icons by Thu.'
+  },
+  'zh-Hant': {
+    title: '每週生產同步會議',
+    notes: '出席：Alice (PM)、Bob (工程)、Carol (設計)\n- Bob 回報後端 API v2 進度正常，週三可部署。\n- Carol 展示新的 Onboarding 設計稿，團隊同意採用方案 B。\n- 決定：本週後凍結 v2.0 範圍。\n- 風險：行動測試裝置不足，Alice 週五前再訂 2 台 iPad。\n- 行動：Bob 週二下班前完成資料庫遷移腳本。\n- 行動：Carol 週四前交出最終圖示。'
+  }
+};
 
   const state = {
     lang: localStorage.getItem('lang') || (navigator.language.startsWith('zh') ? 'zh-Hant' : 'en'),
@@ -96,21 +96,26 @@
   }
 
   async function loadLocale(lang) {
-    if (!SUPPORTED.includes(lang)) lang = 'en';
-    try {
-      const res = await fetch('/locales/' + lang + '.json', { cache: 'no-cache' });
-      state.dict = await res.json();
-      state.lang = lang;
-      localStorage.setItem('lang', lang);
-      document.documentElement.setAttribute('lang', lang === 'zh-Hant' ? 'zh-Hant' : 'en');
-      applyTranslations();
-      updateLangButtons();
-      if (state.lastArtifacts) renderArtifacts(state.lastArtifacts);
-      else clearOutputs();
-      updateQuotaPill();
-    } catch (e) {
-      console.error('Failed to load locale', e);
-    }
+  if (!SUPPORTED.includes(lang)) lang = 'en';
+  state.lang = lang;
+  localStorage.setItem('lang', lang);
+  document.documentElement.setAttribute('lang', lang === 'zh-Hant' ? 'zh-Hant' : 'en');
+
+  try {
+    const res = await fetch('/locales/' + lang + '.json', { cache: 'no-cache' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    state.dict = await res.json();
+  } catch (e) {
+    console.warn('[locale] load failed, keeping previous dict:', e);
+    // keep previous state.dict so UI still switches button highlight
+  }
+
+  applyTranslations();
+  updateLangButtons();
+  if (state.lastArtifacts) renderArtifacts(state.lastArtifacts);
+  else clearOutputs();
+  updateQuotaPill();
+}
   }
 
   function applyTranslations() {
@@ -124,10 +129,15 @@
     });
   }
 
-  function updateLangButtons() {
-    document.querySelectorAll('.lang-btn').forEach((b) => {
-      b.classList.toggle('active', b.dataset.lang === state.lang);
-    });
+  // Event delegation — 即使前面 throw 都有效；click 任何 .lang-btn 都會 work
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('.lang-btn');
+  if (!btn) return;
+  const lang = btn.dataset.lang;
+  if (!lang) return;
+  console.log('[lang] switching to', lang);
+  loadLocale(lang);
+});
   }
 
   document.querySelectorAll('.lang-btn').forEach((b) => {
@@ -432,17 +442,17 @@
   });
 
   function cleanTranscript(text) {
-    return text
-      .replace(/^WEBVTT.*$/m, '')
-      .replace(/^\d+$/gm, '')
-      .replace(/^\d\d:\d\d:\d\d[.,]\d{3} --> \d\d:\d\d:\d\d[.,]\d{3}.*$/gm, '')
-      .replace(/^\[\d{1,2}:\d{2}(:\d{2})?\]\s*/gm, '')
-      .replace(/^\(\d{1,2}:\d{2}(:\d{2})?\)\s*/gm, '')
-      .replace(/<[^>]+>/g, '')
-      .replace(/^Speaker \d+:\s*/gmi, '')
-      .replace(/\n{3,}/g, '\n\n')
-      .trim();
-  }
+  return text
+    .replace(/^WEBVTT.*$/m, '')
+    .replace(/^\d+$/gm, '')
+    .replace(/^\d\d:\d\d:\d\d[.,]\d{3} --> \d\d:\d\d:\d\d[.,]\d{3}.*$/gm, '')
+    .replace(/^\[\d{1,2}:\d{2}(:\d{2})?\]\s*/gm, '')
+    .replace(/^\(\d{1,2}:\d{2}(:\d{2})?\)\s*/gm, '')
+    .replace(/<[^>]+>/g, '')
+    .replace(/^Speaker \d+:\s*/gmi, '')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
 
   async function handleFile(file) {
     if (!file) return;
