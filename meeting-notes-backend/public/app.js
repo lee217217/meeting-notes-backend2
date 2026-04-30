@@ -513,13 +513,46 @@
   });
 
   function isPro() {
-    try {
-      const p = JSON.parse(localStorage.getItem(PRO_KEY) || '{}');
-      if (!p.active) return false;
-      if (p.validUntil && new Date(p.validUntil) < new Date()) return false;
-      return true;
-    } catch { return false; }
+  try {
+    const p = JSON.parse(localStorage.getItem(PRO_KEY) || '{}');
+    if (!p.active) return false;
+    if (p.validUntil && new Date(p.validUntil) < new Date()) return false;
+    return true;
+  } catch { return false; }
+}
+
+async function revalidateLicense() {
+  let rec;
+  try { rec = JSON.parse(localStorage.getItem(PRO_KEY) || '{}'); } catch { return; }
+  if (!rec.active || !rec.licenseKey) return;
+
+  // Only revalidate every 24h to avoid hammering the function
+  const lastCheck = rec.lastCheck ? new Date(rec.lastCheck).getTime() : 0;
+  const fresh = Date.now() - lastCheck < 24 * 60 * 60 * 1000;
+  if (fresh) return;
+
+  try {
+    const res = await fetch('/.netlify/functions/verify-license', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ licenseKey: rec.licenseKey })
+    });
+    const data = await res.json();
+    if (!data || !data.valid) {
+      console.warn('[license] revoked on revalidate:', data && data.reason);
+      localStorage.removeItem(PRO_KEY);
+      updateQuotaPill();
+      setStatusText(t('statusLicenseRevoked') + (data?.reason ? ' (' + data.reason + ')' : ''), 'error');
+      return;
+    }
+    rec.validUntil = data.validUntil || rec.validUntil;
+    rec.lastCheck = new Date().toISOString();
+    localStorage.setItem(PRO_KEY, JSON.stringify(rec));
+  } catch (e) {
+    console.warn('[license] revalidate failed, staying optimistic', e);
+
   }
+}
 
   function todayStr() {
     const d = new Date();
@@ -608,7 +641,8 @@
       active: true,
       validUntil: data.validUntil,
       email: data.customerEmail || '',
-      licenseKey
+      licenseKey,
+ lastCheck: new Date().toISOString()
     }));
 
     updateQuotaPill();
@@ -855,9 +889,10 @@ els.haveLicenseBtn?.addEventListener('click', async () => {
   }
 
   loadLocale(state.lang).then(() => {
-    restoreLast();
-    updateQuotaPill();
-  });
+  restoreLast();
+  updateQuotaPill();
+  revalidateLicense(); 
+});
 
   updateCounter();
   idleStepper();

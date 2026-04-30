@@ -208,5 +208,6 @@
   "statusLicenseActivated": "Pro activated ✨ Enjoy unlimited runs!",
   "statusLicenseInvalid": "License key is invalid or expired.",
   "statusLicenseError": "Could not verify license. Try again later.",
-  "statusLicenseRestored": "Pro license restored."
+  "statusLicenseRestored": "Pro license restored.",
+"statusLicenseRevoked": "Your Pro license has been revoked"
 }

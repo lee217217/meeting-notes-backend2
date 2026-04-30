@@ -208,5 +208,6 @@
   "statusLicenseActivated": "Pro 已啟用 ✨ 盡情使用無限次！",
   "statusLicenseInvalid": "License Key 無效或已過期。",
   "statusLicenseError": "無法驗證 License，請稍後再試。",
-  "statusLicenseRestored": "Pro License 已還原。"
+  "statusLicenseRestored": "Pro License 已還原。"  ,
+"statusLicenseRevoked": "Pro License 已被撤銷"
 }
