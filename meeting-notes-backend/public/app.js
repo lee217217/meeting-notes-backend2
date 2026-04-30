@@ -382,11 +382,26 @@
   }
 
   // ===== Sample / Clear =====
-  els.loadSample.addEventListener('click', () => {
-    els.meetingTitle.value = t('sampleTitle');
-    els.notes.value = t('sampleNotes');
-    updateCounter();
-  });
+  const FALLBACK_SAMPLE = {
+  en: {
+    title: 'Weekly production sync',
+    notes: 'Attendees: Alice (PM), Bob (Eng), Carol (Design)\n- Bob reported backend API v2 is on track, will deploy Wed.\n- Carol showed new onboarding mockups; team agreed to adopt option B.\n- Decision: Freeze scope for v2.0 after this week.\n- Risk: Mobile testing device shortage; Alice to order 2 more iPads by Friday.\n- Action: Bob to finalise migration script by Tue EOD.\n- Action: Carol to deliver final icons by Thu.'
+  },
+  'zh-Hant': {
+    title: '每週生產同步會議',
+    notes: '出席：Alice (PM)、Bob (工程)、Carol (設計)\n- Bob 回報後端 API v2 進度正常，週三可部署。\n- Carol 展示新的 Onboarding 設計稿，團隊同意採用方案 B。\n- 決定：本週後凍結 v2.0 範圍。\n- 風險：行動測試裝置不足，Alice 週五前再訂 2 台 iPad。\n- 行動：Bob 週二下班前完成資料庫遷移腳本。\n- 行動：Carol 週四前交出最終圖示。'
+  }
+};
+
+els.loadSample.addEventListener('click', () => {
+  const fb = FALLBACK_SAMPLE[state.lang] || FALLBACK_SAMPLE.en;
+  const title = t('sampleTitle');
+  const notes = t('sampleNotes');
+  els.meetingTitle.value = (title === 'sampleTitle') ? fb.title : title;
+  els.notes.value = (notes === 'sampleNotes') ? fb.notes : notes;
+  updateCounter();
+  setStatus('statusSuccess', 'success');
+});
   els.clearForm.addEventListener('click', () => {
     els.form.reset();
     updateCounter();
