@@ -195,3 +195,42 @@ textarea{resize:vertical; min-height:240px; font-family:ui-monospace,Menlo,Conso
 .history-empty{color:var(--faint); font-size:.9rem; text-align:center; padding:2rem 0}
 .drawer[hidden]{display:none !important}
 .drawer-overlay[hidden]{display:none !important}
+/* ===== Quota pill ===== */
+.quota-pill{display:inline-flex; align-items:center; gap:.3rem;
+  background:var(--surface); color:var(--muted); border:1px solid var(--border);
+  border-radius:999px; padding:.35rem .75rem; font-size:.78rem; font-weight:700;
+  font-family:inherit; cursor:pointer; font-variant-numeric:tabular-nums;
+  transition:all .15s}
+.quota-pill:hover{background:var(--surface-2); color:var(--text)}
+.quota-pill .quota-label{font-weight:500; color:var(--faint); margin-left:.1rem}
+.quota-pill.warn{background:rgba(201,122,58,.10); border-color:rgba(201,122,58,.35); color:#a06a2a}
+.quota-pill.warn .quota-label{color:#a06a2a}
+.quota-pill.full{background:rgba(139,61,57,.10); border-color:rgba(139,61,57,.35); color:var(--danger)}
+.quota-pill.full .quota-label{color:var(--danger)}
+.quota-pill.pro{background:linear-gradient(135deg,#f4c96d,#c97a3a); color:#1e1c16;
+  border-color:transparent; font-weight:800}
+.quota-pill.pro .quota-label{color:#1e1c16}
+
+/* ===== Modal ===== */
+.modal{position:fixed; inset:0; z-index:100; display:flex; align-items:center; justify-content:center; padding:1rem}
+.modal[hidden]{display:none !important}
+.modal-backdrop{position:absolute; inset:0; background:rgba(0,0,0,.5); backdrop-filter:blur(4px); animation:fade .15s ease-out}
+.modal-card{position:relative; background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--radius-lg); box-shadow:var(--shadow-lg);
+  padding:2rem 1.75rem; max-width:420px; width:100%; text-align:center;
+  animation:popIn .22s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes popIn{from{opacity:0; transform:translateY(10px) scale(.96)}to{opacity:1; transform:translateY(0) scale(1)}}
+.modal-close{position:absolute; top:.6rem; right:.6rem; width:32px; height:32px;
+  background:transparent; border:0; font-size:1.1rem; cursor:pointer; color:var(--faint); border-radius:8px}
+.modal-close:hover{background:var(--surface-2); color:var(--text)}
+.modal-icon{font-size:2.2rem; margin-bottom:.4rem}
+.modal-title{font-size:1.3rem; font-weight:800; margin:0 0 .4rem}
+.modal-sub{color:var(--muted); font-size:.9rem; margin:0 0 1.25rem}
+.modal-perks{list-style:none; padding:0; margin:0 0 1.5rem; text-align:left; display:flex; flex-direction:column; gap:.4rem}
+.modal-perks li{font-size:.9rem; color:var(--text); padding:.35rem .6rem; background:var(--surface-2); border-radius:8px}
+.modal-actions{display:flex; flex-direction:column; gap:.55rem}
+.btn-block{width:100%; justify-content:center; padding:.8rem 1rem}
+.btn-link{background:transparent; border:0; color:var(--muted); font-family:inherit;
+  font-size:.85rem; cursor:pointer; padding:.5rem; font-weight:600}
+.btn-link:hover{color:var(--text); text-decoration:underline}
+.btn:disabled{opacity:.5; cursor:not-allowed}

@@ -6,6 +6,9 @@
   const MIN_NOTES = 30;
   const HISTORY_MAX = 20;
   const ETA_SECONDS = 30;
+  const QUOTA_LIMIT = 3;
+  const QUOTA_KEY = 'quota';
+  const PRO_KEY = 'pro';
 
   const FALLBACK_SAMPLE = {
     en: {
@@ -29,6 +32,7 @@
   };
 
   const $ = (id) => document.getElementById(id);
+
   const els = {
     form: $('form'),
     meetingTitle: $('meetingTitle'),
@@ -66,22 +70,31 @@
     closeDrawer: $('closeDrawer'),
     historyList: $('historyList'),
     historyEmpty: $('historyEmpty'),
-    clearHistoryBtn: $('clearHistory')
+    clearHistoryBtn: $('clearHistory'),
+    quotaPill: $('quotaPill'),
+    quotaCount: $('quotaCount'),
+    quotaLimit: $('quotaLimit'),
+    upgradeModal: $('upgradeModal'),
+    haveLicenseBtn: $('haveLicenseBtn')
   };
 
-  // ===== OS shortcut =====
   const isMac = /Mac|iPhone|iPad|iPod/.test(navigator.platform || navigator.userAgent || '');
   if (els.shortcutKbd) els.shortcutKbd.textContent = isMac ? '⌘ + ↵' : 'Ctrl + Enter';
 
-  // ===== Helpers =====
   function escapeHtml(s) {
-    return String(s).replace(/[&<>"']/g, c => ({
-      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    return String(s).replace(/[&<>"']/g, (c) => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;'
     }[c]));
   }
 
-  // ===== i18n =====
-  function t(k) { return (state.dict && state.dict[k]) || k; }
+  function t(k) {
+    return (state.dict && state.dict[k]) || k;
+  }
+
   async function loadLocale(lang) {
     if (!SUPPORTED.includes(lang)) lang = 'en';
     try {
@@ -94,8 +107,12 @@
       updateLangButtons();
       if (state.lastArtifacts) renderArtifacts(state.lastArtifacts);
       else clearOutputs();
-    } catch (e) { console.error('Failed to load locale', e); }
+      updateQuotaPill();
+    } catch (e) {
+      console.error('Failed to load locale', e);
+    }
   }
+
   function applyTranslations() {
     document.querySelectorAll('[data-i18n]').forEach((el) => {
       const key = el.getAttribute('data-i18n');
@@ -106,54 +123,59 @@
       else el.textContent = val;
     });
   }
+
   function updateLangButtons() {
     document.querySelectorAll('.lang-btn').forEach((b) => {
       b.classList.toggle('active', b.dataset.lang === state.lang);
     });
   }
+
   document.querySelectorAll('.lang-btn').forEach((b) => {
     b.addEventListener('click', () => loadLocale(b.dataset.lang));
   });
 
-  // ===== Theme =====
   function setTheme(th) {
     state.theme = th;
     document.documentElement.setAttribute('data-theme', th);
     localStorage.setItem('theme', th);
   }
+
   setTheme(state.theme);
   els.themeToggle?.addEventListener('click', () => setTheme(state.theme === 'dark' ? 'light' : 'dark'));
 
-  // ===== Counter =====
   function updateCounter() {
     if (!els.notes || !els.notesCount) return;
     const len = els.notes.value.length;
     els.notesCount.textContent = len.toLocaleString();
     els.notesCounter?.classList.toggle('warn', len > 19500 || (len > 0 && len < MIN_NOTES));
   }
+
   els.notes?.addEventListener('input', updateCounter);
 
-  // ===== Status / Error =====
   function setStatus(key, cls) {
     if (!els.status) return;
     els.status.textContent = key ? t(key) : '';
     els.status.className = 'status' + (cls ? ' ' + cls : '');
   }
+
   function setStatusText(text, cls) {
     if (!els.status) return;
     els.status.textContent = text || '';
     els.status.className = 'status' + (cls ? ' ' + cls : '');
   }
+
   function showError(msg) {
     if (!els.errorBanner) return;
     els.errorBannerText.textContent = msg;
     els.errorBanner.classList.add('show');
   }
+
   function hideError() {
     if (!els.errorBanner) return;
     els.errorBanner.classList.remove('show');
     els.errorBannerText.textContent = '';
   }
+
   els.retryButton?.addEventListener('click', () => {
     hideError();
     if (state.lastPayload) submitWorkflow(state.lastPayload);
@@ -170,7 +192,6 @@
     return (err && err.message) || t('errServerError');
   }
 
-  // ===== Stepper + ETA =====
   function resetStepper() {
     if (!els.stepper) return;
     els.stepper.classList.remove('idle');
@@ -179,6 +200,7 @@
       if (el) el.className = 'step';
     });
   }
+
   function idleStepper() {
     if (!els.stepper) return;
     els.stepper.classList.add('idle');
@@ -187,10 +209,12 @@
       if (el) el.className = 'step';
     });
   }
+
   function markStep(name, cls) {
     const el = els.stepper?.querySelector('[data-step="' + name + '"]');
     if (el) el.className = 'step ' + cls;
   }
+
   function applyTraceToStepper(trace) {
     if (!Array.isArray(trace)) return;
     trace.forEach((x) => {
@@ -200,6 +224,7 @@
       else if (x.status === 'started') markStep(x.step, 'active');
     });
   }
+
   function startEta() {
     if (!els.etaLine || !els.etaSec) return;
     let left = ETA_SECONDS;
@@ -208,22 +233,26 @@
     clearInterval(state.etaTimer);
     state.etaTimer = setInterval(() => {
       left -= 1;
-      if (left <= 0) { left = 0; clearInterval(state.etaTimer); }
+      if (left <= 0) {
+        left = 0;
+        clearInterval(state.etaTimer);
+      }
       els.etaSec.textContent = left;
     }, 1000);
   }
+
   function stopEta() {
     clearInterval(state.etaTimer);
     if (els.etaLine) els.etaLine.hidden = true;
   }
 
-  // ===== Render =====
   function priorityClass(p) {
     const v = String(p || '').toLowerCase();
     if (v.includes('high') || v.includes('高') || v === '1') return 'badge-high';
     if (v.includes('low') || v.includes('低') || v === '3') return 'badge-low';
     return 'badge-medium';
   }
+
   function priorityLabel(p) {
     const v = String(p || '').toLowerCase();
     if (v.includes('high') || v.includes('高')) return t('prioHigh');
@@ -231,10 +260,12 @@
     if (v.includes('medium') || v.includes('中')) return t('prioMedium');
     return p;
   }
+
   function renderActions(items) {
     if (!els.actionsOutput) return;
     els.actionsOutput.classList.add('actions-v2');
     els.actionsOutput.innerHTML = '';
+
     if (!items || !items.length) {
       const li = document.createElement('li');
       li.className = 'empty';
@@ -242,22 +273,33 @@
       els.actionsOutput.appendChild(li);
       return;
     }
+
     items.forEach((it) => {
       const li = document.createElement('li');
-      if (typeof it === 'string') { li.textContent = it; els.actionsOutput.appendChild(li); return; }
+
+      if (typeof it === 'string') {
+        li.textContent = it;
+        els.actionsOutput.appendChild(li);
+        return;
+      }
+
       const task = document.createElement('div');
       task.className = 'action-task';
       task.textContent = it.task || '';
       li.appendChild(task);
+
       const meta = document.createElement('div');
       meta.className = 'action-meta';
+
       if (it.owner) meta.insertAdjacentHTML('beforeend', `<span class="badge badge-owner">👤 ${escapeHtml(it.owner)}</span>`);
       if (it.due_date) meta.insertAdjacentHTML('beforeend', `<span class="badge badge-due">📅 ${escapeHtml(it.due_date)}</span>`);
       if (it.priority) meta.insertAdjacentHTML('beforeend', `<span class="badge ${priorityClass(it.priority)}">${escapeHtml(priorityLabel(it.priority))}</span>`);
+
       if (meta.children.length) li.appendChild(meta);
       els.actionsOutput.appendChild(li);
     });
   }
+
   function renderList(el, items, formatter, emptyKey) {
     if (!el) return;
     el.innerHTML = '';
@@ -274,11 +316,18 @@
       el.appendChild(li);
     });
   }
+
   function setBody(el, text, emptyKey) {
     if (!el) return;
-    if (text && text.trim()) { el.textContent = text; el.classList.remove('empty'); }
-    else { el.textContent = t(emptyKey); el.classList.add('empty'); }
+    if (text && text.trim()) {
+      el.textContent = text;
+      el.classList.remove('empty');
+    } else {
+      el.textContent = t(emptyKey);
+      el.classList.add('empty');
+    }
   }
+
   function normalizeArtifacts(data) {
     const a = (data && data.artifacts) || data || {};
     return {
@@ -288,30 +337,38 @@
       follow_up_email: typeof a.follow_up_email === 'string' ? a.follow_up_email : ''
     };
   }
+
   function renderArtifacts(a) {
     setBody(els.summaryOutput, a.summary, 'emptySummary');
     setBody(els.emailOutput, a.follow_up_email, 'emptyEmail');
     renderList(els.decisionsOutput, a.decisions, (it) => (typeof it === 'string' ? it : String(it)), 'emptyDecisions');
     renderActions(a.action_items);
   }
+
   function clearOutputs() {
     renderArtifacts({ summary: '', decisions: [], action_items: [], follow_up_email: '' });
   }
 
-  // ===== Copy + Download =====
   function flashCopied(btn) {
     if (!btn) return;
     const span = btn.querySelector('span') || btn;
     const old = span.textContent;
     btn.classList.add('copied');
     span.textContent = t('statusCopiedBtn') + ' ✓';
-    setTimeout(() => { btn.classList.remove('copied'); span.textContent = old; }, 1600);
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      span.textContent = old;
+    }, 1600);
   }
+
   function buildMarkdown() {
     const a = state.lastArtifacts;
     if (!a) return '';
+
     const lines = [];
-    if (a.summary) { lines.push('# ' + t('outSummary'), a.summary, ''); }
+    if (a.summary) {
+      lines.push('# ' + t('outSummary'), a.summary, '');
+    }
     if (a.decisions && a.decisions.length) {
       lines.push('# ' + t('outDecisions'));
       a.decisions.forEach((d) => lines.push('- ' + d));
@@ -320,8 +377,9 @@
     if (a.action_items && a.action_items.length) {
       lines.push('# ' + t('outActions'));
       a.action_items.forEach((it) => {
-        if (typeof it === 'string') lines.push('- ' + it);
-        else {
+        if (typeof it === 'string') {
+          lines.push('- ' + it);
+        } else {
           const d = [it.task || ''];
           if (it.owner) d.push(t('labelOwner') + ': ' + it.owner);
           if (it.due_date) d.push(t('labelDue') + ': ' + it.due_date);
@@ -331,35 +389,48 @@
       });
       lines.push('');
     }
-    if (a.follow_up_email) { lines.push('# ' + t('outEmail'), a.follow_up_email); }
+    if (a.follow_up_email) {
+      lines.push('# ' + t('outEmail'), a.follow_up_email);
+    }
     return lines.join('\n').trim();
   }
+
   async function copyText(text, btn, okKey) {
-    if (!text) { setStatus('statusNothingToCopy', 'error'); return; }
+    if (!text) {
+      setStatus('statusNothingToCopy', 'error');
+      return;
+    }
     try {
       await navigator.clipboard.writeText(text);
       setStatus(okKey, 'success');
-      if (btn) flashCopied(btn);
-    } catch { setStatus('statusCopyFailed', 'error'); }
+      flashCopied(btn);
+    } catch {
+      setStatus('statusCopyFailed', 'error');
+    }
   }
+
   els.copyMarkdown?.addEventListener('click', (e) => copyText(buildMarkdown(), e.currentTarget, 'statusCopiedMd'));
   els.copyEmail?.addEventListener('click', (e) => copyText((state.lastArtifacts && state.lastArtifacts.follow_up_email) || '', e.currentTarget, 'statusCopiedEmail'));
 
   els.downloadMd?.addEventListener('click', () => {
     const md = buildMarkdown();
-    if (!md) { setStatus('statusNothingToCopy', 'error'); return; }
+    if (!md) {
+      setStatus('statusNothingToCopy', 'error');
+      return;
+    }
     const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     const title = (state.lastPayload && state.lastPayload.meetingTitle) || 'meeting';
     a.href = url;
     a.download = title.replace(/[^\w\u4e00-\u9fff-]+/g, '-').slice(0, 60) + '.md';
-    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
     URL.revokeObjectURL(url);
     setStatus('statusDownloaded', 'success');
   });
 
-  // ===== File import + auto-clean =====
   function cleanTranscript(text) {
     return text
       .replace(/^WEBVTT.*$/m, '')
@@ -372,39 +443,68 @@
       .replace(/\n{3,}/g, '\n\n')
       .trim();
   }
+
   async function handleFile(file) {
     if (!file) return;
     if (file.size > MAX_FILE_SIZE) {
-      showError(t('errFileTooBig') + ' (' + Math.round(file.size / 1024) + 'KB)'); return;
+      showError(t('errFileTooBig') + ' (' + Math.round(file.size / 1024) + 'KB)');
+      return;
     }
     const name = (file.name || '').toLowerCase();
     const isText = /\.(txt|md|vtt)$/.test(name) || /^text\//.test(file.type || '');
-    if (!isText) { showError(t('errFileType')); return; }
+    if (!isText) {
+      showError(t('errFileType'));
+      return;
+    }
     try {
       const raw = await file.text();
       let content = raw;
       if (name.endsWith('.vtt')) content = cleanTranscript(raw);
+
       if (content.length > MAX_NOTES) {
         content = content.slice(0, MAX_NOTES);
         setStatusText(t('statusTruncated'), 'success');
       } else {
         setStatusText(t('statusImported').replace('{name}', file.name), 'success');
       }
+
       els.notes.value = content;
       updateCounter();
       hideError();
-    } catch { showError(t('errFileRead')); }
+    } catch {
+      showError(t('errFileRead'));
+    }
   }
-  els.fileInput?.addEventListener('change', (e) => { const f = e.target.files && e.target.files[0]; handleFile(f); e.target.value = ''; });
+
+  els.fileInput?.addEventListener('change', (e) => {
+    const f = e.target.files && e.target.files[0];
+    handleFile(f);
+    e.target.value = '';
+  });
+
   if (els.dropZone) {
     ['dragenter', 'dragover'].forEach((ev) => {
-      els.dropZone.addEventListener(ev, (e) => { e.preventDefault(); e.stopPropagation(); els.dropZone.classList.add('dragging'); });
+      els.dropZone.addEventListener(ev, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        els.dropZone.classList.add('dragging');
+      });
     });
+
     ['dragleave', 'drop'].forEach((ev) => {
-      els.dropZone.addEventListener(ev, (e) => { e.preventDefault(); e.stopPropagation(); els.dropZone.classList.remove('dragging'); });
+      els.dropZone.addEventListener(ev, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        els.dropZone.classList.remove('dragging');
+      });
     });
-    els.dropZone.addEventListener('drop', (e) => { const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]; if (f) handleFile(f); });
+
+    els.dropZone.addEventListener('drop', (e) => {
+      const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+      if (f) handleFile(f);
+    });
   }
+
   els.autoCleanBtn?.addEventListener('click', () => {
     const before = els.notes.value;
     if (!before.trim()) return;
@@ -413,7 +513,6 @@
     setStatus('statusAutoCleaned', 'success');
   });
 
-  // ===== Sample / Clear =====
   els.loadSample?.addEventListener('click', () => {
     const fb = FALLBACK_SAMPLE[state.lang] || FALLBACK_SAMPLE.en;
     const title = t('sampleTitle');
@@ -423,8 +522,9 @@
     updateCounter();
     setStatus('statusSuccess', 'success');
   });
+
   els.clearForm?.addEventListener('click', () => {
-    els.form.reset();
+    els.form?.reset();
     updateCounter();
     clearOutputs();
     hideError();
@@ -436,41 +536,148 @@
     setStatus('statusFormCleared', 'success');
   });
 
-  // ===== History =====
-  function loadHistory() {
-    try { return JSON.parse(localStorage.getItem('history') || '[]'); }
-    catch { return []; }
+  function isPro() {
+    try {
+      const p = JSON.parse(localStorage.getItem(PRO_KEY) || '{}');
+      if (!p.active) return false;
+      if (p.validUntil && new Date(p.validUntil) < new Date()) return false;
+      return true;
+    } catch {
+      return false;
+    }
   }
-  function saveHistory(list) { localStorage.setItem('history', JSON.stringify(list.slice(0, HISTORY_MAX))); }
+
+  function todayStr() {
+    const d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  }
+
+  function loadQuota() {
+    try {
+      const q = JSON.parse(localStorage.getItem(QUOTA_KEY) || '{}');
+      if (q.date !== todayStr()) return { date: todayStr(), count: 0, limit: QUOTA_LIMIT };
+      return { date: q.date, count: q.count || 0, limit: QUOTA_LIMIT };
+    } catch {
+      return { date: todayStr(), count: 0, limit: QUOTA_LIMIT };
+    }
+  }
+
+  function saveQuota(q) {
+    localStorage.setItem(QUOTA_KEY, JSON.stringify(q));
+  }
+
+  function incrementQuota() {
+    const q = loadQuota();
+    q.count += 1;
+    saveQuota(q);
+    updateQuotaPill();
+  }
+
+  function canRun() {
+    if (isPro()) return true;
+    const q = loadQuota();
+    return q.count < QUOTA_LIMIT;
+  }
+
+  function updateQuotaPill() {
+    if (!els.quotaPill) return;
+
+    if (isPro()) {
+      els.quotaPill.className = 'quota-pill pro';
+      els.quotaPill.innerHTML = '✨ <span class="quota-label">' + t('proActive') + '</span>';
+      els.quotaPill.title = t('proActive');
+      return;
+    }
+
+    const q = loadQuota();
+    els.quotaPill.className = 'quota-pill';
+
+    if (els.quotaCount) els.quotaCount.textContent = q.count;
+    if (els.quotaLimit) els.quotaLimit.textContent = QUOTA_LIMIT;
+
+    if (q.count >= QUOTA_LIMIT) els.quotaPill.classList.add('full');
+    else if (q.count >= QUOTA_LIMIT - 1) els.quotaPill.classList.add('warn');
+
+    els.quotaPill.title = t('quotaRemaining').replace('{n}', Math.max(0, QUOTA_LIMIT - q.count));
+  }
+
+  function openUpgradeModal() {
+    if (!els.upgradeModal) return;
+    els.upgradeModal.hidden = false;
+    els.upgradeModal.setAttribute('aria-hidden', 'false');
+  }
+
+  function closeUpgradeModal() {
+    if (!els.upgradeModal) return;
+    els.upgradeModal.hidden = true;
+    els.upgradeModal.setAttribute('aria-hidden', 'true');
+  }
+
+  document.querySelectorAll('[data-close-modal]').forEach((el) => {
+    el.addEventListener('click', closeUpgradeModal);
+  });
+
+  els.quotaPill?.addEventListener('click', () => {
+    if (isPro()) return;
+    const q = loadQuota();
+    if (q.count >= QUOTA_LIMIT) openUpgradeModal();
+  });
+
+  els.haveLicenseBtn?.addEventListener('click', () => {});
+
+  function loadHistory() {
+    try {
+      return JSON.parse(localStorage.getItem('history') || '[]');
+    } catch {
+      return [];
+    }
+  }
+
+  function saveHistory(list) {
+    localStorage.setItem('history', JSON.stringify(list.slice(0, HISTORY_MAX)));
+  }
+
   function addToHistory(payload, artifacts) {
     const list = loadHistory();
     list.unshift({
       id: Date.now(),
       title: (payload.meetingTitle || '').trim() || '(untitled)',
       at: new Date().toISOString(),
-      payload, artifacts
+      payload,
+      artifacts
     });
     saveHistory(list);
   }
+
   function renderHistory() {
     if (!els.historyList) return;
     const list = loadHistory();
     els.historyList.innerHTML = '';
     if (els.historyEmpty) els.historyEmpty.hidden = list.length > 0;
+
     list.forEach((item) => {
       const li = document.createElement('li');
       li.className = 'history-item';
       li.dataset.id = item.id;
+
       const d = new Date(item.at);
-      const dateStr = d.toLocaleString(state.lang === 'zh-Hant' ? 'zh-HK' : 'en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+      const dateStr = d.toLocaleString(state.lang === 'zh-Hant' ? 'zh-HK' : 'en-US', {
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+
       li.innerHTML = `
         <button class="history-item-del" title="Delete" data-del="${item.id}">✕</button>
         <div class="history-item-title">${escapeHtml(item.title)}</div>
         <div class="history-item-meta">${dateStr}</div>
       `;
+
       els.historyList.appendChild(li);
     });
   }
+
   function openDrawer() {
     if (!els.historyDrawer) return;
     renderHistory();
@@ -478,21 +685,25 @@
     if (els.drawerOverlay) els.drawerOverlay.hidden = false;
     els.historyDrawer.setAttribute('aria-hidden', 'false');
   }
+
   function closeDrawerFn() {
     if (!els.historyDrawer) return;
     els.historyDrawer.hidden = true;
     if (els.drawerOverlay) els.drawerOverlay.hidden = true;
     els.historyDrawer.setAttribute('aria-hidden', 'true');
   }
+
   els.historyBtn?.addEventListener('click', openDrawer);
   els.closeDrawer?.addEventListener('click', closeDrawerFn);
   els.drawerOverlay?.addEventListener('click', closeDrawerFn);
+
   els.clearHistoryBtn?.addEventListener('click', () => {
     if (!confirm(t('confirmClearHistory'))) return;
     localStorage.removeItem('history');
     renderHistory();
     setStatus('statusHistoryCleared', 'success');
   });
+
   els.historyList?.addEventListener('click', (e) => {
     const del = e.target.closest('[data-del]');
     if (del) {
@@ -503,16 +714,20 @@
       renderHistory();
       return;
     }
+
     const item = e.target.closest('.history-item');
     if (!item) return;
+
     const id = Number(item.dataset.id);
     const rec = loadHistory().find((x) => x.id === id);
     if (!rec) return;
+
     els.meetingTitle.value = rec.payload.meetingTitle || '';
     els.meetingType.value = rec.payload.meetingType || 'General';
     els.outputLanguage.value = rec.payload.language || 'English';
     els.outputMode.value = rec.payload.outputMode || 'full_meeting_pack';
     els.notes.value = rec.payload.notes || '';
+
     updateCounter();
     state.lastPayload = rec.payload;
     state.lastArtifacts = rec.artifacts;
@@ -523,11 +738,16 @@
     closeDrawerFn();
   });
 
-  // ===== Submit =====
   async function submitWorkflow(payload) {
     if (state.isRunning) return;
-    state.isRunning = true;
 
+    if (!canRun()) {
+      openUpgradeModal();
+      setStatus('quotaExhausted', 'error');
+      return;
+    }
+
+    state.isRunning = true;
     setStatus('statusRunning');
     hideError();
     resetStepper();
@@ -541,10 +761,12 @@
     }
 
     if (els.submitButton) els.submitButton.disabled = true;
+
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 60000);
 
     let res = null;
+
     try {
       res = await fetch('/.netlify/functions/multi-agent-run', {
         method: 'POST',
@@ -552,16 +774,23 @@
         body: JSON.stringify(payload),
         signal: controller.signal
       });
+
       let data = null;
-      try { data = await res.json(); } catch {}
+      try {
+        data = await res.json();
+      } catch {}
 
       if (!res.ok || (data && data.success === false)) {
         const msg = classifyError(new Error((data && data.error) || 'HTTP ' + res.status), res);
         throw Object.assign(new Error(msg), { handled: true });
       }
-      if (!data || !data.artifacts) throw Object.assign(new Error(t('errEmpty')), { handled: true });
+
+      if (!data || !data.artifacts) {
+        throw Object.assign(new Error(t('errEmpty')), { handled: true });
+      }
 
       applyTraceToStepper(data.trace);
+
       const normalized = normalizeArtifacts(data);
       state.lastPayload = payload;
       state.lastArtifacts = normalized;
@@ -569,14 +798,18 @@
       localStorage.setItem('lastArtifacts', JSON.stringify(normalized));
       localStorage.setItem('lastPayload', JSON.stringify(payload));
       addToHistory(payload, normalized);
+
+      if (!isPro()) incrementQuota();
       setStatus('statusSuccess', 'success');
     } catch (err) {
       console.error(err);
       const msg = err.handled ? err.message : classifyError(err, res);
       showError(msg);
       setStatusText(msg, 'error');
+
       if (state.lastArtifacts) renderArtifacts(state.lastArtifacts);
       else clearOutputs();
+
       STEPS.forEach((s) => {
         const el = els.stepper?.querySelector('[data-step="' + s + '"]');
         if (el && !el.classList.contains('done')) el.className = 'step failed';
@@ -592,9 +825,17 @@
   els.form?.addEventListener('submit', (e) => {
     e.preventDefault();
     if (state.isRunning) return;
+
     const notes = els.notes.value.trim();
-    if (notes.length < MIN_NOTES) { showError(t('errNotesShort')); return; }
-    if (notes.length > MAX_NOTES) { showError(t('errNotesLong')); return; }
+    if (notes.length < MIN_NOTES) {
+      showError(t('errNotesShort'));
+      return;
+    }
+    if (notes.length > MAX_NOTES) {
+      showError(t('errNotesLong'));
+      return;
+    }
+
     const payload = {
       meetingTitle: els.meetingTitle.value.trim(),
       meetingType: els.meetingType.value,
@@ -602,6 +843,7 @@
       language: els.outputLanguage.value,
       notes
     };
+
     state.lastPayload = payload;
     submitWorkflow(payload);
   });
@@ -613,10 +855,10 @@
     } else if (e.key === 'Escape') {
       if (els.historyDrawer && !els.historyDrawer.hidden) closeDrawerFn();
       if (els.errorBanner?.classList.contains('show')) hideError();
+      if (els.upgradeModal && !els.upgradeModal.hidden) closeUpgradeModal();
     }
   });
 
-  // ===== Restore last session =====
   function restoreLast() {
     try {
       const a = localStorage.getItem('lastArtifacts');
@@ -638,10 +880,12 @@
     } catch {}
   }
 
-  // ===== Init =====
   loadLocale(state.lang).then(() => {
     restoreLast();
+    updateQuotaPill();
   });
+
   updateCounter();
   idleStepper();
+  updateQuotaPill();
 })();

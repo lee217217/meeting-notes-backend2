@@ -189,5 +189,20 @@
   "errOffline": "You appear to be offline. Check your connection.",
   "errDailyLimit": "You have reached today's free limit.",
 
-  "confirmClearHistory": "Clear all history? This cannot be undone."
+    "confirmClearHistory": "Clear all history? This cannot be undone.",
+
+  "quotaToday": "today",
+  "quotaRemaining": "{n} runs left today",
+  "quotaExhausted": "Daily limit reached — upgrade for unlimited.",
+  "upgradeTitle": "Daily free limit reached",
+  "upgradeSub": "Resets tomorrow at 00:00 local time.",
+  "upgradePerk1": "✓ Unlimited runs",
+  "upgradePerk2": "✓ Export PDF / DOCX",
+  "upgradePerk3": "✓ Cloud history (coming soon)",
+  "upgradePerk4": "✓ Priority AI response",
+  "upgradeCta": "Upgrade Pro — $9/mo",
+  "haveLicense": "I have a license key",
+  "comeBackTomorrow": "Come back tomorrow",
+  "proActive": "PRO"
+}
 }

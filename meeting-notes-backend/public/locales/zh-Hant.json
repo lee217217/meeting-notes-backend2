@@ -189,5 +189,20 @@
   "errOffline": "網路似乎未連線，請檢查連線狀態。",
   "errDailyLimit": "今日免費用量已達上限。",
 
-  "confirmClearHistory": "確定要清除所有歷史紀錄？無法復原。"
+    "confirmClearHistory": "確定要清除所有歷史紀錄？無法復原。",
+
+  "quotaToday": "今日",
+  "quotaRemaining": "今日剩 {n} 次",
+  "quotaExhausted": "今日免費次數已用完 — 升級解鎖無限次。",
+  "upgradeTitle": "今日免費次數已用完",
+  "upgradeSub": "明日 00:00 重置（本地時間）。",
+  "upgradePerk1": "✓ 無限次執行",
+  "upgradePerk2": "✓ 匯出 PDF / DOCX",
+  "upgradePerk3": "✓ 雲端歷史紀錄（即將推出）",
+  "upgradePerk4": "✓ 優先 AI 回應",
+  "upgradeCta": "升級 Pro — $9/月",
+  "haveLicense": "我有 License Key",
+  "comeBackTomorrow": "明天再來",
+  "proActive": "Pro"
+}
 }
