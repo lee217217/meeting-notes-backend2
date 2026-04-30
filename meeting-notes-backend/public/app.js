@@ -11,15 +11,15 @@
   const PRO_KEY = 'pro';
 
   const FALLBACK_SAMPLE = {
-  en: {
-    title: 'Weekly production sync',
-    notes: 'Attendees: Alice (PM), Bob (Eng), Carol (Design)\n- Bob reported backend API v2 is on track, will deploy Wed.\n- Carol showed new onboarding mockups; team agreed to adopt option B.\n- Decision: Freeze scope for v2.0 after this week.\n- Risk: Mobile testing device shortage; Alice to order 2 more iPads by Friday.\n- Action: Bob to finalise migration script by Tue EOD.\n- Action: Carol to deliver final icons by Thu.'
-  },
-  'zh-Hant': {
-    title: '每週生產同步會議',
-    notes: '出席：Alice (PM)、Bob (工程)、Carol (設計)\n- Bob 回報後端 API v2 進度正常，週三可部署。\n- Carol 展示新的 Onboarding 設計稿，團隊同意採用方案 B。\n- 決定：本週後凍結 v2.0 範圍。\n- 風險：行動測試裝置不足，Alice 週五前再訂 2 台 iPad。\n- 行動：Bob 週二下班前完成資料庫遷移腳本。\n- 行動：Carol 週四前交出最終圖示。'
-  }
-};
+    en: {
+      title: 'Weekly production sync',
+      notes: 'Attendees: Alice (PM), Bob (Eng), Carol (Design)\n- Bob reported backend API v2 is on track, will deploy Wed.\n- Carol showed new onboarding mockups; team agreed to adopt option B.\n- Decision: Freeze scope for v2.0 after this week.\n- Risk: Mobile testing device shortage; Alice to order 2 more iPads by Friday.\n- Action: Bob to finalise migration script by Tue EOD.\n- Action: Carol to deliver final icons by Thu.'
+    },
+    'zh-Hant': {
+      title: '每週生產同步會議',
+      notes: '出席：Alice (PM)、Bob (工程)、Carol (設計)\n- Bob 回報後端 API v2 進度正常，週三可部署。\n- Carol 展示新的 Onboarding 設計稿，團隊同意採用方案 B。\n- 決定：本週後凍結 v2.0 範圍。\n- 風險：行動測試裝置不足，Alice 週五前再訂 2 台 iPad。\n- 行動：Bob 週二下班前完成資料庫遷移腳本。\n- 行動：Carol 週四前交出最終圖示。'
+    }
+  };
 
   const state = {
     lang: localStorage.getItem('lang') || (navigator.language.startsWith('zh') ? 'zh-Hant' : 'en'),
@@ -96,26 +96,24 @@
   }
 
   async function loadLocale(lang) {
-  if (!SUPPORTED.includes(lang)) lang = 'en';
-  state.lang = lang;
-  localStorage.setItem('lang', lang);
-  document.documentElement.setAttribute('lang', lang === 'zh-Hant' ? 'zh-Hant' : 'en');
+    if (!SUPPORTED.includes(lang)) lang = 'en';
+    state.lang = lang;
+    localStorage.setItem('lang', lang);
+    document.documentElement.setAttribute('lang', lang === 'zh-Hant' ? 'zh-Hant' : 'en');
 
-  try {
-    const res = await fetch('/locales/' + lang + '.json', { cache: 'no-cache' });
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    state.dict = await res.json();
-  } catch (e) {
-    console.warn('[locale] load failed, keeping previous dict:', e);
-    // keep previous state.dict so UI still switches button highlight
-  }
+    try {
+      const res = await fetch('/locales/' + lang + '.json', { cache: 'no-cache' });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      state.dict = await res.json();
+    } catch (e) {
+      console.warn('[locale] load failed, keeping previous dict:', e);
+    }
 
-  applyTranslations();
-  updateLangButtons();
-  if (state.lastArtifacts) renderArtifacts(state.lastArtifacts);
-  else clearOutputs();
-  updateQuotaPill();
-}
+    applyTranslations();
+    updateLangButtons();
+    if (state.lastArtifacts) renderArtifacts(state.lastArtifacts);
+    else clearOutputs();
+    updateQuotaPill();
   }
 
   function applyTranslations() {
@@ -129,19 +127,20 @@
     });
   }
 
-  // Event delegation — 即使前面 throw 都有效；click 任何 .lang-btn 都會 work
-document.addEventListener('click', (e) => {
-  const btn = e.target.closest('.lang-btn');
-  if (!btn) return;
-  const lang = btn.dataset.lang;
-  if (!lang) return;
-  console.log('[lang] switching to', lang);
-  loadLocale(lang);
-});
+  function updateLangButtons() {
+    document.querySelectorAll('.lang-btn').forEach((b) => {
+      b.classList.toggle('active', b.dataset.lang === state.lang);
+    });
   }
 
-  document.querySelectorAll('.lang-btn').forEach((b) => {
-    b.addEventListener('click', () => loadLocale(b.dataset.lang));
+  // ✅ Event delegation — 即使前面任何 binding throw 都唔影響
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.lang-btn');
+    if (!btn) return;
+    const lang = btn.dataset.lang;
+    if (!lang) return;
+    console.log('[lang] switching to', lang);
+    loadLocale(lang);
   });
 
   function setTheme(th) {
@@ -243,10 +242,7 @@ document.addEventListener('click', (e) => {
     clearInterval(state.etaTimer);
     state.etaTimer = setInterval(() => {
       left -= 1;
-      if (left <= 0) {
-        left = 0;
-        clearInterval(state.etaTimer);
-      }
+      if (left <= 0) { left = 0; clearInterval(state.etaTimer); }
       els.etaSec.textContent = left;
     }, 1000);
   }
@@ -286,13 +282,11 @@ document.addEventListener('click', (e) => {
 
     items.forEach((it) => {
       const li = document.createElement('li');
-
       if (typeof it === 'string') {
         li.textContent = it;
         els.actionsOutput.appendChild(li);
         return;
       }
-
       const task = document.createElement('div');
       task.className = 'action-task';
       task.textContent = it.task || '';
@@ -300,11 +294,9 @@ document.addEventListener('click', (e) => {
 
       const meta = document.createElement('div');
       meta.className = 'action-meta';
-
       if (it.owner) meta.insertAdjacentHTML('beforeend', `<span class="badge badge-owner">👤 ${escapeHtml(it.owner)}</span>`);
       if (it.due_date) meta.insertAdjacentHTML('beforeend', `<span class="badge badge-due">📅 ${escapeHtml(it.due_date)}</span>`);
       if (it.priority) meta.insertAdjacentHTML('beforeend', `<span class="badge ${priorityClass(it.priority)}">${escapeHtml(priorityLabel(it.priority))}</span>`);
-
       if (meta.children.length) li.appendChild(meta);
       els.actionsOutput.appendChild(li);
     });
@@ -374,11 +366,8 @@ document.addEventListener('click', (e) => {
   function buildMarkdown() {
     const a = state.lastArtifacts;
     if (!a) return '';
-
     const lines = [];
-    if (a.summary) {
-      lines.push('# ' + t('outSummary'), a.summary, '');
-    }
+    if (a.summary) { lines.push('# ' + t('outSummary'), a.summary, ''); }
     if (a.decisions && a.decisions.length) {
       lines.push('# ' + t('outDecisions'));
       a.decisions.forEach((d) => lines.push('- ' + d));
@@ -399,17 +388,12 @@ document.addEventListener('click', (e) => {
       });
       lines.push('');
     }
-    if (a.follow_up_email) {
-      lines.push('# ' + t('outEmail'), a.follow_up_email);
-    }
+    if (a.follow_up_email) { lines.push('# ' + t('outEmail'), a.follow_up_email); }
     return lines.join('\n').trim();
   }
 
   async function copyText(text, btn, okKey) {
-    if (!text) {
-      setStatus('statusNothingToCopy', 'error');
-      return;
-    }
+    if (!text) { setStatus('statusNothingToCopy', 'error'); return; }
     try {
       await navigator.clipboard.writeText(text);
       setStatus(okKey, 'success');
@@ -424,10 +408,7 @@ document.addEventListener('click', (e) => {
 
   els.downloadMd?.addEventListener('click', () => {
     const md = buildMarkdown();
-    if (!md) {
-      setStatus('statusNothingToCopy', 'error');
-      return;
-    }
+    if (!md) { setStatus('statusNothingToCopy', 'error'); return; }
     const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -442,17 +423,17 @@ document.addEventListener('click', (e) => {
   });
 
   function cleanTranscript(text) {
-  return text
-    .replace(/^WEBVTT.*$/m, '')
-    .replace(/^\d+$/gm, '')
-    .replace(/^\d\d:\d\d:\d\d[.,]\d{3} --> \d\d:\d\d:\d\d[.,]\d{3}.*$/gm, '')
-    .replace(/^\[\d{1,2}:\d{2}(:\d{2})?\]\s*/gm, '')
-    .replace(/^\(\d{1,2}:\d{2}(:\d{2})?\)\s*/gm, '')
-    .replace(/<[^>]+>/g, '')
-    .replace(/^Speaker \d+:\s*/gmi, '')
-    .replace(/\n{3,}/g, '\n\n')
-    .trim();
-}
+    return text
+      .replace(/^WEBVTT.*$/m, '')
+      .replace(/^\d+$/gm, '')
+      .replace(/^\d\d:\d\d:\d\d[.,]\d{3} --> \d\d:\d\d:\d\d[.,]\d{3}.*$/gm, '')
+      .replace(/^\[\d{1,2}:\d{2}(:\d{2})?\]\s*/gm, '')
+      .replace(/^\(\d{1,2}:\d{2}(:\d{2})?\)\s*/gm, '')
+      .replace(/<[^>]+>/g, '')
+      .replace(/^Speaker \d+:\s*/gmi, '')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
+  }
 
   async function handleFile(file) {
     if (!file) return;
@@ -462,22 +443,17 @@ document.addEventListener('click', (e) => {
     }
     const name = (file.name || '').toLowerCase();
     const isText = /\.(txt|md|vtt)$/.test(name) || /^text\//.test(file.type || '');
-    if (!isText) {
-      showError(t('errFileType'));
-      return;
-    }
+    if (!isText) { showError(t('errFileType')); return; }
     try {
       const raw = await file.text();
       let content = raw;
       if (name.endsWith('.vtt')) content = cleanTranscript(raw);
-
       if (content.length > MAX_NOTES) {
         content = content.slice(0, MAX_NOTES);
         setStatusText(t('statusTruncated'), 'success');
       } else {
         setStatusText(t('statusImported').replace('{name}', file.name), 'success');
       }
-
       els.notes.value = content;
       updateCounter();
       hideError();
@@ -494,21 +470,11 @@ document.addEventListener('click', (e) => {
 
   if (els.dropZone) {
     ['dragenter', 'dragover'].forEach((ev) => {
-      els.dropZone.addEventListener(ev, (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        els.dropZone.classList.add('dragging');
-      });
+      els.dropZone.addEventListener(ev, (e) => { e.preventDefault(); e.stopPropagation(); els.dropZone.classList.add('dragging'); });
     });
-
     ['dragleave', 'drop'].forEach((ev) => {
-      els.dropZone.addEventListener(ev, (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        els.dropZone.classList.remove('dragging');
-      });
+      els.dropZone.addEventListener(ev, (e) => { e.preventDefault(); e.stopPropagation(); els.dropZone.classList.remove('dragging'); });
     });
-
     els.dropZone.addEventListener('drop', (e) => {
       const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
       if (f) handleFile(f);
@@ -552,9 +518,7 @@ document.addEventListener('click', (e) => {
       if (!p.active) return false;
       if (p.validUntil && new Date(p.validUntil) < new Date()) return false;
       return true;
-    } catch {
-      return false;
-    }
+    } catch { return false; }
   }
 
   function todayStr() {
@@ -567,14 +531,10 @@ document.addEventListener('click', (e) => {
       const q = JSON.parse(localStorage.getItem(QUOTA_KEY) || '{}');
       if (q.date !== todayStr()) return { date: todayStr(), count: 0, limit: QUOTA_LIMIT };
       return { date: q.date, count: q.count || 0, limit: QUOTA_LIMIT };
-    } catch {
-      return { date: todayStr(), count: 0, limit: QUOTA_LIMIT };
-    }
+    } catch { return { date: todayStr(), count: 0, limit: QUOTA_LIMIT }; }
   }
 
-  function saveQuota(q) {
-    localStorage.setItem(QUOTA_KEY, JSON.stringify(q));
-  }
+  function saveQuota(q) { localStorage.setItem(QUOTA_KEY, JSON.stringify(q)); }
 
   function incrementQuota() {
     const q = loadQuota();
@@ -591,23 +551,18 @@ document.addEventListener('click', (e) => {
 
   function updateQuotaPill() {
     if (!els.quotaPill) return;
-
     if (isPro()) {
       els.quotaPill.className = 'quota-pill pro';
       els.quotaPill.innerHTML = '✨ <span class="quota-label">' + t('proActive') + '</span>';
       els.quotaPill.title = t('proActive');
       return;
     }
-
     const q = loadQuota();
     els.quotaPill.className = 'quota-pill';
-
     if (els.quotaCount) els.quotaCount.textContent = q.count;
     if (els.quotaLimit) els.quotaLimit.textContent = QUOTA_LIMIT;
-
     if (q.count >= QUOTA_LIMIT) els.quotaPill.classList.add('full');
     else if (q.count >= QUOTA_LIMIT - 1) els.quotaPill.classList.add('warn');
-
     els.quotaPill.title = t('quotaRemaining').replace('{n}', Math.max(0, QUOTA_LIMIT - q.count));
   }
 
@@ -636,11 +591,8 @@ document.addEventListener('click', (e) => {
   els.haveLicenseBtn?.addEventListener('click', () => {});
 
   function loadHistory() {
-    try {
-      return JSON.parse(localStorage.getItem('history') || '[]');
-    } catch {
-      return [];
-    }
+    try { return JSON.parse(localStorage.getItem('history') || '[]'); }
+    catch { return []; }
   }
 
   function saveHistory(list) {
@@ -664,26 +616,19 @@ document.addEventListener('click', (e) => {
     const list = loadHistory();
     els.historyList.innerHTML = '';
     if (els.historyEmpty) els.historyEmpty.hidden = list.length > 0;
-
     list.forEach((item) => {
       const li = document.createElement('li');
       li.className = 'history-item';
       li.dataset.id = item.id;
-
       const d = new Date(item.at);
       const dateStr = d.toLocaleString(state.lang === 'zh-Hant' ? 'zh-HK' : 'en-US', {
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
+        month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
       });
-
       li.innerHTML = `
         <button class="history-item-del" title="Delete" data-del="${item.id}">✕</button>
         <div class="history-item-title">${escapeHtml(item.title)}</div>
         <div class="history-item-meta">${dateStr}</div>
       `;
-
       els.historyList.appendChild(li);
     });
   }
@@ -724,20 +669,16 @@ document.addEventListener('click', (e) => {
       renderHistory();
       return;
     }
-
     const item = e.target.closest('.history-item');
     if (!item) return;
-
     const id = Number(item.dataset.id);
     const rec = loadHistory().find((x) => x.id === id);
     if (!rec) return;
-
     els.meetingTitle.value = rec.payload.meetingTitle || '';
     els.meetingType.value = rec.payload.meetingType || 'General';
     els.outputLanguage.value = rec.payload.language || 'English';
     els.outputMode.value = rec.payload.outputMode || 'full_meeting_pack';
     els.notes.value = rec.payload.notes || '';
-
     updateCounter();
     state.lastPayload = rec.payload;
     state.lastArtifacts = rec.artifacts;
@@ -750,13 +691,11 @@ document.addEventListener('click', (e) => {
 
   async function submitWorkflow(payload) {
     if (state.isRunning) return;
-
     if (!canRun()) {
       openUpgradeModal();
       setStatus('quotaExhausted', 'error');
       return;
     }
-
     state.isRunning = true;
     setStatus('statusRunning');
     hideError();
@@ -765,8 +704,7 @@ document.addEventListener('click', (e) => {
     startEta();
 
     if (!state.lastArtifacts && els.summaryOutput) {
-      els.summaryOutput.innerHTML =
-        '<div class="skeleton w90"></div><div class="skeleton w60"></div><div class="skeleton w80"></div>';
+      els.summaryOutput.innerHTML = '<div class="skeleton w90"></div><div class="skeleton w60"></div><div class="skeleton w80"></div>';
       els.summaryOutput.classList.remove('empty');
     }
 
@@ -774,7 +712,6 @@ document.addEventListener('click', (e) => {
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 60000);
-
     let res = null;
 
     try {
@@ -786,21 +723,17 @@ document.addEventListener('click', (e) => {
       });
 
       let data = null;
-      try {
-        data = await res.json();
-      } catch {}
+      try { data = await res.json(); } catch {}
 
       if (!res.ok || (data && data.success === false)) {
         const msg = classifyError(new Error((data && data.error) || 'HTTP ' + res.status), res);
         throw Object.assign(new Error(msg), { handled: true });
       }
-
       if (!data || !data.artifacts) {
         throw Object.assign(new Error(t('errEmpty')), { handled: true });
       }
 
       applyTraceToStepper(data.trace);
-
       const normalized = normalizeArtifacts(data);
       state.lastPayload = payload;
       state.lastArtifacts = normalized;
@@ -808,7 +741,6 @@ document.addEventListener('click', (e) => {
       localStorage.setItem('lastArtifacts', JSON.stringify(normalized));
       localStorage.setItem('lastPayload', JSON.stringify(payload));
       addToHistory(payload, normalized);
-
       if (!isPro()) incrementQuota();
       setStatus('statusSuccess', 'success');
     } catch (err) {
@@ -816,10 +748,8 @@ document.addEventListener('click', (e) => {
       const msg = err.handled ? err.message : classifyError(err, res);
       showError(msg);
       setStatusText(msg, 'error');
-
       if (state.lastArtifacts) renderArtifacts(state.lastArtifacts);
       else clearOutputs();
-
       STEPS.forEach((s) => {
         const el = els.stepper?.querySelector('[data-step="' + s + '"]');
         if (el && !el.classList.contains('done')) el.className = 'step failed';
@@ -835,17 +765,9 @@ document.addEventListener('click', (e) => {
   els.form?.addEventListener('submit', (e) => {
     e.preventDefault();
     if (state.isRunning) return;
-
     const notes = els.notes.value.trim();
-    if (notes.length < MIN_NOTES) {
-      showError(t('errNotesShort'));
-      return;
-    }
-    if (notes.length > MAX_NOTES) {
-      showError(t('errNotesLong'));
-      return;
-    }
-
+    if (notes.length < MIN_NOTES) { showError(t('errNotesShort')); return; }
+    if (notes.length > MAX_NOTES) { showError(t('errNotesLong')); return; }
     const payload = {
       meetingTitle: els.meetingTitle.value.trim(),
       meetingType: els.meetingType.value,
@@ -853,7 +775,6 @@ document.addEventListener('click', (e) => {
       language: els.outputLanguage.value,
       notes
     };
-
     state.lastPayload = payload;
     submitWorkflow(payload);
   });
