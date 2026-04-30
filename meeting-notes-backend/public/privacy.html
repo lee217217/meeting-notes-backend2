@@ -4,202 +4,90 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Privacy Policy · Meeting Workspace</title>
-  <meta name="description" content="How Meeting Workspace collects, uses and protects your data." />
-  <meta name="robots" content="index,follow" />
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-
-  <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
-  <link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&f[]=cabinet-grotesk@500,700,800&display=swap" rel="stylesheet" />
+  <meta name="description" content="Privacy Policy for Meeting Workspace — how we handle your meeting notes and data." />
   <link rel="stylesheet" href="/styles.css" />
-
   <style>
-    .legal{max-width:780px; margin:0 auto; padding:2rem 1.5rem 4rem; line-height:1.75}
-    .legal h1{font-size:2.2rem; margin-bottom:.25rem; font-family:var(--font-display); font-weight:800}
-    .legal h2{font-size:1.15rem; margin-top:2.2rem; margin-bottom:.5rem; font-weight:700}
-    .legal .updated{color:var(--muted); font-size:.88rem; margin-bottom:2rem}
-    .legal p, .legal li{color:var(--text); font-size:.95rem}
-    .legal ul{padding-left:1.4rem}
-    .legal li{margin-bottom:.4rem}
-    .legal a{color:var(--primary)}
-    .legal hr{border:0; border-top:1px solid var(--border); margin:3rem 0}
-    .legal .back{display:inline-block; margin-top:2rem; color:var(--muted); font-size:.9rem}
-    .lang-toggle{display:flex; gap:.5rem; justify-content:flex-end; margin-bottom:1.5rem}
-    .lang-toggle button{background:var(--surface); border:1px solid var(--border); color:var(--muted);
-      padding:.4rem .9rem; border-radius:999px; cursor:pointer; font-family:inherit; font-size:.82rem; font-weight:600}
-    .lang-toggle button.active{background:var(--primary); color:var(--inverse); border-color:transparent}
-    [data-lang-section]{display:none}
-    [data-lang-section].active{display:block}
+    .legal { max-width: 780px; margin: 0 auto; padding: 60px 24px 80px; line-height: 1.7; }
+    .legal h1 { font-size: 34px; margin: 0 0 8px; letter-spacing: -0.02em; }
+    .legal .meta { color: var(--text-mute, #888); font-size: 13px; margin-bottom: 40px; }
+    .legal h2 { font-size: 20px; margin-top: 36px; margin-bottom: 10px; }
+    .legal p, .legal li { font-size: 15px; color: var(--text-soft, #333); }
+    .legal ul { padding-left: 20px; }
+    .legal a { color: #5b5bf5; }
+    .legal-nav { display:flex; justify-content:space-between; padding: 18px 24px; border-bottom:1px solid rgba(0,0,0,.08); }
+    .legal-nav a { text-decoration:none; color:inherit; font-weight:600; }
+    .back-home { opacity:.7; }
+    [data-theme="dark"] body { background:#0b0b0f; color:#f5f5f7; }
   </style>
 </head>
 <body>
-  <header class="top">
-    <div class="app" style="max-width:1220px; margin:0 auto; padding:1rem 1.25rem; display:flex; justify-content:space-between; align-items:center;">
-      <a href="/" class="brand">
-        <span class="brand-mark">◈</span>
-        <span class="brand-text">Meeting Workspace</span>
-      </a>
-      <a href="/" class="btn">← Home</a>
-    </div>
-  </header>
+  <nav class="legal-nav">
+    <a href="/"><strong>◈ Meeting Workspace</strong></a>
+    <a class="back-home" href="/">← Back to home</a>
+  </nav>
 
-  <main>
-    <article class="legal">
-      <div class="lang-toggle">
-        <button type="button" class="active" data-target="en">EN</button>
-        <button type="button" data-target="zh">繁中</button>
-      </div>
+  <main class="legal">
+    <h1>Privacy Policy</h1>
+    <p class="meta">Last updated: April 30, 2026</p>
 
-      <!-- =================== ENGLISH =================== -->
-      <section data-lang-section="en" class="active">
-        <h1>Privacy Policy</h1>
-        <p class="updated">Last updated: {{LAST_UPDATED}}</p>
+    <p>This Privacy Policy explains how Meeting Workspace ("we", "our", "us") handles your information when you use our service at <a href="/">meeting-workspace</a> (the "Service").</p>
 
-        <p>This Privacy Policy explains how {{COMPANY_NAME}} ("we", "us", or "our") collects, uses, and protects information in connection with the Meeting Workspace service available at {{WEBSITE_URL}} (the "Service"). By using the Service, you agree to the practices described below.</p>
+    <h2>1. What we collect</h2>
+    <ul>
+      <li><strong>Meeting content you paste or upload.</strong> Text, notes, or transcript files you submit to generate a summary.</li>
+      <li><strong>Technical data.</strong> IP address, browser type, and basic request metadata (used only to prevent abuse).</li>
+      <li><strong>Payment data.</strong> If you upgrade to Pro, payment is processed by Lemon Squeezy. We do not store your card details.</li>
+      <li><strong>Local device data.</strong> Your quota count, Pro license key, language preference, and up to 20 recent meetings are stored in your browser's <code>localStorage</code> — not on our servers.</li>
+    </ul>
 
-        <h2>1. Information We Collect</h2>
-        <p>We collect only the minimum data required to operate the Service.</p>
-        <ul>
-          <li><strong>Meeting content you provide.</strong> Notes, transcripts, meeting titles, and settings you enter are transmitted to third-party AI providers for processing. We do not store this content on our servers after your request completes.</li>
-          <li><strong>Technical data.</strong> IP address, browser type, device information, and timestamps of requests, used for rate limiting, abuse prevention, and service reliability.</li>
-          <li><strong>Payment data.</strong> If you purchase a paid plan, billing information is collected and stored by our payment processor (Stripe). We only receive limited metadata such as your email, subscription status, and last 4 digits of your card.</li>
-          <li><strong>Optional contact data.</strong> If you email us, we keep the message to respond to you.</li>
-        </ul>
+    <h2>2. How we use it</h2>
+    <ul>
+      <li>To generate meeting summaries, action items, and follow-up emails.</li>
+      <li>To enforce daily free-tier limits and validate Pro licenses.</li>
+      <li>To improve reliability, debug errors, and prevent abuse.</li>
+    </ul>
 
-        <h2>2. How We Use Information</h2>
-        <ul>
-          <li>To provide and operate the Service (generate summaries, action items, follow-up emails).</li>
-          <li>To enforce usage limits and prevent abuse.</li>
-          <li>To process payments and manage subscriptions.</li>
-          <li>To respond to customer support requests.</li>
-          <li>To comply with legal obligations.</li>
-        </ul>
+    <h2>3. How your meeting content is processed</h2>
+    <p>When you run the workflow, your meeting notes are sent to <strong>Perplexity Sonar API</strong> (our AI provider) to generate the output. The content is:</p>
+    <ul>
+      <li>Processed in-memory by our Netlify serverless function.</li>
+      <li><strong>Not stored</strong> on our servers or database.</li>
+      <li>Discarded immediately after the response is returned to your browser.</li>
+      <li>Subject to Perplexity's own data handling policy for AI inference.</li>
+    </ul>
+    <p>Your local history (last 20 meetings) lives only in your browser and can be cleared anytime from the history panel.</p>
 
-        <h2>3. Data Retention</h2>
-        <ul>
-          <li><strong>Meeting content:</strong> Not stored. Processed in memory and discarded once the response is returned.</li>
-          <li><strong>IP-based quota records:</strong> Up to 24 hours, then automatically deleted.</li>
-          <li><strong>Payment records:</strong> Retained by Stripe according to their policy and applicable law (generally 7 years).</li>
-          <li><strong>Support emails:</strong> Retained for up to 24 months unless you request deletion earlier.</li>
-        </ul>
+    <h2>4. Third-party services we use</h2>
+    <ul>
+      <li><strong>Perplexity AI</strong> — AI content generation. See <a href="https://www.perplexity.ai/hub/legal/privacy-policy" target="_blank" rel="noopener">Perplexity Privacy Policy</a>.</li>
+      <li><strong>Lemon Squeezy</strong> — Payment processing &amp; license management. See <a href="https://www.lemonsqueezy.com/privacy" target="_blank" rel="noopener">Lemon Squeezy Privacy Policy</a>.</li>
+      <li><strong>Netlify</strong> — Hosting &amp; serverless functions. See <a href="https://www.netlify.com/privacy/" target="_blank" rel="noopener">Netlify Privacy Policy</a>.</li>
+    </ul>
 
-        <h2>4. Third-Party Services</h2>
-        <p>We use the following sub-processors to deliver the Service:</p>
-        <ul>
-          <li><strong>Perplexity AI</strong> — generates meeting outputs based on your notes.</li>
-          <li><strong>Netlify</strong> — hosts our website and serverless functions.</li>
-          <li><strong>Stripe</strong> — processes payments and manages subscriptions.</li>
-        </ul>
-        <p>Each third party processes data under their own privacy policy. By using the Service you consent to this sharing.</p>
+    <h2>5. Cookies</h2>
+    <p>We do not use tracking cookies. We only use <code>localStorage</code> for app preferences (language, theme, quota, Pro license, and local history).</p>
 
-        <h2>5. Your Rights</h2>
-        <p>Depending on your location, you may have rights to access, correct, export, or delete your personal data, and to object to or restrict certain processing. To exercise any right, email us at <a href="mailto:{{CONTACT_EMAIL}}">{{CONTACT_EMAIL}}</a>.</p>
+    <h2>6. Data retention</h2>
+    <p>Meeting content: <strong>not retained</strong>. Payment records: retained by Lemon Squeezy per their policy (typically 7 years for tax compliance). Local device data: retained until you clear your browser storage.</p>
 
-        <h2>6. Cookies & Local Storage</h2>
-        <p>We use browser local storage to remember your preferences (language, theme) and, if applicable, your Pro license key. We do not use tracking cookies for advertising.</p>
+    <h2>7. Your rights</h2>
+    <p>Because we do not store your meeting content, there is nothing on our side to export or delete. For payment records, contact Lemon Squeezy directly. You may clear all local app data by clearing your browser's site data for this domain.</p>
 
-        <h2>7. Security</h2>
-        <p>Data in transit is encrypted with HTTPS. We do not retain meeting content after processing. However, no system is 100% secure. You acknowledge this when you use the Service.</p>
+    <h2>8. Children</h2>
+    <p>The Service is not intended for users under 13. We do not knowingly collect data from children.</p>
 
-        <h2>8. Children</h2>
-        <p>The Service is not directed at children under 13. We do not knowingly collect data from children under 13. If you believe we have, contact us and we will delete it.</p>
+    <h2>9. Security</h2>
+    <p>All traffic is encrypted in transit via HTTPS. API keys and license secrets are stored as Netlify environment variables, never exposed to the browser.</p>
 
-        <h2>9. International Transfers</h2>
-        <p>Your data may be processed in countries other than your own. By using the Service you consent to such transfers.</p>
+    <h2>10. Changes to this policy</h2>
+    <p>We may update this policy from time to time. Material changes will be reflected by updating the "Last updated" date above.</p>
 
-        <h2>10. Changes to this Policy</h2>
-        <p>We may update this Privacy Policy. Material changes will be announced on this page with an updated date. Continued use of the Service after changes constitutes acceptance.</p>
+    <h2>11. Contact</h2>
+    <p>Questions about this policy? Email us at <a href="mailto:support@meeting-workspace.app">support@meeting-workspace.app</a>.</p>
 
-        <h2>11. Contact</h2>
-        <p>Questions or requests? Email <a href="mailto:{{CONTACT_EMAIL}}">{{CONTACT_EMAIL}}</a>.</p>
-
-        <a href="/" class="back">← Back to home</a>
-      </section>
-
-      <!-- =================== 繁中 =================== -->
-      <section data-lang-section="zh">
-        <h1>隱私政策</h1>
-        <p class="updated">最後更新：{{LAST_UPDATED}}</p>
-
-        <p>本隱私政策說明 {{COMPANY_NAME}}（以下稱「我們」）在提供位於 {{WEBSITE_URL}} 的 Meeting Workspace 服務（以下稱「本服務」）過程中，如何蒐集、使用與保護您的資料。使用本服務即表示您同意以下條款。</p>
-
-        <h2>1. 我們蒐集的資料</h2>
-        <p>我們僅蒐集營運本服務所必要的最少資料。</p>
-        <ul>
-          <li><strong>您提供的會議內容。</strong>您輸入的筆記、逐字稿、會議主題與設定會傳送至第三方 AI 服務處理。請求完成後，我們不會在伺服器上留存這些內容。</li>
-          <li><strong>技術性資料。</strong>IP 位址、瀏覽器類型、裝置資訊與請求時間戳，用於速率限制、防止濫用與服務穩定性。</li>
-          <li><strong>付款資料。</strong>若您購買付費方案，帳單資訊由我們的付款服務商（Stripe）蒐集與儲存。我們僅取得有限的後設資料，例如您的 email、訂閱狀態、信用卡末四碼。</li>
-          <li><strong>選擇性聯絡資料。</strong>若您寄 email 給我們，我們會保留該訊息以回覆您。</li>
-        </ul>
-
-        <h2>2. 我們如何使用資料</h2>
-        <ul>
-          <li>提供與營運本服務（產生摘要、行動項目、跟進 Email）。</li>
-          <li>執行使用量限制、防止濫用。</li>
-          <li>處理付款與訂閱管理。</li>
-          <li>回應客戶支援需求。</li>
-          <li>遵守法律義務。</li>
-        </ul>
-
-        <h2>3. 資料保存期限</h2>
-        <ul>
-          <li><strong>會議內容：</strong>不儲存。在記憶體中處理，回應後立即丟棄。</li>
-          <li><strong>IP 配額紀錄：</strong>最多保存 24 小時後自動刪除。</li>
-          <li><strong>付款紀錄：</strong>由 Stripe 依其政策與適用法律保存（通常為 7 年）。</li>
-          <li><strong>客服 email：</strong>最多保存 24 個月，您亦可要求提早刪除。</li>
-        </ul>
-
-        <h2>4. 第三方服務</h2>
-        <p>我們使用以下子處理者提供本服務：</p>
-        <ul>
-          <li><strong>Perplexity AI</strong>——根據您的筆記生成會議成果。</li>
-          <li><strong>Netlify</strong>——提供網站與無伺服器功能的代管。</li>
-          <li><strong>Stripe</strong>——處理付款與管理訂閱。</li>
-        </ul>
-        <p>每一個第三方皆依其自身的隱私政策處理資料。使用本服務即表示您同意上述資料分享。</p>
-
-        <h2>5. 您的權利</h2>
-        <p>依您所在地區，您可能擁有存取、更正、匯出或刪除個人資料的權利，以及對特定處理反對或限制的權利。如需行使任何權利，請來信 <a href="mailto:{{CONTACT_EMAIL}}">{{CONTACT_EMAIL}}</a>。</p>
-
-        <h2>6. Cookies 與本機儲存</h2>
-        <p>我們使用瀏覽器本機儲存（local storage）記住您的偏好設定（語言、主題），以及在適用情況下您的 Pro 授權金鑰。我們不使用追蹤性 cookies 做廣告用途。</p>
-
-        <h2>7. 安全</h2>
-        <p>傳輸中的資料以 HTTPS 加密。我們在處理後不保留會議內容。但沒有任何系統能 100% 安全，您於使用本服務時知悉此一事實。</p>
-
-        <h2>8. 未成年人</h2>
-        <p>本服務並非為 13 歲以下兒童設計。我們不會在知情下蒐集 13 歲以下兒童的資料。如您認為我們蒐集了此類資料，請聯絡我們刪除。</p>
-
-        <h2>9. 跨境資料傳輸</h2>
-        <p>您的資料可能在您所在地以外的國家處理。使用本服務即表示您同意此類傳輸。</p>
-
-        <h2>10. 政策變更</h2>
-        <p>我們可能不時更新本隱私政策。重大變更將於本頁公告並更新日期。於變更後繼續使用本服務即視為同意。</p>
-
-        <h2>11. 聯絡我們</h2>
-        <p>任何問題或申請，請來信 <a href="mailto:{{CONTACT_EMAIL}}">{{CONTACT_EMAIL}}</a>。</p>
-
-        <a href="/" class="back">← 返回首頁</a>
-      </section>
-    </article>
+    <p style="margin-top:48px; font-size:13px; opacity:.6;">
+      <a href="/terms.html">Terms of Service</a> · <a href="/">Home</a>
+    </p>
   </main>
-
-  <script>
-    // 主題套用
-    const theme = localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-    document.documentElement.setAttribute('data-theme', theme);
-
-    // 語言切換
-    const lang = localStorage.getItem('lang') === 'zh-Hant' ? 'zh' : 'en';
-    function setLang(target){
-      document.querySelectorAll('[data-lang-section]').forEach(s => s.classList.toggle('active', s.dataset.langSection === target));
-      document.querySelectorAll('.lang-toggle button').forEach(b => b.classList.toggle('active', b.dataset.target === target));
-      document.documentElement.setAttribute('lang', target === 'zh' ? 'zh-Hant' : 'en');
-      localStorage.setItem('lang', target === 'zh' ? 'zh-Hant' : 'en');
-    }
-    setLang(lang);
-    document.querySelectorAll('.lang-toggle button').forEach(b => {
-      b.addEventListener('click', () => setLang(b.dataset.target));
-    });
-  </script>
 </body>
 </html>

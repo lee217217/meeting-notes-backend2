@@ -4,208 +4,93 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Terms of Service · Meeting Workspace</title>
-  <meta name="description" content="Terms and conditions for using Meeting Workspace." />
-  <meta name="robots" content="index,follow" />
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-
-  <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
-  <link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&f[]=cabinet-grotesk@500,700,800&display=swap" rel="stylesheet" />
+  <meta name="description" content="Terms of Service for Meeting Workspace." />
   <link rel="stylesheet" href="/styles.css" />
-
   <style>
-    .legal{max-width:780px; margin:0 auto; padding:2rem 1.5rem 4rem; line-height:1.75}
-    .legal h1{font-size:2.2rem; margin-bottom:.25rem; font-family:var(--font-display); font-weight:800}
-    .legal h2{font-size:1.15rem; margin-top:2.2rem; margin-bottom:.5rem; font-weight:700}
-    .legal .updated{color:var(--muted); font-size:.88rem; margin-bottom:2rem}
-    .legal p, .legal li{color:var(--text); font-size:.95rem}
-    .legal ul{padding-left:1.4rem}
-    .legal li{margin-bottom:.4rem}
-    .legal a{color:var(--primary)}
-    .legal hr{border:0; border-top:1px solid var(--border); margin:3rem 0}
-    .legal .back{display:inline-block; margin-top:2rem; color:var(--muted); font-size:.9rem}
-    .lang-toggle{display:flex; gap:.5rem; justify-content:flex-end; margin-bottom:1.5rem}
-    .lang-toggle button{background:var(--surface); border:1px solid var(--border); color:var(--muted);
-      padding:.4rem .9rem; border-radius:999px; cursor:pointer; font-family:inherit; font-size:.82rem; font-weight:600}
-    .lang-toggle button.active{background:var(--primary); color:var(--inverse); border-color:transparent}
-    [data-lang-section]{display:none}
-    [data-lang-section].active{display:block}
+    .legal { max-width: 780px; margin: 0 auto; padding: 60px 24px 80px; line-height: 1.7; }
+    .legal h1 { font-size: 34px; margin: 0 0 8px; letter-spacing: -0.02em; }
+    .legal .meta { color: var(--text-mute, #888); font-size: 13px; margin-bottom: 40px; }
+    .legal h2 { font-size: 20px; margin-top: 36px; margin-bottom: 10px; }
+    .legal p, .legal li { font-size: 15px; color: var(--text-soft, #333); }
+    .legal ul { padding-left: 20px; }
+    .legal a { color: #5b5bf5; }
+    .legal-nav { display:flex; justify-content:space-between; padding: 18px 24px; border-bottom:1px solid rgba(0,0,0,.08); }
+    .legal-nav a { text-decoration:none; color:inherit; font-weight:600; }
+    .back-home { opacity:.7; }
+    [data-theme="dark"] body { background:#0b0b0f; color:#f5f5f7; }
   </style>
 </head>
 <body>
-  <header class="top">
-    <div class="app" style="max-width:1220px; margin:0 auto; padding:1rem 1.25rem; display:flex; justify-content:space-between; align-items:center;">
-      <a href="/" class="brand">
-        <span class="brand-mark">◈</span>
-        <span class="brand-text">Meeting Workspace</span>
-      </a>
-      <a href="/" class="btn">← Home</a>
-    </div>
-  </header>
+  <nav class="legal-nav">
+    <a href="/"><strong>◈ Meeting Workspace</strong></a>
+    <a class="back-home" href="/">← Back to home</a>
+  </nav>
 
-  <main>
-    <article class="legal">
-      <div class="lang-toggle">
-        <button type="button" class="active" data-target="en">EN</button>
-        <button type="button" data-target="zh">繁中</button>
-      </div>
+  <main class="legal">
+    <h1>Terms of Service</h1>
+    <p class="meta">Last updated: April 30, 2026</p>
 
-      <!-- =================== ENGLISH =================== -->
-      <section data-lang-section="en" class="active">
-        <h1>Terms of Service</h1>
-        <p class="updated">Last updated: {{LAST_UPDATED}}</p>
+    <p>Welcome to Meeting Workspace ("Service"). By accessing or using the Service, you agree to these Terms. If you don't agree, please don't use the Service.</p>
 
-        <p>These Terms of Service ("Terms") govern your access to and use of the Meeting Workspace service operated by {{COMPANY_NAME}} ("we", "us") and available at {{WEBSITE_URL}} (the "Service"). By using the Service, you agree to these Terms. If you do not agree, do not use the Service.</p>
+    <h2>1. The Service</h2>
+    <p>Meeting Workspace is an AI-powered tool that converts meeting notes into summaries, decisions, action items, and follow-up emails. The Service is offered as a web application at this domain.</p>
 
-        <h2>1. The Service</h2>
-        <p>The Service allows you to generate meeting summaries, decisions, action items, and follow-up emails from meeting notes or transcripts, using third-party AI models. Output is generated automatically and may contain inaccuracies.</p>
+    <h2>2. Accounts</h2>
+    <p>No signup is required to use the free tier. To access Pro, you must purchase a license through Lemon Squeezy. Your license key is personal and must not be shared.</p>
 
-        <h2>2. Eligibility</h2>
-        <p>You must be at least 13 years old to use the Service. By using the Service, you represent that you meet this requirement and that your use complies with applicable law.</p>
+    <h2>3. Free &amp; Pro plans</h2>
+    <ul>
+      <li><strong>Free:</strong> Up to 3 workflow runs per day per browser. Resets at 00:00 local time.</li>
+      <li><strong>Pro:</strong> Unlimited runs, priority AI response, and additional export features. Billed monthly via Lemon Squeezy.</li>
+    </ul>
 
-        <h2>3. Accounts & License Keys</h2>
-        <p>Certain features require a paid plan and a license key. You are responsible for keeping your license key confidential. We may revoke a key that is shared, abused, or obtained fraudulently.</p>
+    <h2>4. Acceptable use</h2>
+    <p>You agree not to:</p>
+    <ul>
+      <li>Submit content you don't have the right to share or process.</li>
+      <li>Submit illegal, harmful, or abusive content.</li>
+      <li>Attempt to reverse-engineer, scrape, or circumvent rate limits.</li>
+      <li>Share or resell your Pro license key.</li>
+    </ul>
+    <p>We may suspend or terminate access for violations.</p>
 
-        <h2>4. Subscriptions & Payment</h2>
-        <ul>
-          <li>Paid plans are billed in advance on a monthly basis at the price displayed on our pricing page.</li>
-          <li>Subscriptions renew automatically unless canceled before the end of the current billing period.</li>
-          <li>All payments are processed by Stripe. By subscribing you also agree to Stripe's terms.</li>
-          <li>Prices may change; we will give reasonable notice of any change.</li>
-        </ul>
+    <h2>5. AI-generated content</h2>
+    <p>Outputs are generated by AI and may contain errors, omissions, or hallucinations. You are responsible for reviewing outputs before relying on or sharing them. The Service is provided as a productivity aid, not a replacement for human judgment.</p>
 
-        <h2>5. Refund Policy</h2>
-        <p>We offer a 7-day refund from the date of initial purchase if the Service does not work as described. Refunds for renewal charges are not provided unless required by law. To request a refund, email <a href="mailto:{{CONTACT_EMAIL}}">{{CONTACT_EMAIL}}</a>.</p>
+    <h2>6. Your content</h2>
+    <p>You retain all rights to the meeting notes you submit. We do not store your content (see <a href="/privacy.html">Privacy Policy</a>). You grant us a limited, non-exclusive right to process your content solely to generate outputs for you.</p>
 
-        <h2>6. Cancellation</h2>
-        <p>You can cancel at any time. Cancellation stops the next renewal; you retain access until the end of the current billing period.</p>
+    <h2>7. Payments, refunds &amp; cancellation</h2>
+    <ul>
+      <li>Pro is billed monthly in advance via Lemon Squeezy.</li>
+      <li>You may cancel anytime from your Lemon Squeezy customer portal; you retain access until the end of the current billing period.</li>
+      <li>Refunds are handled on a case-by-case basis within 14 days of purchase. Contact us at <a href="mailto:support@meeting-workspace.app">support@meeting-workspace.app</a>.</li>
+    </ul>
 
-        <h2>7. Acceptable Use</h2>
-        <p>You agree not to:</p>
-        <ul>
-          <li>Use the Service to process unlawful, infringing, harassing, or hateful content.</li>
-          <li>Attempt to reverse engineer, scrape, or interfere with the Service.</li>
-          <li>Exceed fair use of API quotas or circumvent rate limits.</li>
-          <li>Resell, sublicense, or make the Service available to third parties.</li>
-          <li>Upload content containing regulated personal data (e.g., health records, government IDs) unless you have legal authority to do so.</li>
-        </ul>
+    <h2>8. Service availability</h2>
+    <p>We aim for high availability but do not guarantee uninterrupted Service. We may modify, suspend, or discontinue features at any time. Where a paid feature is discontinued, we will offer a pro-rated refund.</p>
 
-        <h2>8. Your Content</h2>
-        <p>You retain all rights to the meeting content you submit. You grant us a limited license to process that content solely for the purpose of generating output for you. We do not store your content after processing and do not use it to train AI models.</p>
+    <h2>9. Disclaimer of warranties</h2>
+    <p>The Service is provided "as is" without warranties of any kind, express or implied, including merchantability, fitness for a particular purpose, or non-infringement.</p>
 
-        <h2>9. AI Output Disclaimer</h2>
-        <p>AI-generated output may be inaccurate, incomplete, or inappropriate. You are responsible for reviewing output before relying on it for any business, legal, medical, or financial decision. The Service is provided "as is" without warranties of any kind.</p>
+    <h2>10. Limitation of liability</h2>
+    <p>To the maximum extent permitted by law, our total liability for any claim arising out of or relating to the Service is limited to the amount you paid us in the 12 months preceding the claim, or USD 50, whichever is greater.</p>
 
-        <h2>10. Intellectual Property</h2>
-        <p>All rights in the Service, branding, website design, and underlying software belong to {{COMPANY_NAME}} or its licensors. These Terms do not grant you any right to our trademarks or trade dress.</p>
+    <h2>11. Indemnity</h2>
+    <p>You agree to indemnify us against any claims arising from your misuse of the Service or violation of these Terms.</p>
 
-        <h2>11. Termination</h2>
-        <p>We may suspend or terminate your access if you violate these Terms, abuse the Service, or engage in fraud. Upon termination, your right to use the Service ends immediately.</p>
+    <h2>12. Changes to these Terms</h2>
+    <p>We may update these Terms from time to time. Material changes will be communicated by updating the "Last updated" date above. Continued use after changes means you accept the new Terms.</p>
 
-        <h2>12. Limitation of Liability</h2>
-        <p>To the maximum extent permitted by law, {{COMPANY_NAME}} will not be liable for any indirect, incidental, special, or consequential damages. Our total aggregate liability for any claim arising from or related to the Service is limited to the amount you paid to us in the three (3) months preceding the claim.</p>
+    <h2>13. Governing law</h2>
+    <p>These Terms are governed by the laws of Hong Kong SAR. Any dispute shall be resolved in the courts of Hong Kong.</p>
 
-        <h2>13. Indemnification</h2>
-        <p>You agree to indemnify and hold harmless {{COMPANY_NAME}} from any claims arising out of your use of the Service, your content, or your violation of these Terms.</p>
+    <h2>14. Contact</h2>
+    <p>Questions? Email us at <a href="mailto:support@meeting-workspace.app">support@meeting-workspace.app</a>.</p>
 
-        <h2>14. Changes to the Service or Terms</h2>
-        <p>We may modify the Service or these Terms at any time. Material changes will be announced on our website. Continued use after changes become effective constitutes acceptance.</p>
-
-        <h2>15. Governing Law</h2>
-        <p>These Terms are governed by the laws of {{JURISDICTION}}, without regard to conflict-of-law rules. Any dispute shall be resolved in the competent courts of {{JURISDICTION}}.</p>
-
-        <h2>16. Contact</h2>
-        <p>Questions about these Terms? Email <a href="mailto:{{CONTACT_EMAIL}}">{{CONTACT_EMAIL}}</a>.</p>
-
-        <a href="/" class="back">← Back to home</a>
-      </section>
-
-      <!-- =================== 繁中 =================== -->
-      <section data-lang-section="zh">
-        <h1>服務條款</h1>
-        <p class="updated">最後更新：{{LAST_UPDATED}}</p>
-
-        <p>本服務條款（以下稱「本條款」）規範您存取與使用由 {{COMPANY_NAME}}（以下稱「我們」）營運、位於 {{WEBSITE_URL}} 的 Meeting Workspace 服務（以下稱「本服務」）。使用本服務即表示您同意本條款。若您不同意，請勿使用本服務。</p>
-
-        <h2>1. 本服務</h2>
-        <p>本服務可從會議筆記或逐字稿中，透過第三方 AI 模型生成會議摘要、決策、行動項目與跟進 Email。輸出內容為自動生成，可能存在錯誤。</p>
-
-        <h2>2. 使用資格</h2>
-        <p>您須年滿 13 歲方可使用本服務。使用本服務即表示您聲明符合此要求，且使用行為符合適用法律。</p>
-
-        <h2>3. 帳號與授權金鑰</h2>
-        <p>特定功能需付費方案及授權金鑰。您有責任妥善保管您的授權金鑰。若金鑰遭共享、濫用或以詐欺方式取得，我們有權撤銷。</p>
-
-        <h2>4. 訂閱與付款</h2>
-        <ul>
-          <li>付費方案依定價頁所示金額按月預付。</li>
-          <li>訂閱將於每個計費週期結束前自動續訂，除非於期前取消。</li>
-          <li>所有付款由 Stripe 處理。訂閱即視為您亦同意 Stripe 的條款。</li>
-          <li>價格可能變動，我們將合理預告變更。</li>
-        </ul>
-
-        <h2>5. 退款政策</h2>
-        <p>若本服務未如所述運作，自首次購買日起 7 日內可申請退款。續訂費用除法律另有規定外不予退款。如需退款請來信 <a href="mailto:{{CONTACT_EMAIL}}">{{CONTACT_EMAIL}}</a>。</p>
-
-        <h2>6. 取消訂閱</h2>
-        <p>您可隨時取消訂閱。取消後將停止下一次續訂，您在當期計費週期結束前仍可使用。</p>
-
-        <h2>7. 使用規範</h2>
-        <p>您同意不得：</p>
-        <ul>
-          <li>使用本服務處理非法、侵權、騷擾或仇恨性內容。</li>
-          <li>嘗試反向工程、爬取或干擾本服務。</li>
-          <li>超過合理使用之 API 配額或規避速率限制。</li>
-          <li>轉售、再授權或將本服務提供給第三方。</li>
-          <li>在無合法授權的情況下上傳受管制的個人資料（例如健康紀錄、政府核發證件）。</li>
-        </ul>
-
-        <h2>8. 您的內容</h2>
-        <p>您保有您所提交的會議內容之全部權利。您授予我們有限授權，僅為產生供您使用的輸出而處理該內容。我們在處理後不儲存您的內容，且不使用您的內容訓練 AI 模型。</p>
-
-        <h2>9. AI 輸出免責聲明</h2>
-        <p>AI 生成的內容可能不準確、不完整或不適當。您有責任在依賴任何商業、法律、醫療或財務決策前，自行審核輸出內容。本服務依「現況」提供，不附任何明示或默示之保證。</p>
-
-        <h2>10. 智慧財產權</h2>
-        <p>本服務、品牌、網站設計及底層軟體之所有權利均屬於 {{COMPANY_NAME}} 或其授權人。本條款不授予您對我們商標或商業外觀的任何權利。</p>
-
-        <h2>11. 終止</h2>
-        <p>若您違反本條款、濫用本服務或從事詐欺行為，我們可暫停或終止您的使用權。終止後您使用本服務的權利即刻結束。</p>
-
-        <h2>12. 責任上限</h2>
-        <p>在法律允許的最大範圍內，{{COMPANY_NAME}} 不對任何間接性、附隨性、特殊性或衍生性損害負責。就因本服務引起或相關之任何請求，我們之累計賠償責任以您在請求發生前三（3）個月向我們支付之金額為上限。</p>
-
-        <h2>13. 損害賠償</h2>
-        <p>您同意就因您使用本服務、您的內容或違反本條款所引起之任何請求，對 {{COMPANY_NAME}} 為賠償並使其免於損害。</p>
-
-        <h2>14. 服務或條款變更</h2>
-        <p>我們可隨時修改本服務或本條款。重大變更將於我們的網站公告。變更生效後繼續使用即視為同意。</p>
-
-        <h2>15. 管轄法律</h2>
-        <p>本條款受 {{JURISDICTION}} 法律管轄，不適用法律衝突規則。任何爭議應由 {{JURISDICTION}} 具管轄權之法院審理。</p>
-
-        <h2>16. 聯絡我們</h2>
-        <p>對本條款有任何疑問，請來信 <a href="mailto:{{CONTACT_EMAIL}}">{{CONTACT_EMAIL}}</a>。</p>
-
-        <a href="/" class="back">← 返回首頁</a>
-      </section>
-    </article>
+    <p style="margin-top:48px; font-size:13px; opacity:.6;">
+      <a href="/privacy.html">Privacy Policy</a> · <a href="/">Home</a>
+    </p>
   </main>
-
-  <script>
-    const theme = localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-    document.documentElement.setAttribute('data-theme', theme);
-
-    const lang = localStorage.getItem('lang') === 'zh-Hant' ? 'zh' : 'en';
-    function setLang(target){
-      document.querySelectorAll('[data-lang-section]').forEach(s => s.classList.toggle('active', s.dataset.langSection === target));
-      document.querySelectorAll('.lang-toggle button').forEach(b => b.classList.toggle('active', b.dataset.target === target));
-      document.documentElement.setAttribute('lang', target === 'zh' ? 'zh-Hant' : 'en');
-      localStorage.setItem('lang', target === 'zh' ? 'zh-Hant' : 'en');
-    }
-    setLang(lang);
-    document.querySelectorAll('.lang-toggle button').forEach(b => {
-      b.addEventListener('click', () => setLang(b.dataset.target));
-    });
-  </script>
 </body>
 </html>
