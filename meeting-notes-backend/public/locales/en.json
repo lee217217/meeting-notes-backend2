@@ -203,5 +203,10 @@
   "upgradeCta": "Upgrade Pro — $9/mo",
   "haveLicense": "I have a license key",
   "comeBackTomorrow": "Come back tomorrow",
-  "proActive": "PRO"
+  "proActive": "PRO"  ,"promptLicenseKey": "Paste your license key:",
+  "statusVerifyingLicense": "Verifying license...",
+  "statusLicenseActivated": "Pro activated ✨ Enjoy unlimited runs!",
+  "statusLicenseInvalid": "License key is invalid or expired.",
+  "statusLicenseError": "Could not verify license. Try again later.",
+  "statusLicenseRestored": "Pro license restored."
 }

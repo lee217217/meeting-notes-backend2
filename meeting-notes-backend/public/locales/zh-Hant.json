@@ -203,5 +203,10 @@
   "upgradeCta": "升級 Pro — $9/月",
   "haveLicense": "我有 License Key",
   "comeBackTomorrow": "明天再來",
-  "proActive": "Pro"
+  "proActive": "Pro"  ,"promptLicenseKey": "貼上你的 License Key：",
+  "statusVerifyingLicense": "驗證 License 中...",
+  "statusLicenseActivated": "Pro 已啟用 ✨ 盡情使用無限次！",
+  "statusLicenseInvalid": "License Key 無效或已過期。",
+  "statusLicenseError": "無法驗證 License，請稍後再試。",
+  "statusLicenseRestored": "Pro License 已還原。"
 }

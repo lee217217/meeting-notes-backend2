@@ -588,7 +588,50 @@
     if (q.count >= QUOTA_LIMIT) openUpgradeModal();
   });
 
-  els.haveLicenseBtn?.addEventListener('click', () => {});
+  async function activateLicense(licenseKey) {
+  setStatus('statusVerifyingLicense');
+  try {
+    const res = await fetch('/.netlify/functions/verify-license', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ licenseKey })
+    });
+    const data = await res.json();
+
+    if (!data || !data.valid) {
+      const reason = (data && data.reason) ? ' (' + data.reason + ')' : '';
+      setStatusText(t('statusLicenseInvalid') + reason, 'error');
+      return false;
+    }
+
+    localStorage.setItem(PRO_KEY, JSON.stringify({
+      active: true,
+      validUntil: data.validUntil,
+      email: data.customerEmail || '',
+      licenseKey
+    }));
+
+    updateQuotaPill();
+    closeUpgradeModal();
+    setStatus('statusLicenseActivated', 'success');
+    return true;
+  } catch (e) {
+    console.error('[license]', e);
+    setStatusText(t('statusLicenseError'), 'error');
+    return false;
+  }
+}
+
+els.haveLicenseBtn?.addEventListener('click', async () => {
+  const key = prompt(t('promptLicenseKey'));
+  if (!key) return;
+  const cleaned = key.trim();
+  if (cleaned.length < 8) {
+    setStatusText(t('statusLicenseInvalid'), 'error');
+    return;
+  }
+  await activateLicense(cleaned);
+});
 
   function loadHistory() {
     try { return JSON.parse(localStorage.getItem('history') || '[]'); }
