@@ -7,6 +7,17 @@
   const HISTORY_MAX = 20;
   const ETA_SECONDS = 30;
 
+  const FALLBACK_SAMPLE = {
+    en: {
+      title: 'Weekly production sync',
+      notes: 'Attendees: Alice (PM), Bob (Eng), Carol (Design)\n- Bob reported backend API v2 is on track, will deploy Wed.\n- Carol showed new onboarding mockups; team agreed to adopt option B.\n- Decision: Freeze scope for v2.0 after this week.\n- Risk: Mobile testing device shortage; Alice to order 2 more iPads by Friday.\n- Action: Bob to finalise migration script by Tue EOD.\n- Action: Carol to deliver final icons by Thu.'
+    },
+    'zh-Hant': {
+      title: '每週生產同步會議',
+      notes: '出席：Alice (PM)、Bob (工程)、Carol (設計)\n- Bob 回報後端 API v2 進度正常，週三可部署。\n- Carol 展示新的 Onboarding 設計稿，團隊同意採用方案 B。\n- 決定：本週後凍結 v2.0 範圍。\n- 風險：行動測試裝置不足，Alice 週五前再訂 2 台 iPad。\n- 行動：Bob 週二下班前完成資料庫遷移腳本。\n- 行動：Carol 週四前交出最終圖示。'
+    }
+  };
+
   const state = {
     lang: localStorage.getItem('lang') || (navigator.language.startsWith('zh') ? 'zh-Hant' : 'en'),
     theme: localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'),
@@ -62,6 +73,13 @@
   const isMac = /Mac|iPhone|iPad|iPod/.test(navigator.platform || navigator.userAgent || '');
   if (els.shortcutKbd) els.shortcutKbd.textContent = isMac ? '⌘ + ↵' : 'Ctrl + Enter';
 
+  // ===== Helpers =====
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[c]));
+  }
+
   // ===== i18n =====
   function t(k) { return (state.dict && state.dict[k]) || k; }
   async function loadLocale(lang) {
@@ -104,34 +122,39 @@
     localStorage.setItem('theme', th);
   }
   setTheme(state.theme);
-  els.themeToggle.addEventListener('click', () => setTheme(state.theme === 'dark' ? 'light' : 'dark'));
+  els.themeToggle?.addEventListener('click', () => setTheme(state.theme === 'dark' ? 'light' : 'dark'));
 
   // ===== Counter =====
   function updateCounter() {
+    if (!els.notes || !els.notesCount) return;
     const len = els.notes.value.length;
     els.notesCount.textContent = len.toLocaleString();
-    els.notesCounter.classList.toggle('warn', len > 19500 || (len > 0 && len < MIN_NOTES));
+    els.notesCounter?.classList.toggle('warn', len > 19500 || (len > 0 && len < MIN_NOTES));
   }
-  els.notes.addEventListener('input', updateCounter);
+  els.notes?.addEventListener('input', updateCounter);
 
   // ===== Status / Error =====
   function setStatus(key, cls) {
+    if (!els.status) return;
     els.status.textContent = key ? t(key) : '';
     els.status.className = 'status' + (cls ? ' ' + cls : '');
   }
   function setStatusText(text, cls) {
+    if (!els.status) return;
     els.status.textContent = text || '';
     els.status.className = 'status' + (cls ? ' ' + cls : '');
   }
   function showError(msg) {
+    if (!els.errorBanner) return;
     els.errorBannerText.textContent = msg;
     els.errorBanner.classList.add('show');
   }
   function hideError() {
+    if (!els.errorBanner) return;
     els.errorBanner.classList.remove('show');
     els.errorBannerText.textContent = '';
   }
-  els.retryButton.addEventListener('click', () => {
+  els.retryButton?.addEventListener('click', () => {
     hideError();
     if (state.lastPayload) submitWorkflow(state.lastPayload);
   });
@@ -149,6 +172,7 @@
 
   // ===== Stepper + ETA =====
   function resetStepper() {
+    if (!els.stepper) return;
     els.stepper.classList.remove('idle');
     STEPS.forEach((name) => {
       const el = els.stepper.querySelector('[data-step="' + name + '"]');
@@ -156,6 +180,7 @@
     });
   }
   function idleStepper() {
+    if (!els.stepper) return;
     els.stepper.classList.add('idle');
     STEPS.forEach((name) => {
       const el = els.stepper.querySelector('[data-step="' + name + '"]');
@@ -163,7 +188,7 @@
     });
   }
   function markStep(name, cls) {
-    const el = els.stepper.querySelector('[data-step="' + name + '"]');
+    const el = els.stepper?.querySelector('[data-step="' + name + '"]');
     if (el) el.className = 'step ' + cls;
   }
   function applyTraceToStepper(trace) {
@@ -176,6 +201,7 @@
     });
   }
   function startEta() {
+    if (!els.etaLine || !els.etaSec) return;
     let left = ETA_SECONDS;
     els.etaSec.textContent = left;
     els.etaLine.hidden = false;
@@ -188,7 +214,7 @@
   }
   function stopEta() {
     clearInterval(state.etaTimer);
-    els.etaLine.hidden = true;
+    if (els.etaLine) els.etaLine.hidden = true;
   }
 
   // ===== Render =====
@@ -206,6 +232,7 @@
     return p;
   }
   function renderActions(items) {
+    if (!els.actionsOutput) return;
     els.actionsOutput.classList.add('actions-v2');
     els.actionsOutput.innerHTML = '';
     if (!items || !items.length) {
@@ -231,8 +258,8 @@
       els.actionsOutput.appendChild(li);
     });
   }
-  function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
   function renderList(el, items, formatter, emptyKey) {
+    if (!el) return;
     el.innerHTML = '';
     if (!items || !items.length) {
       const li = document.createElement('li');
@@ -248,6 +275,7 @@
     });
   }
   function setBody(el, text, emptyKey) {
+    if (!el) return;
     if (text && text.trim()) { el.textContent = text; el.classList.remove('empty'); }
     else { el.textContent = t(emptyKey); el.classList.add('empty'); }
   }
@@ -272,6 +300,7 @@
 
   // ===== Copy + Download =====
   function flashCopied(btn) {
+    if (!btn) return;
     const span = btn.querySelector('span') || btn;
     const old = span.textContent;
     btn.classList.add('copied');
@@ -313,10 +342,10 @@
       if (btn) flashCopied(btn);
     } catch { setStatus('statusCopyFailed', 'error'); }
   }
-  els.copyMarkdown.addEventListener('click', (e) => copyText(buildMarkdown(), e.currentTarget, 'statusCopiedMd'));
-  els.copyEmail.addEventListener('click', (e) => copyText((state.lastArtifacts && state.lastArtifacts.follow_up_email) || '', e.currentTarget, 'statusCopiedEmail'));
+  els.copyMarkdown?.addEventListener('click', (e) => copyText(buildMarkdown(), e.currentTarget, 'statusCopiedMd'));
+  els.copyEmail?.addEventListener('click', (e) => copyText((state.lastArtifacts && state.lastArtifacts.follow_up_email) || '', e.currentTarget, 'statusCopiedEmail'));
 
-  els.downloadMd.addEventListener('click', () => {
+  els.downloadMd?.addEventListener('click', () => {
     const md = buildMarkdown();
     if (!md) { setStatus('statusNothingToCopy', 'error'); return; }
     const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
@@ -366,43 +395,35 @@
       hideError();
     } catch { showError(t('errFileRead')); }
   }
-  els.fileInput.addEventListener('change', (e) => { const f = e.target.files && e.target.files[0]; handleFile(f); e.target.value = ''; });
-  ['dragenter','dragover'].forEach((ev)=>{els.dropZone.addEventListener(ev,(e)=>{e.preventDefault();e.stopPropagation();els.dropZone.classList.add('dragging');});});
-  ['dragleave','drop'].forEach((ev)=>{els.dropZone.addEventListener(ev,(e)=>{e.preventDefault();e.stopPropagation();els.dropZone.classList.remove('dragging');});});
-  els.dropZone.addEventListener('drop', (e) => { const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]; if (f) handleFile(f); });
-
-  if (els.autoCleanBtn) {
-    els.autoCleanBtn.addEventListener('click', () => {
-      const before = els.notes.value;
-      if (!before.trim()) return;
-      els.notes.value = cleanTranscript(before);
-      updateCounter();
-      setStatus('statusAutoCleaned', 'success');
+  els.fileInput?.addEventListener('change', (e) => { const f = e.target.files && e.target.files[0]; handleFile(f); e.target.value = ''; });
+  if (els.dropZone) {
+    ['dragenter', 'dragover'].forEach((ev) => {
+      els.dropZone.addEventListener(ev, (e) => { e.preventDefault(); e.stopPropagation(); els.dropZone.classList.add('dragging'); });
     });
+    ['dragleave', 'drop'].forEach((ev) => {
+      els.dropZone.addEventListener(ev, (e) => { e.preventDefault(); e.stopPropagation(); els.dropZone.classList.remove('dragging'); });
+    });
+    els.dropZone.addEventListener('drop', (e) => { const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]; if (f) handleFile(f); });
   }
+  els.autoCleanBtn?.addEventListener('click', () => {
+    const before = els.notes.value;
+    if (!before.trim()) return;
+    els.notes.value = cleanTranscript(before);
+    updateCounter();
+    setStatus('statusAutoCleaned', 'success');
+  });
 
   // ===== Sample / Clear =====
-  const FALLBACK_SAMPLE = {
-  en: {
-    title: 'Weekly production sync',
-    notes: 'Attendees: Alice (PM), Bob (Eng), Carol (Design)\n- Bob reported backend API v2 is on track, will deploy Wed.\n- Carol showed new onboarding mockups; team agreed to adopt option B.\n- Decision: Freeze scope for v2.0 after this week.\n- Risk: Mobile testing device shortage; Alice to order 2 more iPads by Friday.\n- Action: Bob to finalise migration script by Tue EOD.\n- Action: Carol to deliver final icons by Thu.'
-  },
-  'zh-Hant': {
-    title: '每週生產同步會議',
-    notes: '出席：Alice (PM)、Bob (工程)、Carol (設計)\n- Bob 回報後端 API v2 進度正常，週三可部署。\n- Carol 展示新的 Onboarding 設計稿，團隊同意採用方案 B。\n- 決定：本週後凍結 v2.0 範圍。\n- 風險：行動測試裝置不足，Alice 週五前再訂 2 台 iPad。\n- 行動：Bob 週二下班前完成資料庫遷移腳本。\n- 行動：Carol 週四前交出最終圖示。'
-  }
-};
-
-els.loadSample.addEventListener('click', () => {
-  const fb = FALLBACK_SAMPLE[state.lang] || FALLBACK_SAMPLE.en;
-  const title = t('sampleTitle');
-  const notes = t('sampleNotes');
-  els.meetingTitle.value = (title === 'sampleTitle') ? fb.title : title;
-  els.notes.value = (notes === 'sampleNotes') ? fb.notes : notes;
-  updateCounter();
-  setStatus('statusSuccess', 'success');
-});
-  els.clearForm.addEventListener('click', () => {
+  els.loadSample?.addEventListener('click', () => {
+    const fb = FALLBACK_SAMPLE[state.lang] || FALLBACK_SAMPLE.en;
+    const title = t('sampleTitle');
+    const notes = t('sampleNotes');
+    els.meetingTitle.value = (title === 'sampleTitle') ? fb.title : title;
+    els.notes.value = (notes === 'sampleNotes') ? fb.notes : notes;
+    updateCounter();
+    setStatus('statusSuccess', 'success');
+  });
+  els.clearForm?.addEventListener('click', () => {
     els.form.reset();
     updateCounter();
     clearOutputs();
@@ -432,15 +453,16 @@ els.loadSample.addEventListener('click', () => {
     saveHistory(list);
   }
   function renderHistory() {
+    if (!els.historyList) return;
     const list = loadHistory();
     els.historyList.innerHTML = '';
-    els.historyEmpty.hidden = list.length > 0;
+    if (els.historyEmpty) els.historyEmpty.hidden = list.length > 0;
     list.forEach((item) => {
       const li = document.createElement('li');
       li.className = 'history-item';
       li.dataset.id = item.id;
       const d = new Date(item.at);
-      const dateStr = d.toLocaleString(state.lang === 'zh-Hant' ? 'zh-HK' : 'en-US', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
+      const dateStr = d.toLocaleString(state.lang === 'zh-Hant' ? 'zh-HK' : 'en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
       li.innerHTML = `
         <button class="history-item-del" title="Delete" data-del="${item.id}">✕</button>
         <div class="history-item-title">${escapeHtml(item.title)}</div>
@@ -450,26 +472,28 @@ els.loadSample.addEventListener('click', () => {
     });
   }
   function openDrawer() {
+    if (!els.historyDrawer) return;
     renderHistory();
     els.historyDrawer.hidden = false;
-    els.drawerOverlay.hidden = false;
+    if (els.drawerOverlay) els.drawerOverlay.hidden = false;
     els.historyDrawer.setAttribute('aria-hidden', 'false');
   }
   function closeDrawerFn() {
+    if (!els.historyDrawer) return;
     els.historyDrawer.hidden = true;
-    els.drawerOverlay.hidden = true;
+    if (els.drawerOverlay) els.drawerOverlay.hidden = true;
     els.historyDrawer.setAttribute('aria-hidden', 'true');
   }
-  els.historyBtn.addEventListener('click', openDrawer);
-  els.closeDrawer.addEventListener('click', closeDrawerFn);
-  els.drawerOverlay.addEventListener('click', closeDrawerFn);
-  els.clearHistoryBtn.addEventListener('click', () => {
+  els.historyBtn?.addEventListener('click', openDrawer);
+  els.closeDrawer?.addEventListener('click', closeDrawerFn);
+  els.drawerOverlay?.addEventListener('click', closeDrawerFn);
+  els.clearHistoryBtn?.addEventListener('click', () => {
     if (!confirm(t('confirmClearHistory'))) return;
     localStorage.removeItem('history');
     renderHistory();
     setStatus('statusHistoryCleared', 'success');
   });
-  els.historyList.addEventListener('click', (e) => {
+  els.historyList?.addEventListener('click', (e) => {
     const del = e.target.closest('[data-del]');
     if (del) {
       e.stopPropagation();
@@ -510,13 +534,13 @@ els.loadSample.addEventListener('click', () => {
     markStep('coordinator', 'active');
     startEta();
 
-    if (!state.lastArtifacts) {
+    if (!state.lastArtifacts && els.summaryOutput) {
       els.summaryOutput.innerHTML =
         '<div class="skeleton w90"></div><div class="skeleton w60"></div><div class="skeleton w80"></div>';
       els.summaryOutput.classList.remove('empty');
     }
 
-    els.submitButton.disabled = true;
+    if (els.submitButton) els.submitButton.disabled = true;
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 60000);
 
@@ -554,18 +578,18 @@ els.loadSample.addEventListener('click', () => {
       if (state.lastArtifacts) renderArtifacts(state.lastArtifacts);
       else clearOutputs();
       STEPS.forEach((s) => {
-        const el = els.stepper.querySelector('[data-step="' + s + '"]');
+        const el = els.stepper?.querySelector('[data-step="' + s + '"]');
         if (el && !el.classList.contains('done')) el.className = 'step failed';
       });
     } finally {
       clearTimeout(timeoutId);
       stopEta();
-      els.submitButton.disabled = false;
+      if (els.submitButton) els.submitButton.disabled = false;
       state.isRunning = false;
     }
   }
 
-  els.form.addEventListener('submit', (e) => {
+  els.form?.addEventListener('submit', (e) => {
     e.preventDefault();
     if (state.isRunning) return;
     const notes = els.notes.value.trim();
@@ -585,10 +609,10 @@ els.loadSample.addEventListener('click', () => {
   document.addEventListener('keydown', (e) => {
     if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
       e.preventDefault();
-      els.form.requestSubmit();
+      els.form?.requestSubmit();
     } else if (e.key === 'Escape') {
-      if (!els.historyDrawer.hidden) closeDrawerFn();
-      if (els.errorBanner.classList.contains('show')) hideError();
+      if (els.historyDrawer && !els.historyDrawer.hidden) closeDrawerFn();
+      if (els.errorBanner?.classList.contains('show')) hideError();
     }
   });
 
