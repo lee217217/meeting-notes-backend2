@@ -1,6 +1,7 @@
 // ============================================================
-// app.js  |  Umami tracking build v2  |  2026-05-04
-// 部署後喺 DevTools Console 應該會見到 [umami] build v2 loaded
+// app.js  |  Umami tracking build v2 + 4-tier quota  |  2026-05-04
+// 部署後喺 DevTools Console 應該會見到 [umami+quota] build v5 loaded
+// Quota: anon 1/day | email 3/day | pro 10/week ($19/mo) | max 60/mo ($29/mo)
 // ============================================================
 
 // ──────────────────────────────────────────────
@@ -8,6 +9,8 @@
 // 用 track('Event Name', { prop: 'value' }) 嚟發送
 // 守衛：如果 script 未 load / ad-blocker 擋到 → 唔會炸
 // ──────────────────────────────────────────────
+console.log('%c[umami+quota] build v5 loaded ✅  2026-05-04', 'color:#16a34a;font-weight:bold');
+
 function track(eventName, eventData) {
   try {
     console.log('%c[umami] track →', 'color:#5b5bf5;font-weight:bold', eventName, eventData || '');
@@ -32,9 +35,17 @@ function track(eventName, eventData) {
   const MIN_NOTES = 30;
   const HISTORY_MAX = 20;
   const ETA_SECONDS = 30;
-  const QUOTA_LIMIT = 3;
-  const QUOTA_KEY = 'quota';
-  const PRO_KEY = 'pro';
+  // ---------- 4-tier quota config ----------
+  const PLANS = {
+    anon:  { label: 'Free',    daily: 1,  weekly: null, monthly: null, periodKey: 'daily'   },
+    email: { label: 'Starter', daily: 3,  weekly: null, monthly: null, periodKey: 'daily'   },
+    pro:   { label: 'Pro',     daily: null, weekly: 10, monthly: null, periodKey: 'weekly'  },
+    max:   { label: 'Max',     daily: null, weekly: null, monthly: 60, periodKey: 'monthly' }
+  };
+  const QUOTA_KEY = 'quota_v4';       // new structure
+  const PRO_KEY   = 'pro';            // license record (kept for backward compat)
+  const EMAIL_KEY = 'userEmail';      // starter tier trigger
+  const QUOTA_LIMIT = PLANS.anon.daily; // legacy alias, kept for stepper messages
 
   const FALLBACK_SAMPLE = {
     en: {
@@ -538,13 +549,26 @@ function track(eventName, eventData) {
     setStatus('statusFormCleared', 'success');
   });
 
-  function isPro() {
+  function getLicensePlan() {
     try {
       const p = JSON.parse(localStorage.getItem(PRO_KEY) || '{}');
-      if (!p.active) return false;
-      if (p.validUntil && new Date(p.validUntil) < new Date()) return false;
-      return true;
-    } catch { return false; }
+      if (!p.active) return null;
+      if (p.validUntil && new Date(p.validUntil) < new Date()) return null;
+      // p.plan can be 'pro' or 'max' (backend returns it); default 'pro' for legacy records
+      return (p.plan === 'max') ? 'max' : 'pro';
+    } catch { return null; }
+  }
+
+  function getPlan() {
+    const lic = getLicensePlan();
+    if (lic) return lic;               // 'pro' or 'max'
+    if (localStorage.getItem(EMAIL_KEY)) return 'email';
+    return 'anon';
+  }
+
+  function isPro() {
+    // legacy helper: true if paid tier active
+    return getLicensePlan() !== null;
   }
 
   async function revalidateLicense() {
@@ -583,45 +607,111 @@ function track(eventName, eventData) {
     return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
   }
 
-  function loadQuota() {
+  function weekStr() {
+    const d = new Date();
+    const onejan = new Date(d.getFullYear(), 0, 1);
+    const wk = Math.ceil((((d - onejan) / 86400000) + onejan.getDay() + 1) / 7);
+    return d.getFullYear() + '-W' + String(wk).padStart(2, '0');
+  }
+
+  function monthStr() {
+    const d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+  }
+
+  // Soft fingerprint (anti-bypass; combined w/ localStorage + server IP check)
+  async function getFingerprint() {
     try {
-      const q = JSON.parse(localStorage.getItem(QUOTA_KEY) || '{}');
-      if (q.date !== todayStr()) return { date: todayStr(), count: 0, limit: QUOTA_LIMIT };
-      return { date: q.date, count: q.count || 0, limit: QUOTA_LIMIT };
-    } catch { return { date: todayStr(), count: 0, limit: QUOTA_LIMIT }; }
+      const raw = [
+        navigator.userAgent, navigator.language,
+        screen.width + 'x' + screen.height,
+        new Date().getTimezoneOffset(),
+        navigator.hardwareConcurrency || 0, navigator.platform
+      ].join('|');
+      const buf = new TextEncoder().encode(raw);
+      const hash = await crypto.subtle.digest('SHA-256', buf);
+      return Array.from(new Uint8Array(hash)).slice(0, 12)
+        .map(b => b.toString(16).padStart(2, '0')).join('');
+    } catch { return ''; }
+  }
+
+  function loadQuota() {
+    let q;
+    try { q = JSON.parse(localStorage.getItem(QUOTA_KEY) || '{}'); }
+    catch { q = {}; }
+    const t_ = todayStr(), w_ = weekStr(), m_ = monthStr();
+    if (q.day   !== t_) { q.day = t_;   q.dayCount = 0; }
+    if (q.week  !== w_) { q.week = w_;  q.weekCount = 0; }
+    if (q.month !== m_) { q.month = m_; q.monthCount = 0; }
+    return q;
   }
 
   function saveQuota(q) { localStorage.setItem(QUOTA_KEY, JSON.stringify(q)); }
 
   function incrementQuota() {
     const q = loadQuota();
-    q.count += 1;
+    q.dayCount   = (q.dayCount   || 0) + 1;
+    q.weekCount  = (q.weekCount  || 0) + 1;
+    q.monthCount = (q.monthCount || 0) + 1;
     saveQuota(q);
     updateQuotaPill();
   }
 
-  function canRun() {
-    if (isPro()) return true;
+  // Returns { ok, reason } where reason is 'daily'|'weekly'|'monthly'|null
+  function checkQuota() {
+    const plan = getPlan();
+    const L = PLANS[plan];
     const q = loadQuota();
-    return q.count < QUOTA_LIMIT;
+    if (L.daily   !== null && (q.dayCount   || 0) >= L.daily)   return { ok: false, reason: 'daily',   plan, limits: L };
+    if (L.weekly  !== null && (q.weekCount  || 0) >= L.weekly)  return { ok: false, reason: 'weekly',  plan, limits: L };
+    if (L.monthly !== null && (q.monthCount || 0) >= L.monthly) return { ok: false, reason: 'monthly', plan, limits: L };
+    return { ok: true, reason: null, plan, limits: L };
   }
+
+  function canRun() { return checkQuota().ok; }
 
   function updateQuotaPill() {
     if (!els.quotaPill) return;
-    if (isPro()) {
+    const plan = getPlan();
+    const L = PLANS[plan];
+    const q = loadQuota();
+
+    // Pro/Max shows premium pill
+    if (plan === 'pro' || plan === 'max') {
       els.quotaPill.className = 'quota-pill pro';
-      els.quotaPill.innerHTML = '✨ <span class="quota-label">' + t('proActive') + '</span>';
-      els.quotaPill.title = t('proActive');
+      let used, lim, periodLbl;
+      if (plan === 'pro')  { used = q.weekCount  || 0; lim = L.weekly;  periodLbl = '/wk'; }
+      else                  { used = q.monthCount || 0; lim = L.monthly; periodLbl = '/mo'; }
+      const remain = Math.max(0, lim - used);
+      els.quotaPill.innerHTML = '✨ <span class="quota-label">' + L.label + '</span> · ' + remain + periodLbl;
+      els.quotaPill.title = L.label + ' — ' + remain + ' runs left' + periodLbl;
+      if (remain <= 0) els.quotaPill.classList.add('full');
+      else if (remain === 1) els.quotaPill.classList.add('warn');
       return;
     }
-    const q = loadQuota();
+
+    // anon / email show legacy-compatible daily count
     els.quotaPill.className = 'quota-pill';
-    if (els.quotaCount) els.quotaCount.textContent = q.count;
-    if (els.quotaLimit) els.quotaLimit.textContent = QUOTA_LIMIT;
-    if (q.count >= QUOTA_LIMIT) els.quotaPill.classList.add('full');
-    else if (q.count >= QUOTA_LIMIT - 1) els.quotaPill.classList.add('warn');
-    els.quotaPill.title = t('quotaRemaining').replace('{n}', Math.max(0, QUOTA_LIMIT - q.count));
+    const used = q.dayCount || 0;
+    const lim  = L.daily;
+    if (els.quotaCount) els.quotaCount.textContent = used;
+    if (els.quotaLimit) els.quotaLimit.textContent = lim;
+    if (used >= lim) els.quotaPill.classList.add('full');
+    else if (used >= lim - 1) els.quotaPill.classList.add('warn');
+    const remaining = Math.max(0, lim - used);
+    els.quotaPill.title = (plan === 'anon' ? 'Free' : 'Starter') + ' — ' + remaining + ' left today';
   }
+
+  // Starter tier: email registration unlocks 3/day
+  function registerEmail(email) {
+    if (!/^[^@]+@[^@]+\.[^@]+$/.test(email)) { setStatusText('Invalid email', 'error'); return false; }
+    localStorage.setItem(EMAIL_KEY, email);
+    track('Email Registered', { plan: 'Starter' });
+    updateQuotaPill();
+    setStatusText('Starter unlocked: 3 runs/day ✓', 'success');
+    return true;
+  }
+  window.registerEmail = registerEmail; // expose for landing/modal buttons
 
   function openUpgradeModal() {
     if (!els.upgradeModal) return;
@@ -640,9 +730,9 @@ function track(eventName, eventData) {
   });
 
   els.quotaPill?.addEventListener('click', () => {
-    if (isPro()) return;
-    const q = loadQuota();
-    if (q.count >= QUOTA_LIMIT) openUpgradeModal();
+    const g = checkQuota();
+    if (!g.ok) openUpgradeModal();
+    // pro/max users with remaining quota: do nothing (future: show plan details)
   });
 
   async function activateLicense(licenseKey) {
@@ -661,8 +751,10 @@ function track(eventName, eventData) {
         return false;
       }
 
+      const plan = (data.plan === 'max') ? 'max' : 'pro';
       localStorage.setItem(PRO_KEY, JSON.stringify({
         active: true,
+        plan,
         validUntil: data.validUntil,
         email: data.customerEmail || '',
         licenseKey,
@@ -672,7 +764,7 @@ function track(eventName, eventData) {
       updateQuotaPill();
       closeUpgradeModal();
       setStatus('statusLicenseActivated', 'success');
-      track('License Activated', { plan: 'Pro' });
+      track('License Activated', { plan });
       return true;
     } catch (e) {
       console.error('[license]', e);
@@ -793,10 +885,11 @@ function track(eventName, eventData) {
 
   async function submitWorkflow(payload) {
     if (state.isRunning) return;
-    if (!canRun()) {
+    const gate = checkQuota();
+    if (!gate.ok) {
       openUpgradeModal();
       setStatus('quotaExhausted', 'error');
-      track('Quota Exceeded', { plan: isPro() ? 'Pro' : 'Free', lang: state.lang });
+      track('Quota Exceeded', { plan: gate.plan, reason: gate.reason, lang: state.lang });
       return;
     }
     state.isRunning = true;
@@ -844,14 +937,14 @@ function track(eventName, eventData) {
       localStorage.setItem('lastArtifacts', JSON.stringify(normalized));
       localStorage.setItem('lastPayload', JSON.stringify(payload));
       addToHistory(payload, normalized);
-      if (!isPro()) incrementQuota();
+      incrementQuota(); // count against plan-specific daily/weekly/monthly
       setStatus('statusSuccess', 'success');
       track('Run Workflow', {
         lang: state.lang,
         mode: payload.outputMode || 'full_meeting_pack',
         meetingType: payload.meetingType || 'General',
         transcript_length: (payload.notes || '').length,
-        is_pro: isPro()
+        plan: getPlan()
       });
     } catch (err) {
       console.error(err);
