@@ -19,6 +19,7 @@
   />
 
   <link rel="stylesheet" href="/styles.css" />
+  <link rel="stylesheet" href="/mobile.css" />
 </head>
 <body>
   <div class="app">
@@ -141,7 +142,7 @@
           </div>
 
           <div class="actions">
-            <button type="submit" id="submitButton" class="btn btn-primary">
+            <button type="submit" id="submitButton" class="btn btn-primary desktop-only">
               <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                 <polygon points="5 3 19 12 5 21 5 3"></polygon>
               </svg>
@@ -206,10 +207,18 @@
           </button>
         </div>
 
-        <div class="out-block"><h3 data-i18n="outSummary">Summary</h3><div class="out-body" id="summaryOutput" aria-live="polite"></div></div>
-        <div class="out-block"><h3 data-i18n="outDecisions">Decisions</h3><ul class="out-list" id="decisionsOutput" aria-live="polite"></ul></div>
-        <div class="out-block"><h3 data-i18n="outActions">Action items</h3><ul class="out-list" id="actionsOutput" aria-live="polite"></ul></div>
-        <div class="out-block"><h3 data-i18n="outEmail">Follow-up email</h3><div class="out-body" id="emailOutput" aria-live="polite"></div></div>
+        <!-- Mobile: output tabs (only shown on ≤768px via mobile.css) -->
+        <nav class="mobile-tabs" id="mobileTabs" role="tablist" aria-label="Output sections">
+          <button type="button" class="active" data-tab="summary" data-i18n="outSummary">Summary</button>
+          <button type="button" data-tab="decisions" data-i18n="outDecisions">Decisions</button>
+          <button type="button" data-tab="actions" data-i18n="outActions">Actions</button>
+          <button type="button" data-tab="email" data-i18n="outEmail">Email</button>
+        </nav>
+
+        <div class="out-block" data-tab-section="summary"><h3 data-i18n="outSummary">Summary</h3><div class="out-body" id="summaryOutput" aria-live="polite"></div></div>
+        <div class="out-block" data-tab-section="decisions"><h3 data-i18n="outDecisions">Decisions</h3><ul class="out-list" id="decisionsOutput" aria-live="polite"></ul></div>
+        <div class="out-block" data-tab-section="actions"><h3 data-i18n="outActions">Action items</h3><ul class="out-list" id="actionsOutput" aria-live="polite"></ul></div>
+        <div class="out-block" data-tab-section="email"><h3 data-i18n="outEmail">Follow-up email</h3><div class="out-body" id="emailOutput" aria-live="polite"></div></div>
       </section>
     </main>
 
@@ -227,12 +236,12 @@
     <div id="drawerOverlay" class="drawer-overlay" hidden></div>
 
     <footer class="foot">
-  <span data-i18n="footerTag">Built with Perplexity Sonar · Netlify Functions</span>
-  <span class="foot-sep"> · </span>
-  <a href="/privacy.html" data-i18n="footPriv">Privacy</a>
-  <span class="foot-sep"> · </span>
-  <a href="/terms.html" data-i18n="footTerms">Terms</a>
-</footer>
+      <span data-i18n="footerTag">Built with Perplexity Sonar · Netlify Functions</span>
+      <span class="foot-sep"> · </span>
+      <a href="/privacy.html" data-i18n="footPriv">Privacy</a>
+      <span class="foot-sep"> · </span>
+      <a href="/terms.html" data-i18n="footTerms">Terms</a>
+    </footer>
 
     <div id="upgradeModal" class="modal" hidden aria-hidden="true" role="dialog">
       <div class="modal-backdrop" data-close-modal></div>
@@ -266,6 +275,11 @@
         </div>
       </div>
     </div>
+  </div>
+
+  <!-- Mobile: sticky Run bar (shown only ≤768px via mobile.css) -->
+  <div class="mobile-run-bar">
+    <button type="button" class="btn btn-primary" id="mobileRunBtn" data-i18n="btnRun">Run Workflow</button>
   </div>
 
   <script src="/app.js" defer></script>

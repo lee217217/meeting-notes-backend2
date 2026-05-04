@@ -1,0 +1,231 @@
+/* =========================================================
+   Meeting Workspace — Mobile Optimization
+   Load order: after styles.css / inline styles
+   Breakpoints: ≤768px (tablet), ≤540px (phone)
+   ========================================================= */
+
+/* ========== Global mobile tweaks ========== */
+@media (max-width: 768px) {
+  html { -webkit-text-size-adjust: 100%; }
+  body { overflow-x: hidden; }
+  input, select, textarea { font-size: 16px !important; } /* iOS 防止自動 zoom */
+  button, .btn, a.btn { min-height: 44px; }               /* Apple HIG 觸控 */
+}
+
+/* =========================================================
+   LANDING PAGE (public/index.html)
+   ========================================================= */
+@media (max-width: 768px) {
+  .nav-inner { padding: 10px 16px !important; gap: 8px !important; }
+  .brand span:last-child { font-size: 14px; }
+  .brand-mark { width: 26px; height: 26px; }
+  .nav-links { display: none !important; }
+  .nav-cta { gap: 6px !important; }
+  .nav-cta .btn { padding: 9px 14px !important; font-size: 13px !important; }
+  .lang-switch-mini { gap: 2px !important; }
+  .lang-mini { padding: 5px 8px !important; font-size: 11px !important; }
+  .theme-toggle { width: 34px !important; height: 34px !important; }
+
+  .hero { padding: 48px 20px 40px !important; }
+  h1.hero-title { font-size: clamp(30px, 9vw, 42px) !important; line-height: 1.1 !important; }
+  .hero-sub { font-size: 15px !important; margin-bottom: 24px !important; }
+  .hero-cta { flex-direction: column; gap: 10px !important; }
+  .hero-cta .btn { width: 100%; justify-content: center; }
+
+  .preview { margin-top: 32px !important; padding: 0 16px !important; }
+  .preview-body { grid-template-columns: 1fr !important; min-height: 0 !important; }
+  .preview-left { padding: 18px !important; border-right: none !important; border-bottom: 1px solid var(--border); }
+  .preview-right { padding: 18px !important; }
+  .transcript-mock { max-height: 200px !important; font-size: 12px !important; }
+
+  .logos { margin-top: 40px !important; }
+  .logos-row { gap: 18px !important; font-size: 13px !important; }
+
+  section { padding: 60px 20px !important; }
+  h2.section-title { font-size: clamp(24px, 6vw, 32px) !important; }
+  .section-sub { font-size: 15px !important; margin-bottom: 32px !important; }
+
+  .features { grid-template-columns: 1fr !important; gap: 14px !important; }
+  .feat { padding: 22px !important; }
+
+  .steps { grid-template-columns: 1fr !important; gap: 12px !important; }
+  .step { padding: 20px !important; }
+
+  .plans { grid-template-columns: 1fr !important; gap: 14px !important; max-width: 100% !important; }
+  .plan { padding: 26px !important; }
+  .plan .price { font-size: 36px !important; }
+
+  .faq-item summary { font-size: 15px !important; }
+  .faq-item p { font-size: 14px !important; }
+
+  .final-cta { padding: 44px 24px !important; margin: 0 16px; }
+  .final-cta .btn-lg { width: 100%; justify-content: center; }
+
+  .foot-inner { flex-direction: column; gap: 12px !important; text-align: center; }
+  .foot-links a { margin: 0 8px !important; }
+}
+
+@media (max-width: 540px) {
+  .badge-pill { font-size: 11px !important; padding: 5px 11px !important; }
+  .hero-note { font-size: 12px !important; }
+  .plan .price { font-size: 32px !important; }
+}
+
+/* =========================================================
+   WORKSPACE (public/app/index.html)
+   ========================================================= */
+
+/* Sticky bottom Run bar (phone only) */
+.mobile-run-bar {
+  display: none;
+  position: fixed; left: 0; right: 0; bottom: 0;
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+  background: var(--bg, #fff);
+  border-top: 1px solid var(--border, rgba(0,0,0,.08));
+  box-shadow: 0 -4px 20px rgba(0,0,0,.08);
+  z-index: 40;
+}
+.mobile-run-bar .btn { width: 100%; justify-content: center; padding: 14px; font-size: 15px; }
+
+/* Tabbed output on mobile */
+.mobile-tabs {
+  display: none;
+  position: sticky; top: 56px;
+  background: var(--bg, #fff);
+  border-bottom: 1px solid var(--border, rgba(0,0,0,.08));
+  padding: 8px 12px; gap: 6px; z-index: 30;
+  overflow-x: auto; -webkit-overflow-scrolling: touch;
+}
+.mobile-tabs button {
+  flex: 0 0 auto; padding: 8px 14px; font-size: 13px; font-weight: 600;
+  background: transparent; border: 1px solid var(--border, rgba(0,0,0,.1));
+  border-radius: 999px; color: var(--text-soft, #555); cursor: pointer;
+  white-space: nowrap;
+}
+.mobile-tabs button.active {
+  background: var(--text, #0a0a0b); color: var(--bg, #fff);
+  border-color: var(--text, #0a0a0b);
+}
+
+@media (max-width: 768px) {
+  /* Layout: single column */
+  .workspace, .app-grid, .layout, main.app, .main-grid {
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+    padding: 14px !important;
+  }
+
+  /* Header / topbar tightening */
+  header.top, .topbar, .app-topbar {
+    padding: 10px 14px !important;
+    flex-wrap: wrap;
+    gap: 6px !important;
+  }
+  .topbar h1, .app-brand { font-size: 15px !important; }
+
+  /* Form fields */
+  .form-row, .field { gap: 10px !important; }
+  label { font-size: 13px !important; }
+  input[type="text"], select, textarea {
+    padding: 11px 12px !important;
+    border-radius: 10px !important;
+  }
+  textarea#notes {
+    min-height: 200px !important;
+    font-size: 15px !important;
+    line-height: 1.55 !important;
+  }
+
+  /* Buttons */
+  .btn, button.btn { padding: 11px 16px !important; font-size: 14px !important; border-radius: 10px !important; }
+  .btn-group, .actions-row { flex-wrap: wrap; gap: 8px !important; }
+  .btn-block { width: 100%; justify-content: center; }
+
+  /* Stepper: horizontal scroll instead of squish */
+  .stepper {
+    overflow-x: auto; -webkit-overflow-scrolling: touch;
+    padding: 8px 4px !important; gap: 8px !important;
+  }
+  .stepper .step { flex: 0 0 auto; font-size: 11px !important; padding: 6px 10px !important; }
+
+  /* Output cards */
+  .output-card, .artifact { padding: 16px !important; border-radius: 12px !important; }
+  .output-card h3 { font-size: 14px !important; }
+
+  /* Action items: badges wrap, bigger tap target */
+  .actions-v2 li {
+    padding: 14px !important; border-radius: 10px !important;
+  }
+  .action-task { font-size: 14px !important; }
+  .action-meta { flex-wrap: wrap; gap: 6px !important; }
+  .action-meta .badge { font-size: 11px !important; padding: 3px 8px !important; }
+
+  /* Counter + dropzone */
+  .drop-zone { padding: 16px !important; font-size: 13px !important; }
+  .notes-counter { font-size: 12px !important; }
+
+  /* Leave space for bottom sticky bar */
+  body.has-mobile-bar { padding-bottom: 88px; }
+
+  /* Show mobile-only widgets */
+  .mobile-run-bar { display: block; }
+  .mobile-tabs { display: flex; }
+
+  /* Hide main submit button (replaced by sticky) */
+  #submitButton.desktop-only { display: none !important; }
+
+  /* History drawer → full-screen bottom sheet */
+  #historyDrawer {
+    top: auto !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 85vh !important;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    transform: translateY(0) !important;
+  }
+  #historyDrawer.closing { transform: translateY(100%) !important; }
+
+  /* Upgrade modal → bottom sheet */
+  #upgradeModal .modal-content, .modal-content {
+    position: fixed !important;
+    left: 0 !important; right: 0 !important; bottom: 0 !important;
+    top: auto !important; transform: none !important;
+    width: 100% !important; max-width: 100% !important;
+    border-radius: 16px 16px 0 0 !important;
+    padding: 24px 20px calc(24px + env(safe-area-inset-bottom)) !important;
+    max-height: 90vh; overflow-y: auto;
+  }
+
+  /* Error banner */
+  .error-banner {
+    left: 12px !important; right: 12px !important;
+    max-width: calc(100% - 24px) !important;
+    font-size: 13px !important;
+  }
+
+  /* Quota pill smaller */
+  .quota-pill { font-size: 12px !important; padding: 4px 10px !important; }
+
+  /* Tabbed output sections */
+  body.tabs-active .output-card { display: none; }
+  body.tabs-active .output-card.tab-active { display: block; }
+}
+
+@media (max-width: 540px) {
+  textarea#notes { min-height: 180px !important; }
+  .output-card { padding: 14px !important; }
+  .feat-icon, .step { font-size: 13px; }
+}
+
+/* =========================================================
+   Landscape phone: don't waste too much space on stepper
+   ========================================================= */
+@media (max-width: 900px) and (orientation: landscape) and (max-height: 500px) {
+  .hero { padding: 32px 16px !important; }
+  textarea#notes { min-height: 140px !important; }
+  .mobile-run-bar { padding: 8px 12px !important; }
+}

@@ -133,13 +133,11 @@
     });
   }
 
-  // ✅ Event delegation — 即使前面任何 binding throw 都唔影響
   document.addEventListener('click', (e) => {
     const btn = e.target.closest('.lang-btn');
     if (!btn) return;
     const lang = btn.dataset.lang;
     if (!lang) return;
-    console.log('[lang] switching to', lang);
     loadLocale(lang);
   });
 
@@ -513,46 +511,44 @@
   });
 
   function isPro() {
-  try {
-    const p = JSON.parse(localStorage.getItem(PRO_KEY) || '{}');
-    if (!p.active) return false;
-    if (p.validUntil && new Date(p.validUntil) < new Date()) return false;
-    return true;
-  } catch { return false; }
-}
-
-async function revalidateLicense() {
-  let rec;
-  try { rec = JSON.parse(localStorage.getItem(PRO_KEY) || '{}'); } catch { return; }
-  if (!rec.active || !rec.licenseKey) return;
-
-  // Only revalidate every 24h to avoid hammering the function
-  const lastCheck = rec.lastCheck ? new Date(rec.lastCheck).getTime() : 0;
-  const fresh = Date.now() - lastCheck < 24 * 60 * 60 * 1000;
-  if (fresh) return;
-
-  try {
-    const res = await fetch('/.netlify/functions/verify-license', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ licenseKey: rec.licenseKey })
-    });
-    const data = await res.json();
-    if (!data || !data.valid) {
-      console.warn('[license] revoked on revalidate:', data && data.reason);
-      localStorage.removeItem(PRO_KEY);
-      updateQuotaPill();
-      setStatusText(t('statusLicenseRevoked') + (data?.reason ? ' (' + data.reason + ')' : ''), 'error');
-      return;
-    }
-    rec.validUntil = data.validUntil || rec.validUntil;
-    rec.lastCheck = new Date().toISOString();
-    localStorage.setItem(PRO_KEY, JSON.stringify(rec));
-  } catch (e) {
-    console.warn('[license] revalidate failed, staying optimistic', e);
-
+    try {
+      const p = JSON.parse(localStorage.getItem(PRO_KEY) || '{}');
+      if (!p.active) return false;
+      if (p.validUntil && new Date(p.validUntil) < new Date()) return false;
+      return true;
+    } catch { return false; }
   }
-}
+
+  async function revalidateLicense() {
+    let rec;
+    try { rec = JSON.parse(localStorage.getItem(PRO_KEY) || '{}'); } catch { return; }
+    if (!rec.active || !rec.licenseKey) return;
+
+    const lastCheck = rec.lastCheck ? new Date(rec.lastCheck).getTime() : 0;
+    const fresh = Date.now() - lastCheck < 24 * 60 * 60 * 1000;
+    if (fresh) return;
+
+    try {
+      const res = await fetch('/.netlify/functions/verify-license', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ licenseKey: rec.licenseKey })
+      });
+      const data = await res.json();
+      if (!data || !data.valid) {
+        console.warn('[license] revoked on revalidate:', data && data.reason);
+        localStorage.removeItem(PRO_KEY);
+        updateQuotaPill();
+        setStatusText(t('statusLicenseRevoked') + (data?.reason ? ' (' + data.reason + ')' : ''), 'error');
+        return;
+      }
+      rec.validUntil = data.validUntil || rec.validUntil;
+      rec.lastCheck = new Date().toISOString();
+      localStorage.setItem(PRO_KEY, JSON.stringify(rec));
+    } catch (e) {
+      console.warn('[license] revalidate failed, staying optimistic', e);
+    }
+  }
 
   function todayStr() {
     const d = new Date();
@@ -622,50 +618,50 @@ async function revalidateLicense() {
   });
 
   async function activateLicense(licenseKey) {
-  setStatus('statusVerifyingLicense');
-  try {
-    const res = await fetch('/.netlify/functions/verify-license', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ licenseKey })
-    });
-    const data = await res.json();
+    setStatus('statusVerifyingLicense');
+    try {
+      const res = await fetch('/.netlify/functions/verify-license', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ licenseKey })
+      });
+      const data = await res.json();
 
-    if (!data || !data.valid) {
-      const reason = (data && data.reason) ? ' (' + data.reason + ')' : '';
-      setStatusText(t('statusLicenseInvalid') + reason, 'error');
+      if (!data || !data.valid) {
+        const reason = (data && data.reason) ? ' (' + data.reason + ')' : '';
+        setStatusText(t('statusLicenseInvalid') + reason, 'error');
+        return false;
+      }
+
+      localStorage.setItem(PRO_KEY, JSON.stringify({
+        active: true,
+        validUntil: data.validUntil,
+        email: data.customerEmail || '',
+        licenseKey,
+        lastCheck: new Date().toISOString()
+      }));
+
+      updateQuotaPill();
+      closeUpgradeModal();
+      setStatus('statusLicenseActivated', 'success');
+      return true;
+    } catch (e) {
+      console.error('[license]', e);
+      setStatusText(t('statusLicenseError'), 'error');
       return false;
     }
-
-    localStorage.setItem(PRO_KEY, JSON.stringify({
-      active: true,
-      validUntil: data.validUntil,
-      email: data.customerEmail || '',
-      licenseKey,
- lastCheck: new Date().toISOString()
-    }));
-
-    updateQuotaPill();
-    closeUpgradeModal();
-    setStatus('statusLicenseActivated', 'success');
-    return true;
-  } catch (e) {
-    console.error('[license]', e);
-    setStatusText(t('statusLicenseError'), 'error');
-    return false;
   }
-}
 
-els.haveLicenseBtn?.addEventListener('click', async () => {
-  const key = prompt(t('promptLicenseKey'));
-  if (!key) return;
-  const cleaned = key.trim();
-  if (cleaned.length < 8) {
-    setStatusText(t('statusLicenseInvalid'), 'error');
-    return;
-  }
-  await activateLicense(cleaned);
-});
+  els.haveLicenseBtn?.addEventListener('click', async () => {
+    const key = prompt(t('promptLicenseKey'));
+    if (!key) return;
+    const cleaned = key.trim();
+    if (cleaned.length < 8) {
+      setStatusText(t('statusLicenseInvalid'), 'error');
+      return;
+    }
+    await activateLicense(cleaned);
+  });
 
   function loadHistory() {
     try { return JSON.parse(localStorage.getItem('history') || '[]'); }
@@ -889,12 +885,55 @@ els.haveLicenseBtn?.addEventListener('click', async () => {
   }
 
   loadLocale(state.lang).then(() => {
-  restoreLast();
-  updateQuotaPill();
-  revalidateLicense(); 
-});
+    restoreLast();
+    updateQuotaPill();
+    revalidateLicense();
+  });
 
   updateCounter();
   idleStepper();
   updateQuotaPill();
+
+  /* ========== Mobile enhancements ========== */
+  const isMobileView = () => window.matchMedia('(max-width: 768px)').matches;
+
+  const mobileRunBtn = document.getElementById('mobileRunBtn');
+  if (mobileRunBtn) {
+    mobileRunBtn.addEventListener('click', () => {
+      els.form?.requestSubmit();
+    });
+  }
+
+  function applyMobileMode() {
+    if (isMobileView()) document.body.classList.add('has-mobile-bar', 'tabs-active');
+    else document.body.classList.remove('has-mobile-bar', 'tabs-active');
+  }
+  applyMobileMode();
+  window.addEventListener('resize', applyMobileMode);
+
+  const mobileTabsEl = document.getElementById('mobileTabs');
+  const tabSections = document.querySelectorAll('[data-tab-section]');
+
+  function showTab(name) {
+    tabSections.forEach((sec) => {
+      sec.classList.toggle('tab-active', sec.dataset.tabSection === name);
+    });
+    mobileTabsEl?.querySelectorAll('button').forEach((b) => {
+      b.classList.toggle('active', b.dataset.tab === name);
+    });
+  }
+
+  if (tabSections.length) showTab('summary');
+
+  mobileTabsEl?.addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-tab]');
+    if (btn) showTab(btn.dataset.tab);
+  });
+
+  if (els.submitButton && mobileRunBtn) {
+    const sync = () => { mobileRunBtn.disabled = els.submitButton.disabled; };
+    const mo = new MutationObserver(sync);
+    mo.observe(els.submitButton, { attributes: true, attributeFilter: ['disabled'] });
+    sync();
+  }
 })();
