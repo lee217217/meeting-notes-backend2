@@ -327,7 +327,7 @@
             <li data-i18n="starter3">Resets at local midnight</li>
             <li data-i18n="starter4">Product tips newsletter</li>
           </ul>
-          <a class="btn btn-ghost" href="/app/?register=1" data-umami-event="Email Register Click" data-i18n="starterCta">Unlock with email</a>
+          <a class="btn btn-ghost" href="javascript:void(0)" onclick="event.preventDefault();document.getElementById('emailModal').hidden=false;document.getElementById('emailModal').setAttribute('aria-hidden','false');setTimeout(function(){document.getElementById('emailInput').focus();},80);try{umami&&umami.track('Email Modal Opened');}catch(e){}return false;" data-umami-event="Email Register Click" data-i18n="starterCta">Unlock with email</a>
         </div>
 
         <div class="plan featured">
