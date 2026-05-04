@@ -566,5 +566,167 @@
     const savedLang = localStorage.getItem('lang') || (navigator.language.startsWith('zh') ? 'zh-Hant' : 'en');
     applyI18N(savedLang);
   </script>
+<!-- ============================================================
+     Email Register Modal — paste before </body> in public/index.html
+     Triggered by click on #registerEmailBtn OR buttons with [data-umami-event="Email Register Click"]
+============================================================ -->
+<div id="emailModal" class="email-modal" hidden aria-hidden="true" role="dialog">
+  <div class="email-modal-backdrop" data-close-email-modal></div>
+  <div class="email-modal-body">
+    <button class="email-modal-close" data-close-email-modal aria-label="Close">✕</button>
+    <h3 data-i18n="emReg.title">Unlock Starter — 3 runs / day</h3>
+    <p data-i18n="emReg.sub">Enter your email. Instant unlock, no verification needed.</p>
+
+    <form id="emailRegisterForm" class="email-form">
+      <input type="email" id="emailInput" required placeholder="you@work.com" autocomplete="email" />
+      <button type="submit" class="btn btn-primary" id="emailSubmitBtn">
+        <span data-i18n="emReg.submit">Unlock Starter</span>
+      </button>
+    </form>
+
+    <div id="emailMsg" class="email-msg" hidden></div>
+
+    <p class="email-fineprint" data-i18n="emReg.fine">
+      We only use your email to unlock your quota and send occasional product tips. Unsubscribe anytime.
+    </p>
+  </div>
+</div>
+
+<style>
+.email-modal { position:fixed; inset:0; z-index:100; display:flex; align-items:center; justify-content:center; }
+.email-modal[hidden] { display:none; }
+.email-modal-backdrop { position:absolute; inset:0; background:rgba(0,0,0,.55); backdrop-filter:blur(4px); }
+.email-modal-body {
+  position:relative; background:var(--bg-card,#fff); border-radius:16px;
+  padding:32px 28px; width:min(440px, calc(100% - 32px));
+  box-shadow:0 20px 60px rgba(0,0,0,.3);
+}
+.email-modal-close {
+  position:absolute; top:12px; right:14px; background:transparent; border:0;
+  font-size:20px; cursor:pointer; color:var(--text-mute,#888);
+}
+.email-modal h3 { margin:0 0 8px; font-size:20px; font-weight:700; }
+.email-modal p  { margin:0 0 18px; color:var(--text-soft,#555); font-size:14px; }
+.email-form { display:flex; flex-direction:column; gap:10px; }
+.email-form input {
+  padding:12px 14px; font-size:15px; border-radius:10px;
+  border:1px solid var(--border-strong,#ccc); background:var(--bg,#fff);
+  color:var(--text,#111);
+}
+.email-form input:focus { outline:2px solid var(--brand,#5b5bf5); outline-offset:1px; }
+.email-form .btn { width:100%; justify-content:center; padding:12px; font-size:15px; }
+.email-msg { margin-top:14px; padding:10px 12px; border-radius:8px; font-size:13px; }
+.email-msg.ok    { background:#e8fdf0; color:#065f36; }
+.email-msg.err   { background:#fdecec; color:#7a1515; }
+.email-fineprint { margin-top:16px; font-size:12px; color:var(--text-mute,#888); }
+</style>
+
+<script>
+(function() {
+  const modal    = document.getElementById('emailModal');
+  const form     = document.getElementById('emailRegisterForm');
+  const input    = document.getElementById('emailInput');
+  const btn      = document.getElementById('emailSubmitBtn');
+  const msg      = document.getElementById('emailMsg');
+
+  function openModal() {
+    modal.hidden = false;
+    modal.setAttribute('aria-hidden', 'false');
+    setTimeout(() => input.focus(), 80);
+    try { umami?.track('Email Modal Opened'); } catch {}
+  }
+  function closeModal() {
+    modal.hidden = true;
+    modal.setAttribute('aria-hidden', 'true');
+    msg.hidden = true;
+  }
+
+  // Trigger from any button with data-umami-event="Email Register Click"
+  // OR from the Starter plan CTA
+  document.addEventListener('click', (e) => {
+    const trigger = e.target.closest('[data-open-email-modal], [data-umami-event="Email Register Click"]');
+    if (trigger) {
+      e.preventDefault();
+      openModal();
+    }
+    if (e.target.closest('[data-close-email-modal]')) {
+      e.preventDefault();
+      closeModal();
+    }
+  });
+
+  // Also trigger if landing opened with ?register=1
+  if (new URLSearchParams(location.search).get('register') === '1') {
+    setTimeout(openModal, 300);
+  }
+
+  // Esc to close
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !modal.hidden) closeModal();
+  });
+
+  // Simple fingerprint (same algo as app.js v5)
+  async function getFingerprint() {
+    try {
+      const raw = [navigator.userAgent, navigator.language,
+        screen.width+'x'+screen.height, new Date().getTimezoneOffset(),
+        navigator.hardwareConcurrency||0, navigator.platform].join('|');
+      const buf = new TextEncoder().encode(raw);
+      const hash = await crypto.subtle.digest('SHA-256', buf);
+      return Array.from(new Uint8Array(hash)).slice(0,12)
+        .map(b=>b.toString(16).padStart(2,'0')).join('');
+    } catch { return ''; }
+  }
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = (input.value || '').trim();
+    if (!email) return;
+
+    btn.disabled = true;
+    btn.innerHTML = '<span>Processing…</span>';
+    msg.hidden = true;
+
+    try {
+      const fp = await getFingerprint();
+      const res = await fetch('/.netlify/functions/email-register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, fp })
+      });
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        msg.className = 'email-msg err';
+        msg.textContent = data.error || 'Registration failed, please try again.';
+        msg.hidden = false;
+        return;
+      }
+
+      // Persist locally so app.js v5 getPlan() returns 'email'
+      localStorage.setItem('userEmail', email);
+      try { umami?.track('Email Registered', { plan: 'Starter' }); } catch {}
+
+      msg.className = 'email-msg ok';
+      msg.textContent = '✓ ' + (data.message || 'Starter unlocked — 3 runs / day');
+      msg.hidden = false;
+
+      // Redirect to app after 1.5s
+      setTimeout(() => {
+        window.location.href = '/app/?welcome=starter';
+      }, 1500);
+
+    } catch (err) {
+      msg.className = 'email-msg err';
+      msg.textContent = 'Network error. Please try again.';
+      msg.hidden = false;
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<span>Unlock Starter</span>';
+    }
+  });
+})();
+</script>
+
 </body>
 </html>

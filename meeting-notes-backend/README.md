@@ -1,31 +1,58 @@
-# Netlify Functions Version
+# Email Register — Deployment Guide (A+A+A)
 
-## Project structure
+## Files
+1. `email-register.js` → save to `netlify/functions/email-register.js`
+2. `email-export.js`   → save to `netlify/functions/email-export.js`
+3. `landing-modal-snippet.html` → paste before </body> in `public/index.html`
 
-```text
-netlify-meeting-notes/
-├─ public/
-│  └─ index.html
-├─ netlify/
-│  └─ functions/
-│     └─ generate.js
-├─ netlify.toml
-└─ package.json
+## Setup steps
+
+### 1. Install Netlify Blobs
+```
+npm install @netlify/blobs
 ```
 
-## Deploy to Netlify
+### 2. Enable Blobs in Netlify
+- Netlify dashboard → Site settings → Integrations → "Netlify Blobs" → Enable
+- Free tier: 100 GB storage + 1M reads/month
 
-1. Zip the whole project folder or connect it to a Git repo.
-2. In Netlify, create a new site from the project.
-3. Netlify should read `netlify.toml` automatically.
-4. Go to **Site configuration > Environment variables**.
-5. Add:
-   - `POE_API_KEY` = your Poe API key
-   - `POE_MODEL` = a model your Poe account can access, for example `GPT-3.5-Turbo`
-6. Redeploy the site.
+### 3. Set ADMIN_KEY env var (for CSV export)
+- Netlify dashboard → Site settings → Environment variables → Add
+- Key: `ADMIN_KEY`
+- Value: (any long random string, e.g. `uuid` from https://www.uuidgenerator.net)
 
-## Important
+### 4. Deploy
+```
+git add .
+git commit -m "Add email register flow (A+A+A)"
+git push
+```
 
-- Do not put the Poe API key in the HTML.
-- The frontend calls `/.netlify/functions/generate`.
-- If Poe returns 402 or subscription errors, switch `POE_MODEL` to another accessible model or upgrade your Poe plan.
+### 5. Test
+- Open landing page → click Starter "Unlock with email" button
+- Enter your own email → should see "✓ Starter unlocked"
+- Check Umami: Events tab should show `Email Modal Opened` + `Email Registered`
+- Open app in same browser → quota pill should show "Starter · 3 left/day"
+
+### 6. Export email list anytime
+```
+https://your-site.netlify.app/.netlify/functions/email-export?key=YOUR_ADMIN_KEY
+```
+Downloads CSV.
+
+## Storage structure (Netlify Blobs)
+- `email:user@example.com` → { email, plan, createdAt, lastSeenAt, seenCount, fingerprint, ua, ip, verified, source }
+- `log:2026-05-04`         → [{ at, email, ip, fp }, ...]
+- `ip:1.2.3.4:2026-05-04`  → "3" (rate limit counter, 5/day max)
+
+## Abuse prevention
+- Email regex validation
+- Domain blocklist (9 disposable domains)
+- IP rate limit: 5 registrations/day per IP
+- Upsert behavior: same email won't double-count
+
+## Phase 2 (later)
+- Add Resend integration to send welcome email
+- Magic link verification → set verified=true
+- Weekly newsletter drip via Resend
+- Export to Google Sheets via Apps Script webhook
