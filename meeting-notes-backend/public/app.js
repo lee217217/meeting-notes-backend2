@@ -1,3 +1,22 @@
+// ──────────────────────────────────────────────
+// Umami Analytics helper
+// 用 track('Event Name', { prop: 'value' }) 嚟發送
+// 守衛：如果 script 未 load / ad-blocker 擋到 → 唔會炸
+// ──────────────────────────────────────────────
+function track(eventName, eventData) {
+  try {
+    if (typeof window !== 'undefined' && window.umami && typeof window.umami.track === 'function') {
+      if (eventData) {
+        window.umami.track(eventName, eventData);
+      } else {
+        window.umami.track(eventName);
+      }
+    }
+  } catch (err) {
+    // 靜默失敗，analytics 唔應該影響產品
+    console.debug('[track] failed:', err);
+  }
+}
 (function () {
   const STEPS = ['coordinator', 'summarizer', 'action_item_agent', 'followup_email_agent', 'qa_review_agent'];
   const SUPPORTED = ['en', 'zh-Hant'];
