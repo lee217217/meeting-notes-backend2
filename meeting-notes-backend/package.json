@@ -1,7 +1,9 @@
 {
-  "name": "netlify-meeting-notes",
+  "name": "meeting-notes-backend",
   "version": "1.0.0",
   "private": true,
-  "type": "commonjs"
-"@netlify/blobs": "^8.1.0"
+  "type": "commonjs",
+  "dependencies": {
+    "@netlify/blobs": "^8.1.0"
+  }
 }
