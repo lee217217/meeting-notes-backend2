@@ -215,7 +215,7 @@
         Meeting Workspace reads your transcript and delivers a clean summary, owner-tagged action items, and a ready-to-send follow-up email — in under 15 seconds.
       </p>
       <div class="hero-cta">
-        <a class="btn btn-primary btn-lg" href="/app/" data-i18n="ctaStart">Start free — 3 runs / day</a>
+        <a class="btn btn-primary btn-lg" href="/app/" data-i18n="ctaStart">Start free — 1 run / day</a>
         <a class="btn btn-ghost btn-lg" href="#how" data-i18n="ctaSee">See how it works</a>
       </div>
       <div class="hero-note" data-i18n="heroNote">No signup · No credit card · English &amp; 繁體中文</div>
@@ -307,27 +307,54 @@
         <div class="plan">
           <h3 data-i18n="freeName">Free</h3>
           <div class="price"><span data-i18n="freePrice">$0</span><small data-i18n="freePer"> / forever</small></div>
-          <p class="plan-desc" data-i18n="freeDesc">Perfect for trying it out.</p>
+          <p class="plan-desc" data-i18n="freeDesc">No signup needed.</p>
           <ul>
-            <li data-i18n="free1">3 runs per day</li>
+            <li data-i18n="free1">1 run per day</li>
             <li data-i18n="free2">Summary + action items + email</li>
             <li data-i18n="free3">English &amp; 繁體中文</li>
             <li data-i18n="free4">Local history (20 items)</li>
           </ul>
-          <a class="btn btn-ghost" href="/app/" data-i18n="freeCta">Start free</a>
+          <a class="btn btn-ghost" href="/app/" data-umami-event="Launch App" data-umami-event-plan="free" data-i18n="freeCta">Start free</a>
         </div>
+
+        <div class="plan">
+          <h3 data-i18n="starterName">Starter</h3>
+          <div class="price"><span data-i18n="starterPrice">$0</span><small data-i18n="starterPer"> / with email</small></div>
+          <p class="plan-desc" data-i18n="starterDesc">Register email, unlock more daily runs.</p>
+          <ul>
+            <li data-i18n="starter1">3 runs per day</li>
+            <li data-i18n="starter2">Everything in Free</li>
+            <li data-i18n="starter3">Resets at local midnight</li>
+            <li data-i18n="starter4">Product tips newsletter</li>
+          </ul>
+          <a class="btn btn-ghost" href="/app/?register=1" data-umami-event="Email Register Click" data-i18n="starterCta">Unlock with email</a>
+        </div>
+
         <div class="plan featured">
           <span class="plan-tag" data-i18n="proTag">MOST POPULAR</span>
           <h3 data-i18n="proName">Pro ✨</h3>
-          <div class="price"><span data-i18n="proPrice">$9</span><small data-i18n="proPer"> / month</small></div>
-          <p class="plan-desc" data-i18n="proDesc">For operators who run meetings daily.</p>
+          <div class="price"><span data-i18n="proPrice">$19</span><small data-i18n="proPer"> / month</small></div>
+          <p class="plan-desc" data-i18n="proDesc">For operators who run meetings weekly.</p>
           <ul>
-            <li data-i18n="pro1">Unlimited runs</li>
-            <li data-i18n="pro2">Priority processing</li>
-            <li data-i18n="pro3">Longer transcript limit</li>
-            <li data-i18n="pro4">Priority email support</li>
+            <li data-i18n="pro1">10 runs per week (~43/mo)</li>
+            <li data-i18n="pro2">Priority processing queue</li>
+            <li data-i18n="pro3">Longer transcript limit (50k chars)</li>
+            <li data-i18n="pro4">Email support within 24h</li>
           </ul>
-          <a class="btn btn-primary" href="https://aimeetingnote.lemonsqueezy.com/checkout/buy/f50cef81-bc3d-40a2-bbab-8bc850a9af80" target="_blank" rel="noopener" data-i18n="proCta">Upgrade to Pro →</a>
+          <a class="btn btn-primary" href="https://aimeetingnote.lemonsqueezy.com/checkout/buy/f50cef81-bc3d-40a2-bbab-8bc850a9af80" target="_blank" rel="noopener" data-umami-event="Checkout Start" data-umami-event-plan="pro" data-i18n="proCta">Upgrade to Pro →</a>
+        </div>
+
+        <div class="plan">
+          <h3 data-i18n="maxName">Max</h3>
+          <div class="price"><span data-i18n="maxPrice">$29</span><small data-i18n="maxPer"> / month</small></div>
+          <p class="plan-desc" data-i18n="maxDesc">For daily meeting note-takers.</p>
+          <ul>
+            <li data-i18n="max1">60 runs per month</li>
+            <li data-i18n="max2">Everything in Pro</li>
+            <li data-i18n="max3">Flexible monthly allowance</li>
+            <li data-i18n="max4">Early access to new features</li>
+          </ul>
+          <a class="btn btn-ghost" href="https://aimeetingnote.lemonsqueezy.com/checkout/buy/REPLACE-WITH-MAX-VARIANT-ID" target="_blank" rel="noopener" data-umami-event="Checkout Start" data-umami-event-plan="max" data-i18n="maxCta">Upgrade to Max →</a>
         </div>
       </div>
     </div>
@@ -399,7 +426,7 @@
         heroBadge:'New · Audio transcription & bilingual output',
         heroTitleA:'Turn every meeting into ', heroTitleB:'real action', heroTitleC:'.',
         heroSub:"Meeting Workspace reads your transcript and delivers a clean summary, owner-tagged action items, and a ready-to-send follow-up email — in under 15 seconds.",
-        ctaStart:'Start free — 3 runs / day', ctaSee:'See how it works',
+        ctaStart:'Start free — 1 run / day', ctaSee:'See how it works',
         heroNote:'No signup · No credit card · English & 繁體中文',
         previewLabel:'📋 Meeting transcript', aiBadge:'✨ AI generated',
         pvSumT:'📝 Summary',
@@ -423,18 +450,28 @@
         step2T:'Choose mode', step2D:'Pick language and output — summary, actions, or full pack.',
         step3T:'Hit Run', step3D:'Our AI returns a recap, tasks, and email in ~15 seconds.',
         step4T:'Copy & send', step4D:'Copy, download as Markdown, or forward it to your team.',
-        priceEyebrow:'Pricing', priceTitle:'Simple. Honest. No seats.',
-        priceSub:'Start for free. Upgrade when you run more meetings.',
+        priceEyebrow:'Pricing', priceTitle:'Simple pricing that scales with you.',
+        priceSub:'Start free, unlock more runs as your team grows. Cancel anytime.',
         freeName:'Free', freePrice:'$0', freePer:' / forever',
-        freeDesc:'Perfect for trying it out.',
-        free1:'3 runs per day', free2:'Summary + action items + email',
+        freeDesc:'No signup needed.',
+        free1:'1 run per day', free2:'Summary + action items + email',
         free3:'English & 繁體中文', free4:'Local history (20 items)', freeCta:'Start free',
-        proName:'Pro ✨', proPrice:'$9', proPer:' / month', proTag:'MOST POPULAR',
-        proDesc:'For operators who run meetings daily.',
-        pro1:'Unlimited runs', pro2:'Priority processing',
-        pro3:'Longer transcript limit', pro4:'Priority email support', proCta:'Upgrade to Pro →',
+        starterName:'Starter', starterPrice:'$0', starterPer:' / with email',
+        starterDesc:'Register email, unlock more daily runs.',
+        starter1:'3 runs per day', starter2:'Everything in Free',
+        starter3:'Resets at local midnight', starter4:'Product tips newsletter',
+        starterCta:'Unlock with email',
+        proName:'Pro ✨', proPrice:'$19', proPer:' / month', proTag:'MOST POPULAR',
+        proDesc:'For operators who run meetings weekly.',
+        pro1:'10 runs per week (~43/mo)', pro2:'Priority processing queue',
+        pro3:'Longer transcript limit (50k chars)', pro4:'Email support within 24h', proCta:'Upgrade to Pro →',
+        maxName:'Max', maxPrice:'$29', maxPer:' / month',
+        maxDesc:'For daily meeting note-takers.',
+        max1:'60 runs per month', max2:'Everything in Pro',
+        max3:'Flexible monthly allowance', max4:'Early access to new features',
+        maxCta:'Upgrade to Max →',
         faqEyebrow:'FAQ', faqTitle:'Answers, fast.',
-        faq1Q:'Do I need to sign up?', faq1A:'No. Free tier works right away — just open the app and paste your transcript. A Pro license unlocks unlimited runs.',
+        faq1Q:'Do I need to sign up?', faq1A:'No. Free tier (1/day) works right away. Register your email for Starter (3/day). Upgrade to Pro ($19, 10/week) or Max ($29, 60/month) when you need more.',
         faq2Q:'Is my meeting data stored?', faq2A:'No. Transcripts are processed on demand. Your history is saved only in your browser, on your device.',
         faq3Q:'Which languages are supported?', faq3A:'English and 繁體中文. You can switch the output language per run.',
         faq4Q:'Can I cancel Pro anytime?', faq4A:'Yes. Cancel from your billing dashboard — no questions asked.',
@@ -450,7 +487,7 @@
         heroBadge:'新功能 · 音訊轉錄 & 雙語輸出',
         heroTitleA:'把每場會議，變成 ', heroTitleB:'真實行動', heroTitleC:'。',
         heroSub:'Meeting Workspace 讀取你嘅逐字稿，15 秒內產出乾淨摘要、帶負責人嘅行動項目、同可直接寄出嘅跟進 Email。',
-        ctaStart:'免費開始 — 每日 3 次', ctaSee:'睇下點樣運作',
+        ctaStart:'免費開始 — 每日 1 次', ctaSee:'睇下點樣運作',
         heroNote:'免註冊 · 免信用卡 · 支援英文同繁體中文',
         previewLabel:'📋 會議逐字稿', aiBadge:'✨ AI 生成',
         pvSumT:'📝 摘要',
@@ -474,18 +511,28 @@
         step2T:'選擇模式', step2D:'揀語言同輸出 — 摘要、行動項目，或完整包。',
         step3T:'按執行', step3D:'AI 約 15 秒內回傳摘要、任務同 Email。',
         step4T:'複製分享', step4D:'複製、下載為 Markdown，或轉寄團隊。',
-        priceEyebrow:'價格', priceTitle:'簡單、誠實、冇人頭費。',
-        priceSub:'免費開始，會議多嘅時候再升級。',
+        priceEyebrow:'價格', priceTitle:'簡單透明嘅定價，隨團隊成長。',
+        priceSub:'免費開始，用得愈多升得愈高。隨時取消。',
         freeName:'免費版', freePrice:'$0', freePer:' / 永久',
-        freeDesc:'適合試用。',
-        free1:'每日 3 次執行', free2:'摘要 + 行動項目 + Email',
+        freeDesc:'免註冊即用。',
+        free1:'每日 1 次執行', free2:'摘要 + 行動項目 + Email',
         free3:'英文同繁體中文', free4:'本地歷史紀錄（20 筆）', freeCta:'免費開始',
-        proName:'Pro ✨', proPrice:'$9', proPer:' / 月', proTag:'最受歡迎',
-        proDesc:'畀每日開會嘅營運者。',
-        pro1:'無限次執行', pro2:'優先處理',
-        pro3:'更長逐字稿上限', pro4:'優先 Email 支援', proCta:'升級 Pro →',
+        starterName:'Starter', starterPrice:'$0', starterPer:' / 用 email 解鎖',
+        starterDesc:'註冊 email，解鎖每日更多次數。',
+        starter1:'每日 3 次執行', starter2:'包含免費版所有功能',
+        starter3:'本地時間每日凌晨重置', starter4:'產品更新電子報',
+        starterCta:'輸入 email 解鎖',
+        proName:'Pro ✨', proPrice:'$19', proPer:' / 月', proTag:'最受歡迎',
+        proDesc:'畀每週開會嘅營運者。',
+        pro1:'每週 10 次（約每月 43 次）', pro2:'優先處理佇列',
+        pro3:'最長 50,000 字逐字稿', pro4:'24 小時內 Email 支援', proCta:'升級 Pro →',
+        maxName:'Max', maxPrice:'$29', maxPer:' / 月',
+        maxDesc:'畀每日記錄會議嘅重度用家。',
+        max1:'每月 60 次', max2:'包含 Pro 所有功能',
+        max3:'彈性月額度', max4:'搶先體驗新功能',
+        maxCta:'升級 Max →',
         faqEyebrow:'常見問題', faqTitle:'快速解答。',
-        faq1Q:'我需要註冊嗎？', faq1A:'唔需要。免費版即開即用 — 打開 app 貼逐字稿就得。Pro License 解鎖無限次。',
+        faq1Q:'我需要註冊嗎？', faq1A:'唔需要。免費版（每日 1 次）即開即用。註冊 email 可升 Starter（每日 3 次）。每週會議多升 Pro ($19，10/週)，每日開會升 Max ($29，60/月)。',
         faq2Q:'我嘅會議資料會儲存嗎？', faq2A:'唔會。逐字稿即時處理，歷史紀錄只存喺你嘅瀏覽器本機。',
         faq3Q:'支援邊啲語言？', faq3A:'英文同繁體中文。每次執行可以切換輸出語言。',
         faq4Q:'Pro 可以隨時取消嗎？', faq4A:'可以。喺 billing dashboard 取消 — 唔會問原因。',
