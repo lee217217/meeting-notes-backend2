@@ -898,19 +898,6 @@
   const isMobileView = () => window.matchMedia('(max-width: 768px)').matches;
 
   const mobileRunBtn = document.getElementById('mobileRunBtn');
-  if (mobileRunBtn) {
-    mobileRunBtn.addEventListener('click', () => {
-      els.form?.requestSubmit();
-    });
-  }
-
-  function applyMobileMode() {
-    if (isMobileView()) document.body.classList.add('has-mobile-bar', 'tabs-active');
-    else document.body.classList.remove('has-mobile-bar', 'tabs-active');
-  }
-  applyMobileMode();
-  window.addEventListener('resize', applyMobileMode);
-
   const mobileTabsEl = document.getElementById('mobileTabs');
   const tabSections = document.querySelectorAll('[data-tab-section]');
 
@@ -923,7 +910,26 @@
     });
   }
 
-  if (tabSections.length) showTab('summary');
+  function applyMobileMode() {
+    if (isMobileView()) {
+      document.body.classList.add('has-mobile-bar', 'tabs-active');
+      // 手機：只顯示 active tab
+      if (tabSections.length && !document.querySelector('[data-tab-section].tab-active')) {
+        showTab('summary');
+      }
+    } else {
+      document.body.classList.remove('has-mobile-bar', 'tabs-active');
+      // 桌面：清除 tab-active，還原全部顯示
+      tabSections.forEach((sec) => sec.classList.remove('tab-active'));
+      mobileTabsEl?.querySelectorAll('button').forEach((b) => b.classList.remove('active'));
+    }
+  }
+
+  if (mobileRunBtn) {
+    mobileRunBtn.addEventListener('click', () => {
+      els.form?.requestSubmit();
+    });
+  }
 
   mobileTabsEl?.addEventListener('click', (e) => {
     const btn = e.target.closest('button[data-tab]');
@@ -936,4 +942,7 @@
     mo.observe(els.submitButton, { attributes: true, attributeFilter: ['disabled'] });
     sync();
   }
+
+  applyMobileMode();
+  window.addEventListener('resize', applyMobileMode);
 })();

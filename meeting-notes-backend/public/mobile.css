@@ -211,8 +211,13 @@
   .quota-pill { font-size: 12px !important; padding: 4px 10px !important; }
 
   /* Tabbed output sections */
-  body.tabs-active .output-card { display: none; }
-  body.tabs-active .output-card.tab-active { display: block; }
+ /* 桌面：全部顯示 */
+.out-block[data-tab-section] { display: block; }
+
+/* 手機 tab 模式：只顯示 active 嗰個 */
+@media (max-width: 768px) {
+  body.tabs-active .out-block[data-tab-section] { display: none !important; }
+  body.tabs-active .out-block[data-tab-section].tab-active { display: block !important; }
 }
 
 @media (max-width: 540px) {
