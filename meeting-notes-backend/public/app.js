@@ -1,3 +1,8 @@
+// ============================================================
+// app.js  |  Umami tracking build v2  |  2026-05-04
+// 部署後喺 DevTools Console 應該會見到 [umami] build v2 loaded
+// ============================================================
+
 // ──────────────────────────────────────────────
 // Umami Analytics helper
 // 用 track('Event Name', { prop: 'value' }) 嚟發送
@@ -5,15 +10,17 @@
 // ──────────────────────────────────────────────
 function track(eventName, eventData) {
   try {
+    console.log('%c[umami] track →', 'color:#5b5bf5;font-weight:bold', eventName, eventData || '');
     if (typeof window !== 'undefined' && window.umami && typeof window.umami.track === 'function') {
       if (eventData) {
         window.umami.track(eventName, eventData);
       } else {
         window.umami.track(eventName);
       }
+    } else {
+      console.warn('[umami] window.umami not ready — event dropped:', eventName);
     }
   } catch (err) {
-    // 靜默失敗，analytics 唔應該影響產品
     console.debug('[track] failed:', err);
   }
 }
@@ -133,6 +140,7 @@ function track(eventName, eventData) {
     if (state.lastArtifacts) renderArtifacts(state.lastArtifacts);
     else clearOutputs();
     updateQuotaPill();
+    track('Language Switched', { to: lang });
   }
 
   function applyTranslations() {
@@ -420,8 +428,8 @@ function track(eventName, eventData) {
     }
   }
 
-  els.copyMarkdown?.addEventListener('click', (e) => copyText(buildMarkdown(), e.currentTarget, 'statusCopiedMd'));
-  els.copyEmail?.addEventListener('click', (e) => copyText((state.lastArtifacts && state.lastArtifacts.follow_up_email) || '', e.currentTarget, 'statusCopiedEmail'));
+  els.copyMarkdown?.addEventListener('click', (e) => { track('Export Clicked', { type: 'copy', target: 'markdown' }); copyText(buildMarkdown(), e.currentTarget, 'statusCopiedMd'); });
+  els.copyEmail?.addEventListener('click', (e) => { track('Export Clicked', { type: 'copy', target: 'email' }); copyText((state.lastArtifacts && state.lastArtifacts.follow_up_email) || '', e.currentTarget, 'statusCopiedEmail'); });
 
   els.downloadMd?.addEventListener('click', () => {
     const md = buildMarkdown();
@@ -437,6 +445,7 @@ function track(eventName, eventData) {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
     setStatus('statusDownloaded', 'success');
+    track('Export Clicked', { type: 'download', format: 'markdown' });
   });
 
   function cleanTranscript(text) {
@@ -663,6 +672,7 @@ function track(eventName, eventData) {
       updateQuotaPill();
       closeUpgradeModal();
       setStatus('statusLicenseActivated', 'success');
+      track('License Activated', { plan: 'Pro' });
       return true;
     } catch (e) {
       console.error('[license]', e);
@@ -786,6 +796,7 @@ function track(eventName, eventData) {
     if (!canRun()) {
       openUpgradeModal();
       setStatus('quotaExhausted', 'error');
+      track('Quota Exceeded', { plan: isPro() ? 'Pro' : 'Free', lang: state.lang });
       return;
     }
     state.isRunning = true;
@@ -835,11 +846,24 @@ function track(eventName, eventData) {
       addToHistory(payload, normalized);
       if (!isPro()) incrementQuota();
       setStatus('statusSuccess', 'success');
+      track('Run Workflow', {
+        lang: state.lang,
+        mode: payload.outputMode || 'full_meeting_pack',
+        meetingType: payload.meetingType || 'General',
+        transcript_length: (payload.notes || '').length,
+        is_pro: isPro()
+      });
     } catch (err) {
       console.error(err);
       const msg = err.handled ? err.message : classifyError(err, res);
       showError(msg);
       setStatusText(msg, 'error');
+      track('Run Failed', {
+        lang: state.lang,
+        mode: payload.outputMode || 'full_meeting_pack',
+        status: res && res.status ? res.status : 0,
+        reason: (msg || 'unknown').toString().slice(0, 80)
+      });
       if (state.lastArtifacts) renderArtifacts(state.lastArtifacts);
       else clearOutputs();
       STEPS.forEach((s) => {
@@ -902,6 +926,21 @@ function track(eventName, eventData) {
       }
     } catch {}
   }
+
+  (function detectCheckoutReturn() {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('checkout') === 'success' || params.has('order_id')) {
+        track('Checkout Complete', {
+          plan: 'Pro',
+          source: params.get('source') || 'direct'
+        });
+        window.history.replaceState({}, '', window.location.pathname);
+      }
+    } catch (e) {
+      console.debug('[checkout-detect] failed:', e);
+    }
+  })();
 
   loadLocale(state.lang).then(() => {
     restoreLast();
