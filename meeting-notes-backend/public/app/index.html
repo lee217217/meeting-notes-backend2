@@ -265,39 +265,89 @@
       <a href="/terms.html" data-i18n="footTerms">Terms</a>
     </footer>
 
-    <div id="upgradeModal" class="modal" hidden aria-hidden="true" role="dialog">
+        <!-- ============================================================
+         Upgrade Modal | v2 (2026-05-05) — Pro + Max + Portal link
+    ============================================================ -->
+    <div id="upgradeModal" class="modal" hidden aria-hidden="true" role="dialog" aria-labelledby="upgradeTitleH3">
       <div class="modal-backdrop" data-close-modal></div>
-      <div class="modal-card" role="document">
+      <div class="modal-card modal-card-wide" role="document">
         <button type="button" class="modal-close" data-close-modal aria-label="Close">✕</button>
-        <div class="modal-icon">🎯</div>
-        <h3 class="modal-title" data-i18n="upgradeTitle">Daily free limit reached</h3>
-        <p class="modal-sub" data-i18n="upgradeSub">Resets tomorrow at 00:00 local time.</p>
-        <ul class="modal-perks">
-          <li data-i18n="upgradePerk1">✓ Unlimited runs</li>
-          <li data-i18n="upgradePerk2">✓ Export PDF / DOCX</li>
-          <li data-i18n="upgradePerk3">✓ Cloud history (coming soon)</li>
-          <li data-i18n="upgradePerk4">✓ Priority AI response</li>
-        </ul>
+
+        <div class="modal-icon">⚡</div>
+        <h3 id="upgradeTitleH3" class="modal-title" data-i18n="upgradeTitle">You've reached your quota</h3>
+        <p class="modal-sub" data-i18n="upgradeSub">Upgrade to keep shipping meeting notes, faster.</p>
+
+        <!-- Two plan cards -->
+        <div class="upgrade-plans-grid">
+          <!-- Pro -->
+          <div class="upgrade-plan-card">
+            <div class="upgrade-plan-head">
+              <h4 data-i18n="upgradeProName">Pro</h4>
+              <span class="upgrade-plan-badge upgrade-plan-badge-popular" data-i18n="upgradeProTag">POPULAR</span>
+            </div>
+            <div class="upgrade-plan-price">
+              <span class="upgrade-price-amount">$19</span><span class="upgrade-price-per" data-i18n="upgradePerMo">/mo</span>
+            </div>
+            <ul class="upgrade-plan-feats">
+              <li data-i18n="upgradeProF1">10 runs per week</li>
+              <li data-i18n="upgradeProF2">Priority queue</li>
+              <li data-i18n="upgradeProF3">50k char transcripts</li>
+            </ul>
+            <a class="btn btn-primary btn-block"
+               href="https://aimeetingnote.lemonsqueezy.com/buy/1593246"
+               target="_blank" rel="noopener"
+               data-umami-event="Upgrade Modal CTA"
+               data-umami-event-plan="pro">
+              <span data-i18n="upgradeProCta">Upgrade to Pro</span>
+            </a>
+          </div>
+
+          <!-- Max -->
+          <div class="upgrade-plan-card upgrade-plan-card-max">
+            <div class="upgrade-plan-head">
+              <h4 data-i18n="upgradeMaxName">Max</h4>
+              <span class="upgrade-plan-badge upgrade-plan-badge-max" data-i18n="upgradeMaxTag">BEST VALUE</span>
+            </div>
+            <div class="upgrade-plan-price">
+              <span class="upgrade-price-amount">$29</span><span class="upgrade-price-per" data-i18n="upgradePerMo">/mo</span>
+            </div>
+            <ul class="upgrade-plan-feats">
+              <li data-i18n="upgradeMaxF1">60 runs per month</li>
+              <li data-i18n="upgradeMaxF2">Everything in Pro</li>
+              <li data-i18n="upgradeMaxF3">Early access to new features</li>
+            </ul>
+            <a class="btn btn-block"
+               href="https://aimeetingnote.lemonsqueezy.com/buy/1613669"
+               target="_blank" rel="noopener"
+               data-umami-event="Upgrade Modal CTA"
+               data-umami-event-plan="max">
+              <span data-i18n="upgradeMaxCta">Upgrade to Max</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Already Pro? Manage in Portal -->
+        <div class="upgrade-manage">
+          <span data-i18n="upgradeExisting">Already Pro?</span>
+          <a href="https://aimeetingnote.lemonsqueezy.com/billing"
+             target="_blank" rel="noopener"
+             data-umami-event="Manage Subscription Click"
+             data-i18n="upgradeManageSub">Manage / change plan in Billing Portal →</a>
+        </div>
+
         <div class="modal-actions">
-          <a
-            href="https://aimeetingnote.lemonsqueezy.com/checkout/buy/f50cef81-bc3d-40a2-bbab-8bc850a9af80"
-            target="_blank"
-            rel="noopener"
-            class="btn btn-primary btn-block"
-            id="upgradeCta"
-          >
-            <span data-i18n="upgradeCta">Upgrade Pro — $9/mo</span>
-          </a>
-          <button type="button" class="btn btn-block" id="haveLicenseBtn">
-            <span data-i18n="haveLicense">I have a license key</span>
+          <button type="button" class="btn btn-block" id="haveLicenseBtn"
+                  data-umami-event="I Have License Click">
+            <span data-i18n="haveLicense">I already have a license key</span>
           </button>
           <button type="button" class="btn-link" data-close-modal>
-            <span data-i18n="comeBackTomorrow">Come back tomorrow</span>
+            <span data-i18n="comeBackTomorrow">Come back later</span>
           </button>
         </div>
+
+        <p class="upgrade-fineprint" data-i18n="upgradeFine">Cancel anytime · License tied to email</p>
       </div>
     </div>
-  </div>
 
   <!-- Mobile: sticky Run bar (shown only ≤768px via mobile.css) -->
   <div class="mobile-run-bar">
