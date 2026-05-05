@@ -674,36 +674,44 @@ function track(eventName, eventData) {
   function canRun() { return checkQuota().ok; }
 
   function updateQuotaPill() {
-    if (!els.quotaPill) return;
-    const plan = getPlan();
-    const L = PLANS[plan];
-    const q = loadQuota();
+  if (!els.quotaPill) return;
+  const plan = getPlan();
+  const L = PLANS[plan];
+  const q = loadQuota();
 
-    // Pro/Max shows premium pill
-    if (plan === 'pro' || plan === 'max') {
-      els.quotaPill.className = 'quota-pill pro';
-      let used, lim, periodLbl;
-      if (plan === 'pro')  { used = q.weekCount  || 0; lim = L.weekly;  periodLbl = '/wk'; }
-      else                  { used = q.monthCount || 0; lim = L.monthly; periodLbl = '/mo'; }
-      const remain = Math.max(0, lim - used);
-      els.quotaPill.innerHTML = '✨ <span class="quota-label">' + L.label + '</span> · ' + remain + periodLbl;
-      els.quotaPill.title = L.label + ' — ' + remain + ' runs left' + periodLbl;
-      if (remain <= 0) els.quotaPill.classList.add('full');
-      else if (remain === 1) els.quotaPill.classList.add('warn');
-      return;
+  // Pro/Max shows premium pill
+  if (plan === 'pro' || plan === 'max') {
+    els.quotaPill.className = 'quota-pill pro';
+    let used, lim, periodLbl;
+    if (plan === 'pro') {
+      used = Number(q.weekCount) || 0;
+      lim = Number(L.weekly) || 10;
+      periodLbl = t('periodWk') || '/wk';
+    } else {
+      used = Number(q.monthCount) || 0;
+      lim = Number(L.monthly) || 60;
+      periodLbl = t('periodMo') || '/mo';
     }
-
-    // anon / email show legacy-compatible daily count
-    els.quotaPill.className = 'quota-pill';
-    const used = q.dayCount || 0;
-    const lim  = L.daily;
-    if (els.quotaCount) els.quotaCount.textContent = used;
-    if (els.quotaLimit) els.quotaLimit.textContent = lim;
-    if (used >= lim) els.quotaPill.classList.add('full');
-    else if (used >= lim - 1) els.quotaPill.classList.add('warn');
-    const remaining = Math.max(0, lim - used);
-    els.quotaPill.title = (plan === 'anon' ? 'Free' : 'Starter') + ' — ' + remaining + ' left today';
+    const remain = Math.max(0, lim - used);
+    els.quotaPill.innerHTML =
+      `<span class="quota-label">${L.label}</span> ${remain} ${periodLbl}`;
+    els.quotaPill.title = `${L.label} · ${remain} runs left ${periodLbl}`;
+    if (remain === 0) els.quotaPill.classList.add('full');
+    else if (remain <= 1) els.quotaPill.classList.add('warn');
+    return;
   }
+
+  // Anon / Email (unchanged) ...
+  els.quotaPill.className = 'quota-pill';
+  const used = Number(q.dayCount) || 0;
+  const lim = Number(L.daily) || 1;
+  if (els.quotaCount) els.quotaCount.textContent = used;
+  if (els.quotaLimit) els.quotaLimit.textContent = lim;
+  if (used >= lim) els.quotaPill.classList.add('full');
+  else if (used >= lim - 1) els.quotaPill.classList.add('warn');
+  const remaining = Math.max(0, lim - used);
+  els.quotaPill.title = `${plan === 'anon' ? 'Free' : 'Starter'} · ${remaining} left today`;
+}
 
   // Starter tier: email registration unlocks 3/day
   function registerEmail(email) {
