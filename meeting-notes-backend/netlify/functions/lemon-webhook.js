@@ -1,10 +1,29 @@
-// Receives Lemon Squeezy webhooks and maintains a license blacklist.
-// Events handled: subscription_cancelled, subscription_expired,
-//                 order_refunded, license_key_updated (status=disabled|expired)
+// ============================================================
+// lemon-webhook.js  |  v3 (2026-05-05)
+// ------------------------------------------------------------
+// Handles Lemon Squeezy webhooks:
+//  1. order_created / subscription_created  →  Issue license → license-keys store
+//     (plan detected from variant_id: Pro 1593246 / Max 1613669)
+//  2. subscription_cancelled / expired / refunded / key_disabled
+//     →  Blacklist license → license-blacklist store
+//  3. subscription_resumed  →  Un-blacklist
 // Docs: https://docs.lemonsqueezy.com/help/webhooks
+// ============================================================
 
 const crypto = require('crypto');
 const { getStore } = require('@netlify/blobs');
+
+const PRO_VARIANT_ID = process.env.LEMON_PRO_VARIANT_ID || '1593246';
+const MAX_VARIANT_ID = process.env.LEMON_MAX_VARIANT_ID || '1613669';
+
+function blobsStore(name) {
+  return getStore({
+    name,
+    consistency: 'strong',
+    siteID: process.env.NETLIFY_SITE_ID,
+    token: process.env.NETLIFY_BLOBS_TOKEN
+  });
+}
 
 function timingSafeEqual(a, b) {
   try {
@@ -13,6 +32,13 @@ function timingSafeEqual(a, b) {
     if (ab.length !== bb.length) return false;
     return crypto.timingSafeEqual(ab, bb);
   } catch { return false; }
+}
+
+function detectPlan(variantId) {
+  const v = String(variantId || '');
+  if (v === MAX_VARIANT_ID) return 'max';
+  if (v === PRO_VARIANT_ID) return 'pro';
+  return 'pro'; // safe default
 }
 
 exports.handler = async (event) => {
@@ -26,11 +52,10 @@ exports.handler = async (event) => {
     return { statusCode: 500, body: 'Server not configured' };
   }
 
-  const signature = event.headers['x-signature'] || event.headers['X-Signature'] || '';
+  const signature = event.headers['x-signature'] || event.headers['X-Signature'];
   const raw = event.body || '';
   const computed = crypto.createHmac('sha256', secret).update(raw).digest('hex');
-
-  if (!timingSafeEqual(signature, computed)) {
+  if (!timingSafeEqual(signature || '', computed)) {
     console.warn('[webhook] signature mismatch');
     return { statusCode: 401, body: 'Invalid signature' };
   }
@@ -39,51 +64,123 @@ exports.handler = async (event) => {
   try { payload = JSON.parse(raw); }
   catch { return { statusCode: 400, body: 'Bad JSON' }; }
 
-  const eventName = payload?.meta?.event_name || '';
-  const data = payload?.data || {};
+  const eventName = payload?.meta?.event_name;
+  const data = payload?.data;
   const attrs = data?.attributes || {};
 
-  // Collect any license key we can find in this payload
+  // ---------- Extract key fields ----------
+  // License key candidates (different events put it in different places)
   const licenseKey =
     attrs?.license_key ||
+    attrs?.key ||
     attrs?.first_order_item?.license_key ||
     attrs?.meta?.license_key ||
     payload?.meta?.custom_data?.license_key ||
     null;
 
+  // Variant ID (to distinguish Pro vs Max)
+  const variantId =
+    attrs?.variant_id ||
+    attrs?.first_order_item?.variant_id ||
+    attrs?.product?.variant_id ||
+    null;
+
+  // Customer email
+  const customerEmail =
+    attrs?.user_email ||
+    attrs?.customer_email ||
+    attrs?.email ||
+    null;
+
+  // Subscription / order info
+  const orderId = attrs?.order_id || data?.id || null;
+  const status  = attrs?.status || null;
+
+  console.log('[webhook] event=', eventName, 'variant=', variantId, 'plan=', detectPlan(variantId), 'lk=', licenseKey ? '***' + String(licenseKey).slice(-4) : '-');
+
+  // ============================================================
+  // CASE 1: ISSUE LICENSE (order_created, subscription_created, etc.)
+  // ============================================================
+  const ISSUE_EVENTS = new Set([
+    'order_created',
+    'subscription_created',
+    'license_key_created'
+  ]);
+
+  if (ISSUE_EVENTS.has(eventName) && licenseKey) {
+    try {
+      const store = blobsStore('license-keys');
+      const plan = detectPlan(variantId);
+
+      // validUntil: read from LS if provided, else default +35 days
+      let validUntil = attrs?.expires_at || attrs?.renews_at || null;
+      if (!validUntil) {
+        const d = new Date();
+        d.setDate(d.getDate() + 35);
+        validUntil = d.toISOString();
+      }
+
+      const record = {
+        licenseKey,
+        plan,
+        variantId: String(variantId || ''),
+        customerEmail,
+        orderId,
+        status: status || 'active',
+        issuedAt: new Date().toISOString(),
+        validUntil,
+        source: eventName
+      };
+
+      await store.setJSON(licenseKey, record);
+      console.log('[webhook] ✅ issued license plan=', plan, 'email=', customerEmail);
+    } catch (e) {
+      console.error('[webhook] issue license failed:', e);
+      return { statusCode: 500, body: 'License store error' };
+    }
+  }
+
+  // ============================================================
+  // CASE 2: BLACKLIST (cancel / expire / refund / disable)
+  // ============================================================
   const BLACKLIST_EVENTS = new Set([
     'subscription_cancelled',
     'subscription_expired',
     'subscription_payment_failed',
-    'order_refunded',
-    'license_key_updated'
+    'order_refunded'
   ]);
 
   const shouldBlacklist =
-    BLACKLIST_EVENTS.has(eventName) &&
-    (eventName !== 'license_key_updated' ||
-      ['disabled', 'expired'].includes(String(attrs?.status || '').toLowerCase()));
+    BLACKLIST_EVENTS.has(eventName) ||
+    (eventName === 'license_key_updated' &&
+      ['disabled', 'expired'].includes(String(status || '').toLowerCase()));
 
-  try {
-    const store = getStore('license-blacklist');
-
-    if (licenseKey && shouldBlacklist) {
+  if (shouldBlacklist && licenseKey) {
+    try {
+      const store = blobsStore('license-blacklist');
       await store.setJSON(licenseKey, {
         reason: eventName,
-        status: attrs?.status || null,
+        status: status || null,
         at: new Date().toISOString()
       });
-      console.log('[webhook] blacklisted', licenseKey, 'reason=', eventName);
+      console.log('[webhook] ⛔ blacklisted', licenseKey.slice(-4), 'reason=', eventName);
+    } catch (e) {
+      console.error('[webhook] blacklist error:', e);
+      return { statusCode: 500, body: 'Blob store error' };
     }
+  }
 
-    // Optional: remove from blacklist on reactivation
-    if (licenseKey && eventName === 'subscription_resumed') {
+  // ============================================================
+  // CASE 3: UN-BLACKLIST (subscription resumed)
+  // ============================================================
+  if (licenseKey && eventName === 'subscription_resumed') {
+    try {
+      const store = blobsStore('license-blacklist');
       await store.delete(licenseKey);
-      console.log('[webhook] un-blacklisted', licenseKey);
+      console.log('[webhook] ♻️  un-blacklisted', licenseKey.slice(-4));
+    } catch (e) {
+      console.error('[webhook] un-blacklist error:', e);
     }
-  } catch (e) {
-    console.error('[webhook] blob error', e);
-    return { statusCode: 500, body: 'Blob store error' };
   }
 
   return { statusCode: 200, body: 'ok' };
