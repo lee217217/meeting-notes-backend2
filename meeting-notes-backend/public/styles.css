@@ -210,6 +210,16 @@ textarea{resize:vertical; min-height:240px; font-family:ui-monospace,Menlo,Conso
 .quota-pill.pro{background:linear-gradient(135deg,#f4c96d,#c97a3a); color:#1e1c16;
   border-color:transparent; font-weight:800}
 .quota-pill.pro .quota-label{color:#1e1c16}
+.quota-pill::after {
+  content: '·';
+  opacity: .4;
+  margin-left: .3rem;
+  transition: all .15s;
+}
+.quota-pill:hover::after {
+  content: '⚡';
+  opacity: 1;
+}
 
 /* ===== Modal ===== */
 .modal{position:fixed; inset:0; z-index:100; display:flex; align-items:center; justify-content:center; padding:1rem}

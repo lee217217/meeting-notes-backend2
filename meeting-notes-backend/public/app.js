@@ -717,10 +717,32 @@ function track(eventName, eventData) {
   window.registerEmail = registerEmail; // expose for landing/modal buttons
 
   function openUpgradeModal() {
-    if (!els.upgradeModal) return;
-    els.upgradeModal.hidden = false;
-    els.upgradeModal.setAttribute('aria-hidden', 'false');
+  const modal = document.getElementById('upgradeModal');
+  const titleEl = document.getElementById('upgradeTitleH3');
+  const subEl = modal?.querySelector('.modal-sub');
+  if (!modal) return;
+
+  const g = checkQuota();
+  const plan = getPlan(); // 或者你 v6 入面用緊嘅 function
+  const i18n = (window.I18N && window.I18N[document.documentElement.lang === 'zh-Hant' ? 'zh-Hant' : 'en']) || {};
+
+  if (!g.ok) {
+    // Quota exhausted — original tone
+    if (titleEl) titleEl.textContent = i18n.upgradeTitle || "You've reached your quota";
+    if (subEl) subEl.textContent = i18n.upgradeSub || 'Upgrade to keep shipping meeting notes, faster.';
+  } else if (plan === 'pro' || plan === 'max') {
+    // Pro/Max already — show as "manage" context
+    if (titleEl) titleEl.textContent = i18n.upgradeTitleManage || 'Manage your plan';
+    if (subEl) subEl.textContent = i18n.upgradeSubManage || 'Change plan, cancel, or update billing.';
+  } else {
+    // Anon/Starter — proactive upgrade exploration
+    if (titleEl) titleEl.textContent = i18n.upgradeTitleExplore || 'Unlock more runs';
+    if (subEl) subEl.textContent = i18n.upgradeSubExplore || 'Pick a plan that fits your meeting rhythm.';
   }
+
+  modal.hidden = false;
+  modal.setAttribute('aria-hidden', 'false');
+}
 
   function closeUpgradeModal() {
     if (!els.upgradeModal) return;
@@ -733,10 +755,11 @@ function track(eventName, eventData) {
   });
 
   els.quotaPill?.addEventListener('click', () => {
-    const g = checkQuota();
-    if (!g.ok) openUpgradeModal();
-    // pro/max users with remaining quota: do nothing (future: show plan details)
-  });
+  // Always open upgrade modal — let users upgrade proactively,
+  // not just when quota is exhausted.
+  openUpgradeModal();
+  try { window.umami?.track('Quota Pill Clicked', { quotaFull: !checkQuota().ok }); } catch {}
+});
 
   async function activateLicense(licenseKey) {
     setStatus('statusVerifyingLicense');
