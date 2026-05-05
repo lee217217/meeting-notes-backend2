@@ -141,6 +141,58 @@ exports.handler = async (event) => {
   }
 
   // ============================================================
+  // CASE 1B: PLAN CHANGED (Pro ↔ Max, upgrade / downgrade)
+  // ============================================================
+  if (eventName === 'subscription_updated' && licenseKey) {
+    try {
+      const store = blobsStore('license-keys');
+      const existing = await store.get(licenseKey, { type: 'json' }) || {};
+      const newPlan = detectPlan(variantId);
+      const oldPlan = existing.plan || 'pro';
+
+      const updated = {
+        ...existing,
+        licenseKey,
+        plan: newPlan,
+        variantId: String(variantId || ''),
+        customerEmail: customerEmail || existing.customerEmail,
+        status: status || 'active',
+        validUntil: attrs?.renews_at || attrs?.expires_at || existing.validUntil,
+        lastPlanChange: {
+          from: oldPlan,
+          to: newPlan,
+          at: new Date().toISOString()
+        },
+        source: eventName
+      };
+
+      await store.setJSON(licenseKey, updated);
+
+      // IMPORTANT: Reset quota counter on plan change to avoid carry-over
+      // (e.g., user used 10/10 Pro weekly → upgrade to Max → should get fresh 60/mo)
+      try {
+        const quotaStore = blobsStore('quota-counters');
+        // Clear all known quota keys for this license
+        const keysToDel = [];
+        const { blobs } = await quotaStore.list({ prefix: `weekly:lk:${licenseKey}:` });
+        for (const b of blobs) keysToDel.push(b.key);
+        const m = await quotaStore.list({ prefix: `monthly:lk:${licenseKey}:` });
+        for (const b of m.blobs) keysToDel.push(b.key);
+        await Promise.all(keysToDel.map(k => quotaStore.delete(k)));
+        console.log('[webhook] cleared', keysToDel.length, 'quota keys for plan change');
+      } catch (e) {
+        console.warn('[webhook] quota reset failed (non-fatal):', e.message);
+      }
+
+      console.log('[webhook] 🔄 plan changed', oldPlan, '→', newPlan, 'lk=', licenseKey.slice(-4));
+    } catch (e) {
+      console.error('[webhook] subscription_updated error:', e);
+      return { statusCode: 500, body: 'Update failed' };
+    }
+  }
+
+
+  // ============================================================
   // CASE 2: BLACKLIST (cancel / expire / refund / disable)
   // ============================================================
   const BLACKLIST_EVENTS = new Set([
