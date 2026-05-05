@@ -811,18 +811,25 @@ function track(eventName, eventData) {
 
       const plan = (data.plan === 'max') ? 'max' : 'pro';
       localStorage.setItem(PRO_KEY, JSON.stringify({
-        active: true,
-        plan,
-        validUntil: data.validUntil,
-        email: data.customerEmail || '',
-        licenseKey,
-        lastCheck: new Date().toISOString()
-      }));
+  active: true,
+  plan,
+  validUntil: data.validUntil,
+  email: data.customerEmail,
+  licenseKey,
+  lastCheck: new Date().toISOString(),
+}));
 
-      updateQuotaPill();
-      closeUpgradeModal();
-      setStatus('statusLicenseActivated', 'success');
-      track('License Activated', { plan });
+// ✨ NEW: Reset quota counters on plan upgrade — fresh start
+// User just paid, give them full quota immediately
+const q = loadQuota();
+q.weekCount = 0;
+q.monthCount = 0;
+saveQuota(q);
+
+updateQuotaPill();
+closeUpgradeModal();
+setStatus('statusLicenseActivated', 'success');
+trackEvent('License Activated', { plan });
       return true;
     } catch (e) {
       console.error('[license]', e);
