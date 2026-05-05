@@ -57,7 +57,11 @@ async function validateLicense(licenseKey) {
 async function isEmailRegistered(getStoreFn, email) {
   if (!email) return false;
   try {
-    const store = getStoreFn({ name: 'email-list' });
+    const store = getStoreFn({
+  name: 'email-list',
+  siteID: process.env.NETLIFY_SITE_ID,
+  token: process.env.NETLIFY_BLOBS_TOKEN
+});
     const rec = await store.get(`email:${email.toLowerCase()}`, { type: 'json' });
     return !!rec;
   } catch (e) {
