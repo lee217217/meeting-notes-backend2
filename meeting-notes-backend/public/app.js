@@ -717,31 +717,30 @@ function track(eventName, eventData) {
   window.registerEmail = registerEmail; // expose for landing/modal buttons
 
   function openUpgradeModal() {
-  const modal = document.getElementById('upgradeModal');
-  const titleEl = document.getElementById('upgradeTitleH3');
-  const subEl = modal?.querySelector('.modal-sub');
-  if (!modal) return;
+  if (!els.upgradeModal) return;
 
+  // Dynamic title based on user context (方案 B 2026-05-05)
+  const titleEl = document.getElementById('upgradeTitleH3');
+  const subEl = els.upgradeModal.querySelector('.modal-sub');
   const g = checkQuota();
-  const plan = getPlan(); // 或者你 v6 入面用緊嘅 function
-  const i18n = (window.I18N && window.I18N[document.documentElement.lang === 'zh-Hant' ? 'zh-Hant' : 'en']) || {};
+  const plan = getPlan();
 
   if (!g.ok) {
-    // Quota exhausted — original tone
-    if (titleEl) titleEl.textContent = i18n.upgradeTitle || "You've reached your quota";
-    if (subEl) subEl.textContent = i18n.upgradeSub || 'Upgrade to keep shipping meeting notes, faster.';
+    // Quota exhausted — urgent tone
+    if (titleEl) titleEl.textContent = t('upgradeTitle');
+    if (subEl) subEl.textContent = t('upgradeSub');
   } else if (plan === 'pro' || plan === 'max') {
-    // Pro/Max already — show as "manage" context
-    if (titleEl) titleEl.textContent = i18n.upgradeTitleManage || 'Manage your plan';
-    if (subEl) subEl.textContent = i18n.upgradeSubManage || 'Change plan, cancel, or update billing.';
+    // Pro/Max browsing — manage context
+    if (titleEl) titleEl.textContent = t('upgradeTitleManage');
+    if (subEl) subEl.textContent = t('upgradeSubManage');
   } else {
-    // Anon/Starter — proactive upgrade exploration
-    if (titleEl) titleEl.textContent = i18n.upgradeTitleExplore || 'Unlock more runs';
-    if (subEl) subEl.textContent = i18n.upgradeSubExplore || 'Pick a plan that fits your meeting rhythm.';
+    // Anon/Starter proactive explore
+    if (titleEl) titleEl.textContent = t('upgradeTitleExplore');
+    if (subEl) subEl.textContent = t('upgradeSubExplore');
   }
 
-  modal.hidden = false;
-  modal.setAttribute('aria-hidden', 'false');
+  els.upgradeModal.hidden = false;
+  els.upgradeModal.setAttribute('aria-hidden', 'false');
 }
 
   function closeUpgradeModal() {
@@ -755,10 +754,14 @@ function track(eventName, eventData) {
   });
 
   els.quotaPill?.addEventListener('click', () => {
-  // Always open upgrade modal — let users upgrade proactively,
-  // not just when quota is exhausted.
+  // Always open modal — let users upgrade/manage proactively (方案 B 2026-05-05)
+  const g = checkQuota();
   openUpgradeModal();
-  try { window.umami?.track('Quota Pill Clicked', { quotaFull: !checkQuota().ok }); } catch {}
+  trackEvent('Quota Pill Clicked', {
+    plan: getPlan(),
+    quotaFull: !g.ok,
+    lang: state.lang,
+  });
 });
 
   async function activateLicense(licenseKey) {
