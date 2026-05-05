@@ -676,37 +676,58 @@ function track(eventName, eventData) {
   function updateQuotaPill() {
   if (!els.quotaPill) return;
   const plan = getPlan();
-  const L = PLANS[plan];
+  const L = PLANS[plan] || PLANS.anon;
   const q = loadQuota();
 
-  // Pro/Max shows premium pill
+  // ===== Pro/Max premium pill =====
   if (plan === 'pro' || plan === 'max') {
     els.quotaPill.className = 'quota-pill pro';
-    let used, lim, periodLbl;
+
+    let used = 0, lim = 0, periodLbl = '';
     if (plan === 'pro') {
       used = Number(q.weekCount) || 0;
       lim = Number(L.weekly) || 10;
-      periodLbl = t('periodWk') || '/wk';
+      periodLbl = '/wk';
     } else {
       used = Number(q.monthCount) || 0;
       lim = Number(L.monthly) || 60;
-      periodLbl = t('periodMo') || '/mo';
+      periodLbl = '/mo';
     }
     const remain = Math.max(0, lim - used);
+    const label = L.label || (plan === 'pro' ? 'Pro' : 'Max');
+
     els.quotaPill.innerHTML =
-      `<span class="quota-label">${L.label}</span> ${remain} ${periodLbl}`;
-    els.quotaPill.title = `${L.label} · ${remain} runs left ${periodLbl}`;
+      `<span class="quota-label">${label}</span> ` +
+      `<span id="quotaCount">${remain}</span>` +
+      `<span id="quotaLimit" style="display:none">${lim}</span>` +
+      `<span class="quota-period">${periodLbl}</span>`;
+
+    els.quotaPill.title = `${label} · ${remain} runs left ${periodLbl}`;
     if (remain === 0) els.quotaPill.classList.add('full');
     else if (remain <= 1) els.quotaPill.classList.add('warn');
     return;
   }
 
-  // Anon / Email (unchanged) ...
+  // ===== Anon / Email (reset DOM if previously premium) =====
   els.quotaPill.className = 'quota-pill';
   const used = Number(q.dayCount) || 0;
   const lim = Number(L.daily) || 1;
-  if (els.quotaCount) els.quotaCount.textContent = used;
-  if (els.quotaLimit) els.quotaLimit.textContent = lim;
+
+  // Rebuild DOM if it was replaced by premium variant
+  if (!els.quotaPill.querySelector('#quotaCount') ||
+      !els.quotaPill.querySelector('#quotaLimit') ||
+      els.quotaPill.querySelector('.quota-period')) {
+    els.quotaPill.innerHTML =
+      `<span id="quotaCount">${used}</span>/<span id="quotaLimit">${lim}</span> ` +
+      `<span class="quota-label" data-i18n="quotaToday">today</span>`;
+    // Re-cache
+    els.quotaCount = document.getElementById('quotaCount');
+    els.quotaLimit = document.getElementById('quotaLimit');
+  } else {
+    if (els.quotaCount) els.quotaCount.textContent = used;
+    if (els.quotaLimit) els.quotaLimit.textContent = lim;
+  }
+
   if (used >= lim) els.quotaPill.classList.add('full');
   else if (used >= lim - 1) els.quotaPill.classList.add('warn');
   const remaining = Math.max(0, lim - used);
