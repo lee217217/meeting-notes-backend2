@@ -120,7 +120,7 @@ exports.handler = async (event) => {
         validUntil = d.toISOString();
       }
 
-      const record = {
+            const record = {
         licenseKey,
         plan,
         variantId: String(variantId || ''),
@@ -129,7 +129,8 @@ exports.handler = async (event) => {
         status: status || 'active',
         issuedAt: new Date().toISOString(),
         validUntil,
-        source: eventName
+        source: eventName,
+        activations: {}   // ← NEW: device tracking bucket
       };
 
       await store.setJSON(licenseKey, record);
