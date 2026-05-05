@@ -1,6 +1,7 @@
 // ============================================================
-// app.js  |  Umami tracking build v2 + 4-tier quota  |  2026-05-04
-// 部署後喺 DevTools Console 應該會見到 [umami+quota] build v5 loaded
+// app.js  |  Umami tracking build v2 + 4-tier quota  |  2026-05-05
+// v6: Server-authoritative quota (fp + email + licenseKey sent to backend)
+// 部署後喺 DevTools Console 應該會見到 [umami+quota] build v6 loaded
 // Quota: anon 1/day | email 3/day | pro 10/week ($19/mo) | max 60/mo ($29/mo)
 // ============================================================
 
@@ -9,7 +10,7 @@
 // 用 track('Event Name', { prop: 'value' }) 嚟發送
 // 守衛：如果 script 未 load / ad-blocker 擋到 → 唔會炸
 // ──────────────────────────────────────────────
-console.log('%c[umami+quota] build v5 loaded ✅  2026-05-04', 'color:#16a34a;font-weight:bold');
+console.log('%c[umami+quota] build v6 loaded ✅ server-authoritative  2026-05-05', 'color:#16a34a;font-weight:bold');
 
 function track(eventName, eventData) {
   try {
@@ -594,6 +595,8 @@ function track(eventName, eventData) {
         setStatusText(t('statusLicenseRevoked') + (data?.reason ? ' (' + data.reason + ')' : ''), 'error');
         return;
       }
+      // v6: server now returns plan (pro/max) — keep local record in sync
+      if (data.plan) rec.plan = data.plan;
       rec.validUntil = data.validUntil || rec.validUntil;
       rec.lastCheck = new Date().toISOString();
       localStorage.setItem(PRO_KEY, JSON.stringify(rec));
@@ -889,7 +892,7 @@ function track(eventName, eventData) {
     if (!gate.ok) {
       openUpgradeModal();
       setStatus('quotaExhausted', 'error');
-      track('Quota Exceeded', { plan: gate.plan, reason: gate.reason, lang: state.lang });
+      track('Quota Exceeded', { plan: gate.plan, reason: gate.reason, lang: state.lang, source: 'client' });
       return;
     }
     state.isRunning = true;
@@ -911,15 +914,43 @@ function track(eventName, eventData) {
     let res = null;
 
     try {
+      // v6: attach identity for server-side quota
+      const fp = await getFingerprint();
+      const email = localStorage.getItem(EMAIL_KEY) || '';
+      let licenseKey = '';
+      try {
+        const proRec = JSON.parse(localStorage.getItem(PRO_KEY) || '{}');
+        if (proRec.active && proRec.licenseKey) licenseKey = proRec.licenseKey;
+      } catch {}
+
       res = await fetch('/.netlify/functions/multi-agent-run', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({ ...payload, fp, email, licenseKey }),
         signal: controller.signal
       });
 
       let data = null;
       try { data = await res.json(); } catch {}
+
+      // v6: server-authoritative quota exceeded
+      if (res.status === 429 && data && data.error === 'quota_exceeded') {
+        const q = data.quota || {};
+        openUpgradeModal();
+        setStatus('quotaExhausted', 'error');
+        track('Quota Exceeded', {
+          plan: q.plan, reason: q.reason || q.period,
+          source: 'server', used: q.used, limit: q.limit
+        });
+        // sync local counter with server truth
+        const qLocal = loadQuota();
+        if (q.plan === 'anon' || q.plan === 'email') qLocal.dayCount   = Math.max(qLocal.dayCount   || 0, q.used);
+        else if (q.plan === 'pro')                   qLocal.weekCount  = Math.max(qLocal.weekCount  || 0, q.used);
+        else if (q.plan === 'max')                   qLocal.monthCount = Math.max(qLocal.monthCount || 0, q.used);
+        saveQuota(qLocal);
+        updateQuotaPill();
+        throw Object.assign(new Error(t('quotaExhausted') || 'Quota exceeded'), { handled: true });
+      }
 
       if (!res.ok || (data && data.success === false)) {
         const msg = classifyError(new Error((data && data.error) || 'HTTP ' + res.status), res);
@@ -937,7 +968,19 @@ function track(eventName, eventData) {
       localStorage.setItem('lastArtifacts', JSON.stringify(normalized));
       localStorage.setItem('lastPayload', JSON.stringify(payload));
       addToHistory(payload, normalized);
-      incrementQuota(); // count against plan-specific daily/weekly/monthly
+
+      // v6: sync local quota pill with server-authoritative count
+      if (data.quota) {
+        const qLocal = loadQuota();
+        if (data.quota.period === 'daily')   qLocal.dayCount   = data.quota.used;
+        if (data.quota.period === 'weekly')  qLocal.weekCount  = data.quota.used;
+        if (data.quota.period === 'monthly') qLocal.monthCount = data.quota.used;
+        saveQuota(qLocal);
+        updateQuotaPill();
+      } else {
+        incrementQuota(); // fallback if server didn't return quota
+      }
+
       setStatus('statusSuccess', 'success');
       track('Run Workflow', {
         lang: state.lang,
@@ -1047,7 +1090,6 @@ function track(eventName, eventData) {
 
   /* ========== Mobile enhancements ========== */
   const isMobileView = () => window.matchMedia('(max-width: 768px)').matches;
-
   const mobileRunBtn = document.getElementById('mobileRunBtn');
   const mobileTabsEl = document.getElementById('mobileTabs');
   const tabSections = document.querySelectorAll('[data-tab-section]');

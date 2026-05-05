@@ -1,8 +1,6 @@
-// netlify/functions/email-register.js
-// A+A+A flow: 即填即解鎖 Starter tier，儲 Netlify Blobs
-// No external email service yet (phase 2 add Resend)
-
-import { getStore } from '@netlify/blobs';
+// netlify/functions/email-register.js  (v2, CJS)
+const { getStore } = require('@netlify/blobs');
+const { buildCorsHeaders, getOrigin, getClientIp, jsonResponse } = require('./_shared/cors');
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const BLOCKED_DOMAINS = [
@@ -10,75 +8,66 @@ const BLOCKED_DOMAINS = [
   'throwaway.email','yopmail.com','trashmail.com','getnada.com'
 ];
 
-export default async (req, context) => {
-  if (req.method !== 'POST') {
-    return new Response(JSON.stringify({ error: 'POST only' }), {
-      status: 405, headers: { 'Content-Type': 'application/json' }
-    });
-  }
+function todayStr() { return new Date().toISOString().slice(0, 10); }
+
+exports.handler = async (event) => {
+  const CORS = buildCorsHeaders(getOrigin(event));
+  if (event.httpMethod === 'OPTIONS') return { statusCode: 204, headers: CORS, body: '' };
+  if (event.httpMethod !== 'POST')    return jsonResponse(405, { error: 'POST only' }, CORS);
 
   let body;
-  try { body = await req.json(); }
-  catch { return json({ error: 'Invalid JSON' }, 400); }
+  try { body = JSON.parse(event.body || '{}'); }
+  catch { return jsonResponse(400, { error: 'Invalid JSON' }, CORS); }
 
   const email = String(body.email || '').trim().toLowerCase();
   const fp    = String(body.fp || '').slice(0, 64);
-  const ua    = req.headers.get('user-agent') || '';
-  const ip    = context.ip || req.headers.get('x-nf-client-connection-ip') || '';
+  const ua    = event.headers['user-agent'] || event.headers['User-Agent'] || '';
+  const ip    = getClientIp(event);
 
-  // Validate email
-  if (!EMAIL_RE.test(email))             return json({ error: 'Invalid email' }, 400);
-  if (email.length > 120)                 return json({ error: 'Email too long' }, 400);
+  if (!EMAIL_RE.test(email))           return jsonResponse(400, { error: 'Invalid email' }, CORS);
+  if (email.length > 120)               return jsonResponse(400, { error: 'Email too long' }, CORS);
   const domain = email.split('@')[1];
-  if (BLOCKED_DOMAINS.includes(domain))   return json({ error: 'Disposable email not allowed' }, 400);
+  if (BLOCKED_DOMAINS.includes(domain)) return jsonResponse(400, { error: 'Disposable email not allowed' }, CORS);
 
   const store = getStore({ name: 'email-list', consistency: 'strong' });
 
-  // Simple IP rate limit: max 5 registrations per IP per day
-  if (ip) {
+  // IP limit: 2/day (tightened from 5)
+  if (ip && ip !== 'unknown') {
     const ipKey = `ip:${ip}:${todayStr()}`;
     const ipCount = Number((await store.get(ipKey)) || 0);
-    if (ipCount >= 5) return json({ error: 'Too many registrations from this IP today' }, 429);
+    if (ipCount >= 2) return jsonResponse(429, { error: 'Too many registrations from this IP today' }, CORS);
     await store.set(ipKey, String(ipCount + 1));
   }
 
-  // Upsert email record
+  // Fingerprint binding: one fp -> only 1 email (prevents clearing localStorage to rebind)
+  if (fp) {
+    const fpKey = `fp:${fp}`;
+    const boundEmail = await store.get(fpKey);
+    if (boundEmail && boundEmail !== email) {
+      return jsonResponse(429, { error: 'This device is already registered with another email' }, CORS);
+    }
+    if (!boundEmail) await store.set(fpKey, email);
+  }
+
   const key = `email:${email}`;
   const existing = await store.get(key, { type: 'json' });
   const now = new Date().toISOString();
-
   const record = existing || {
-    email,
-    plan: 'starter',
-    createdAt: now,
-    fingerprint: fp,
-    ua, ip,
-    verified: false,     // phase 2: magic link will flip this
-    source: 'landing'
+    email, plan: 'starter', createdAt: now,
+    fingerprint: fp, ua, ip, verified: false, source: 'landing'
   };
   record.lastSeenAt = now;
-  record.seenCount  = (record.seenCount || 0) + 1;
-
+  record.seenCount = (record.seenCount || 0) + 1;
   await store.setJSON(key, record);
 
-  // Append to aggregated list for easy export (append-only log)
+  // Daily log
   const logKey = `log:${todayStr()}`;
   const log = (await store.get(logKey, { type: 'json' })) || [];
   log.push({ at: now, email, ip, fp });
   await store.setJSON(logKey, log);
 
-  return json({
-    success: true,
-    plan: 'starter',
+  return jsonResponse(200, {
+    success: true, plan: 'starter',
     message: existing ? 'Welcome back' : 'Starter unlocked'
-  });
+  }, CORS);
 };
-
-function json(data, status = 200) {
-  return new Response(JSON.stringify(data), {
-    status, headers: { 'Content-Type': 'application/json' }
-  });
-}
-function todayStr() {
-  return new Date().toISOString().slice(0, 10);
-}
