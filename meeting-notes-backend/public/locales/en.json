@@ -229,5 +229,11 @@
 "upgradeManageSub": "Manage / change plan in Billing Portal →",
 "upgradeFine": "Cancel anytime · License tied to email",
 "haveLicense": "I already have a license key",
-"comeBackTomorrow": "Come back later"
+"comeBackTomorrow": "Come back later",
+"quotaPillTitle": "Click to view plans",
+"upgradeTitleExplore": "Unlock more runs",
+"upgradeSubExplore": "Pick a plan that fits your meeting rhythm.",
+"upgradeTitleManage": "Manage your plan",
+"upgradeSubManage": "Change plan, cancel, or update billing."
+
 }

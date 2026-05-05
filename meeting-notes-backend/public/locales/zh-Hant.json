@@ -229,5 +229,10 @@
 "upgradeManageSub": "前往 Billing Portal 管理訂閱 / 更換方案 →",
 "upgradeFine": "隨時可取消 · License 綁定至 email",
 "haveLicense": "我已有 License Key",
-"comeBackTomorrow": "稍後再試"
+"comeBackTomorrow": "稍後再試",
+"quotaPillTitle": "點擊查看升級方案",
+"upgradeTitleExplore": "解鎖更多執行次數",
+"upgradeSubExplore": "選擇合適你會議節奏嘅方案。",
+"upgradeTitleManage": "管理你嘅方案",
+"upgradeSubManage": "變更方案、取消訂閱或更新付款資料。",
 }
