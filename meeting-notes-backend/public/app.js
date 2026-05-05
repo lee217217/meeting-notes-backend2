@@ -48,6 +48,22 @@ function track(eventName, eventData) {
   const EMAIL_KEY = 'userEmail';      // starter tier trigger
   const QUOTA_LIMIT = PLANS.anon.daily; // legacy alias, kept for stepper messages
 
+// ============================================================
+// Device ID — stable per-browser identifier for license binding
+// ============================================================
+const DEVICE_KEY = 'device_id';
+
+function getDeviceId() {
+  let id = localStorage.getItem(DEVICE_KEY);
+  if (!id) {
+    id = 'dev_' +
+         Math.random().toString(36).slice(2, 10) + '_' +
+         Date.now().toString(36);
+    localStorage.setItem(DEVICE_KEY, id);
+  }
+  return id;
+}
+
   const FALLBACK_SAMPLE = {
     en: {
       title: 'Weekly production sync',
@@ -585,16 +601,46 @@ function track(eventName, eventData) {
       const res = await fetch('/.netlify/functions/verify-license', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ licenseKey: rec.licenseKey })
+        body: JSON.stringify({
+  licenseKey: pro.licenseKey,
+  deviceId: getDeviceId()   // ← NEW
+})
       });
-      const data = await res.json();
-      if (!data || !data.valid) {
-        console.warn('[license] revoked on revalidate:', data && data.reason);
-        localStorage.removeItem(PRO_KEY);
-        updateQuotaPill();
-        setStatusText(t('statusLicenseRevoked') + (data?.reason ? ' (' + data.reason + ')' : ''), 'error');
-        return;
-      }
+        const data = await res.json();
+
+  if (!data.valid) {
+    // ← 加入新嘅 error handling（喺原本 error 處理之前）
+    if (data.reason === 'activation_limit_exceeded') {
+      setStatus(
+        `❌ 此 license 已於 ${data.activeCount}/${data.limit} 部裝置啟用。請先喺其他裝置登出，或聯絡 support@yourapp.com`,
+        'error'
+      );
+      return;
+    }
+    if (data.reason === 'blacklisted') {
+      setStatus('❌ 此 license 已被停用（退款或取消）', 'error');
+      return;
+    }
+    if (data.reason === 'expired') {
+      setStatus('❌ 此 license 已過期，請續訂', 'error');
+      return;
+    }
+    setStatus('❌ License key 無效', 'error');
+    return;
+  }
+
+  // ✅ 成功 — 儲 pro info（原本邏輯，保留）
+  localStorage.setItem(PRO_KEY, JSON.stringify({
+    active: true,
+    plan: data.plan,
+    validUntil: data.validUntil,
+    email: data.customerEmail,
+    licenseKey,
+    deviceId: getDeviceId(),             // ← NEW
+    activeDevices: data.activeDevices,   // ← NEW (optional，顯示用)
+    deviceLimit: data.deviceLimit,       // ← NEW (optional)
+    lastCheck: new Date().toISOString(),
+  }));
       // v6: server now returns plan (pro/max) — keep local record in sync
       if (data.plan) rec.plan = data.plan;
       rec.validUntil = data.validUntil || rec.validUntil;
@@ -793,21 +839,14 @@ function track(eventName, eventData) {
   });
 });
 
-  async function activateLicense(licenseKey) {
-    setStatus('statusVerifyingLicense');
-    try {
-      const res = await fetch('/.netlify/functions/verify-license', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ licenseKey })
-      });
-      const data = await res.json();
-
-      if (!data || !data.valid) {
-        const reason = (data && data.reason) ? ' (' + data.reason + ')' : '';
-        setStatusText(t('statusLicenseInvalid') + reason, 'error');
-        return false;
-      }
+    const res = await fetch('/.netlify/functions/verify-license', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      licenseKey,
+      deviceId: getDeviceId()   // ← NEW
+    })
+  });
 
       const plan = (data.plan === 'max') ? 'max' : 'pro';
       localStorage.setItem(PRO_KEY, JSON.stringify({
