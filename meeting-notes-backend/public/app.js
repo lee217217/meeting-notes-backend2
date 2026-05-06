@@ -1,33 +1,27 @@
 // ============================================================
-// app.js  |  Umami tracking build v2 + 4-tier quota  |  2026-05-05
-// v6: Server-authoritative quota (fp + email + licenseKey sent to backend)
-// 部署後喺 DevTools Console 應該會見到 [umami+quota] build v6 loaded
-// Quota: anon 1/day | email 3/day | pro 10/week ($19/mo) | max 60/mo ($29/mo)
+// app.js  |  v7 (2026-05-05)
+// 4-tier quota + License device binding
+// anon 1/day | email 3/day | pro 10/week | max 60/mo
+// v7 CHANGE: deviceId sent on verify-license + revalidate
+//            activateLicense / revalidateLicense cleaned up
 // ============================================================
 
-// ──────────────────────────────────────────────
-// Umami Analytics helper
-// 用 track('Event Name', { prop: 'value' }) 嚟發送
-// 守衛：如果 script 未 load / ad-blocker 擋到 → 唔會炸
-// ──────────────────────────────────────────────
-console.log('%c[umami+quota] build v6 loaded ✅ server-authoritative  2026-05-05', 'color:#16a34a;font-weight:bold');
+console.log('%c[umami+quota] build v7 loaded ✅ device-bound license  2026-05-05', 'color:#16a34a;font-weight:bold');
 
 function track(eventName, eventData) {
   try {
     console.log('%c[umami] track →', 'color:#5b5bf5;font-weight:bold', eventName, eventData || '');
     if (typeof window !== 'undefined' && window.umami && typeof window.umami.track === 'function') {
-      if (eventData) {
-        window.umami.track(eventName, eventData);
-      } else {
-        window.umami.track(eventName);
-      }
+      if (eventData) window.umami.track(eventName, eventData);
+      else window.umami.track(eventName);
     } else {
       console.warn('[umami] window.umami not ready — event dropped:', eventName);
     }
-  } catch (err) {
-    console.debug('[track] failed:', err);
-  }
+  } catch (err) { console.debug('[track] failed:', err); }
 }
+// Alias for old code calling trackEvent()
+const trackEvent = track;
+
 (function () {
   const STEPS = ['coordinator', 'summarizer', 'action_item_agent', 'followup_email_agent', 'qa_review_agent'];
   const SUPPORTED = ['en', 'zh-Hant'];
@@ -36,33 +30,30 @@ function track(eventName, eventData) {
   const MIN_NOTES = 30;
   const HISTORY_MAX = 20;
   const ETA_SECONDS = 30;
-  // ---------- 4-tier quota config ----------
+
   const PLANS = {
-    anon:  { label: 'Free',    daily: 1,  weekly: null, monthly: null, periodKey: 'daily'   },
-    email: { label: 'Starter', daily: 3,  weekly: null, monthly: null, periodKey: 'daily'   },
-    pro:   { label: 'Pro',     daily: null, weekly: 10, monthly: null, periodKey: 'weekly'  },
-    max:   { label: 'Max',     daily: null, weekly: null, monthly: 60, periodKey: 'monthly' }
+    anon:  { label: 'Free',    daily: 1,    weekly: null, monthly: null, periodKey: 'daily'   },
+    email: { label: 'Starter', daily: 3,    weekly: null, monthly: null, periodKey: 'daily'   },
+    pro:   { label: 'Pro',     daily: null, weekly: 10,   monthly: null, periodKey: 'weekly'  },
+    max:   { label: 'Max',     daily: null, weekly: null, monthly: 60,   periodKey: 'monthly' }
   };
-  const QUOTA_KEY = 'quota_v4';       // new structure
-  const PRO_KEY   = 'pro';            // license record (kept for backward compat)
-  const EMAIL_KEY = 'userEmail';      // starter tier trigger
-  const QUOTA_LIMIT = PLANS.anon.daily; // legacy alias, kept for stepper messages
+  const QUOTA_KEY  = 'quota_v4';
+  const PRO_KEY    = 'pro';
+  const EMAIL_KEY  = 'userEmail';
+  const DEVICE_KEY = 'device_id';
+  const QUOTA_LIMIT = PLANS.anon.daily;
 
-// ============================================================
-// Device ID — stable per-browser identifier for license binding
-// ============================================================
-const DEVICE_KEY = 'device_id';
-
-function getDeviceId() {
-  let id = localStorage.getItem(DEVICE_KEY);
-  if (!id) {
-    id = 'dev_' +
-         Math.random().toString(36).slice(2, 10) + '_' +
-         Date.now().toString(36);
-    localStorage.setItem(DEVICE_KEY, id);
+  // ──────────────────────────────────────────────
+  // Device ID — stable per-browser identifier
+  // ──────────────────────────────────────────────
+  function getDeviceId() {
+    let id = localStorage.getItem(DEVICE_KEY);
+    if (!id) {
+      id = 'dev_' + Math.random().toString(36).slice(2, 10) + '_' + Date.now().toString(36);
+      localStorage.setItem(DEVICE_KEY, id);
+    }
+    return id;
   }
-  return id;
-}
 
   const FALLBACK_SAMPLE = {
     en: {
@@ -78,58 +69,29 @@ function getDeviceId() {
   const state = {
     lang: localStorage.getItem('lang') || (navigator.language.startsWith('zh') ? 'zh-Hant' : 'en'),
     theme: localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'),
-    dict: {},
-    lastPayload: null,
-    lastArtifacts: null,
-    isRunning: false,
-    etaTimer: null
+    dict: {}, lastPayload: null, lastArtifacts: null, isRunning: false, etaTimer: null
   };
 
   const $ = (id) => document.getElementById(id);
 
   const els = {
-    form: $('form'),
-    meetingTitle: $('meetingTitle'),
-    meetingType: $('meetingType'),
-    outputLanguage: $('outputLanguage'),
-    outputMode: $('outputMode'),
-    notes: $('notes'),
-    submitButton: $('submitButton'),
-    loadSample: $('loadSample'),
-    clearForm: $('clearForm'),
-    copyMarkdown: $('copyMarkdown'),
-    copyEmail: $('copyEmail'),
-    downloadMd: $('downloadMd'),
-    themeToggle: $('themeToggle'),
-    historyBtn: $('historyBtn'),
-    status: $('status'),
-    summaryOutput: $('summaryOutput'),
-    decisionsOutput: $('decisionsOutput'),
-    actionsOutput: $('actionsOutput'),
-    emailOutput: $('emailOutput'),
-    stepper: $('stepper'),
-    etaLine: $('etaLine'),
-    etaSec: $('etaSec'),
-    errorBanner: $('errorBanner'),
-    errorBannerText: $('errorBannerText'),
-    retryButton: $('retryButton'),
-    notesCounter: $('notesCounter'),
-    notesCount: $('notesCount'),
-    dropZone: $('dropZone'),
-    fileInput: $('fileInput'),
-    autoCleanBtn: $('autoCleanBtn'),
-    shortcutKbd: $('shortcutKbd'),
-    historyDrawer: $('historyDrawer'),
-    drawerOverlay: $('drawerOverlay'),
-    closeDrawer: $('closeDrawer'),
-    historyList: $('historyList'),
-    historyEmpty: $('historyEmpty'),
-    clearHistoryBtn: $('clearHistory'),
-    quotaPill: $('quotaPill'),
-    quotaCount: $('quotaCount'),
-    quotaLimit: $('quotaLimit'),
-    upgradeModal: $('upgradeModal'),
-    haveLicenseBtn: $('haveLicenseBtn')
+    form: $('form'), meetingTitle: $('meetingTitle'), meetingType: $('meetingType'),
+    outputLanguage: $('outputLanguage'), outputMode: $('outputMode'), notes: $('notes'),
+    submitButton: $('submitButton'), loadSample: $('loadSample'), clearForm: $('clearForm'),
+    copyMarkdown: $('copyMarkdown'), copyEmail: $('copyEmail'), downloadMd: $('downloadMd'),
+    themeToggle: $('themeToggle'), historyBtn: $('historyBtn'), status: $('status'),
+    summaryOutput: $('summaryOutput'), decisionsOutput: $('decisionsOutput'),
+    actionsOutput: $('actionsOutput'), emailOutput: $('emailOutput'),
+    stepper: $('stepper'), etaLine: $('etaLine'), etaSec: $('etaSec'),
+    errorBanner: $('errorBanner'), errorBannerText: $('errorBannerText'),
+    retryButton: $('retryButton'), notesCounter: $('notesCounter'), notesCount: $('notesCount'),
+    dropZone: $('dropZone'), fileInput: $('fileInput'), autoCleanBtn: $('autoCleanBtn'),
+    shortcutKbd: $('shortcutKbd'), historyDrawer: $('historyDrawer'),
+    drawerOverlay: $('drawerOverlay'), closeDrawer: $('closeDrawer'),
+    historyList: $('historyList'), historyEmpty: $('historyEmpty'),
+    clearHistoryBtn: $('clearHistory'), quotaPill: $('quotaPill'),
+    quotaCount: $('quotaCount'), quotaLimit: $('quotaLimit'),
+    upgradeModal: $('upgradeModal'), haveLicenseBtn: $('haveLicenseBtn')
   };
 
   const isMac = /Mac|iPhone|iPad|iPod/.test(navigator.platform || navigator.userAgent || '');
@@ -137,24 +99,17 @@ function getDeviceId() {
 
   function escapeHtml(s) {
     return String(s).replace(/[&<>"']/g, (c) => ({
-      '&': '&amp;',
-      '<': '&lt;',
-      '>': '&gt;',
-      '"': '&quot;',
-      "'": '&#39;'
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
     }[c]));
   }
 
-  function t(k) {
-    return (state.dict && state.dict[k]) || k;
-  }
+  function t(k) { return (state.dict && state.dict[k]) || k; }
 
   async function loadLocale(lang) {
     if (!SUPPORTED.includes(lang)) lang = 'en';
     state.lang = lang;
     localStorage.setItem('lang', lang);
     document.documentElement.setAttribute('lang', lang === 'zh-Hant' ? 'zh-Hant' : 'en');
-
     try {
       const res = await fetch('/locales/' + lang + '.json', { cache: 'no-cache' });
       if (!res.ok) throw new Error('HTTP ' + res.status);
@@ -162,7 +117,6 @@ function getDeviceId() {
     } catch (e) {
       console.warn('[locale] load failed, keeping previous dict:', e);
     }
-
     applyTranslations();
     updateLangButtons();
     if (state.lastArtifacts) renderArtifacts(state.lastArtifacts);
@@ -211,7 +165,6 @@ function getDeviceId() {
     els.notesCount.textContent = len.toLocaleString();
     els.notesCounter?.classList.toggle('warn', len > 19500 || (len > 0 && len < MIN_NOTES));
   }
-
   els.notes?.addEventListener('input', updateCounter);
 
   function setStatus(key, cls) {
@@ -219,7 +172,6 @@ function getDeviceId() {
     els.status.textContent = key ? t(key) : '';
     els.status.className = 'status' + (cls ? ' ' + cls : '');
   }
-
   function setStatusText(text, cls) {
     if (!els.status) return;
     els.status.textContent = text || '';
@@ -231,7 +183,6 @@ function getDeviceId() {
     els.errorBannerText.textContent = msg;
     els.errorBanner.classList.add('show');
   }
-
   function hideError() {
     if (!els.errorBanner) return;
     els.errorBanner.classList.remove('show');
@@ -262,7 +213,6 @@ function getDeviceId() {
       if (el) el.className = 'step';
     });
   }
-
   function idleStepper() {
     if (!els.stepper) return;
     els.stepper.classList.add('idle');
@@ -271,12 +221,10 @@ function getDeviceId() {
       if (el) el.className = 'step';
     });
   }
-
   function markStep(name, cls) {
     const el = els.stepper?.querySelector('[data-step="' + name + '"]');
     if (el) el.className = 'step ' + cls;
   }
-
   function applyTraceToStepper(trace) {
     if (!Array.isArray(trace)) return;
     trace.forEach((x) => {
@@ -299,7 +247,6 @@ function getDeviceId() {
       els.etaSec.textContent = left;
     }, 1000);
   }
-
   function stopEta() {
     clearInterval(state.etaTimer);
     if (els.etaLine) els.etaLine.hidden = true;
@@ -311,7 +258,6 @@ function getDeviceId() {
     if (v.includes('low') || v.includes('低') || v === '3') return 'badge-low';
     return 'badge-medium';
   }
-
   function priorityLabel(p) {
     const v = String(p || '').toLowerCase();
     if (v.includes('high') || v.includes('高')) return t('prioHigh');
@@ -324,7 +270,6 @@ function getDeviceId() {
     if (!els.actionsOutput) return;
     els.actionsOutput.classList.add('actions-v2');
     els.actionsOutput.innerHTML = '';
-
     if (!items || !items.length) {
       const li = document.createElement('li');
       li.className = 'empty';
@@ -332,19 +277,13 @@ function getDeviceId() {
       els.actionsOutput.appendChild(li);
       return;
     }
-
     items.forEach((it) => {
       const li = document.createElement('li');
-      if (typeof it === 'string') {
-        li.textContent = it;
-        els.actionsOutput.appendChild(li);
-        return;
-      }
+      if (typeof it === 'string') { li.textContent = it; els.actionsOutput.appendChild(li); return; }
       const task = document.createElement('div');
       task.className = 'action-task';
       task.textContent = it.task || '';
       li.appendChild(task);
-
       const meta = document.createElement('div');
       meta.className = 'action-meta';
       if (it.owner) meta.insertAdjacentHTML('beforeend', `<span class="badge badge-owner">👤 ${escapeHtml(it.owner)}</span>`);
@@ -374,13 +313,8 @@ function getDeviceId() {
 
   function setBody(el, text, emptyKey) {
     if (!el) return;
-    if (text && text.trim()) {
-      el.textContent = text;
-      el.classList.remove('empty');
-    } else {
-      el.textContent = t(emptyKey);
-      el.classList.add('empty');
-    }
+    if (text && text.trim()) { el.textContent = text; el.classList.remove('empty'); }
+    else { el.textContent = t(emptyKey); el.classList.add('empty'); }
   }
 
   function normalizeArtifacts(data) {
@@ -410,10 +344,7 @@ function getDeviceId() {
     const old = span.textContent;
     btn.classList.add('copied');
     span.textContent = t('statusCopiedBtn') + ' ✓';
-    setTimeout(() => {
-      btn.classList.remove('copied');
-      span.textContent = old;
-    }, 1600);
+    setTimeout(() => { btn.classList.remove('copied'); span.textContent = old; }, 1600);
   }
 
   function buildMarkdown() {
@@ -429,9 +360,8 @@ function getDeviceId() {
     if (a.action_items && a.action_items.length) {
       lines.push('# ' + t('outActions'));
       a.action_items.forEach((it) => {
-        if (typeof it === 'string') {
-          lines.push('- ' + it);
-        } else {
+        if (typeof it === 'string') lines.push('- ' + it);
+        else {
           const d = [it.task || ''];
           if (it.owner) d.push(t('labelOwner') + ': ' + it.owner);
           if (it.due_date) d.push(t('labelDue') + ': ' + it.due_date);
@@ -451,9 +381,7 @@ function getDeviceId() {
       await navigator.clipboard.writeText(text);
       setStatus(okKey, 'success');
       flashCopied(btn);
-    } catch {
-      setStatus('statusCopyFailed', 'error');
-    }
+    } catch { setStatus('statusCopyFailed', 'error'); }
   }
 
   els.copyMarkdown?.addEventListener('click', (e) => { track('Export Clicked', { type: 'copy', target: 'markdown' }); copyText(buildMarkdown(), e.currentTarget, 'statusCopiedMd'); });
@@ -468,9 +396,7 @@ function getDeviceId() {
     const title = (state.lastPayload && state.lastPayload.meetingTitle) || 'meeting';
     a.href = url;
     a.download = title.replace(/[^\w\u4e00-\u9fff-]+/g, '-').slice(0, 60) + '.md';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
     URL.revokeObjectURL(url);
     setStatus('statusDownloaded', 'success');
     track('Export Clicked', { type: 'download', format: 'markdown' });
@@ -491,10 +417,7 @@ function getDeviceId() {
 
   async function handleFile(file) {
     if (!file) return;
-    if (file.size > MAX_FILE_SIZE) {
-      showError(t('errFileTooBig') + ' (' + Math.round(file.size / 1024) + 'KB)');
-      return;
-    }
+    if (file.size > MAX_FILE_SIZE) { showError(t('errFileTooBig') + ' (' + Math.round(file.size / 1024) + 'KB)'); return; }
     const name = (file.name || '').toLowerCase();
     const isText = /\.(txt|md|vtt)$/.test(name) || /^text\//.test(file.type || '');
     if (!isText) { showError(t('errFileType')); return; }
@@ -502,18 +425,12 @@ function getDeviceId() {
       const raw = await file.text();
       let content = raw;
       if (name.endsWith('.vtt')) content = cleanTranscript(raw);
-      if (content.length > MAX_NOTES) {
-        content = content.slice(0, MAX_NOTES);
-        setStatusText(t('statusTruncated'), 'success');
-      } else {
-        setStatusText(t('statusImported').replace('{name}', file.name), 'success');
-      }
+      if (content.length > MAX_NOTES) { content = content.slice(0, MAX_NOTES); setStatusText(t('statusTruncated'), 'success'); }
+      else { setStatusText(t('statusImported').replace('{name}', file.name), 'success'); }
       els.notes.value = content;
       updateCounter();
       hideError();
-    } catch {
-      showError(t('errFileRead'));
-    }
+    } catch { showError(t('errFileRead')); }
   }
 
   els.fileInput?.addEventListener('change', (e) => {
@@ -571,23 +488,22 @@ function getDeviceId() {
       const p = JSON.parse(localStorage.getItem(PRO_KEY) || '{}');
       if (!p.active) return null;
       if (p.validUntil && new Date(p.validUntil) < new Date()) return null;
-      // p.plan can be 'pro' or 'max' (backend returns it); default 'pro' for legacy records
       return (p.plan === 'max') ? 'max' : 'pro';
     } catch { return null; }
   }
 
   function getPlan() {
     const lic = getLicensePlan();
-    if (lic) return lic;               // 'pro' or 'max'
+    if (lic) return lic;
     if (localStorage.getItem(EMAIL_KEY)) return 'email';
     return 'anon';
   }
 
-  function isPro() {
-    // legacy helper: true if paid tier active
-    return getLicensePlan() !== null;
-  }
+  function isPro() { return getLicensePlan() !== null; }
 
+  // ============================================================
+  // License revalidation (runs on page load, max once per 24h)
+  // ============================================================
   async function revalidateLicense() {
     let rec;
     try { rec = JSON.parse(localStorage.getItem(PRO_KEY) || '{}'); } catch { return; }
@@ -602,73 +518,133 @@ function getDeviceId() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-  licenseKey: pro.licenseKey,
-  deviceId: getDeviceId()   // ← NEW
-})
+          licenseKey: rec.licenseKey,
+          deviceId: getDeviceId()
+        })
       });
-        const data = await res.json();
+      const data = await res.json();
 
-  if (!data.valid) {
-    // ← 加入新嘅 error handling（喺原本 error 處理之前）
-    if (data.reason === 'activation_limit_exceeded') {
-      setStatus(
-        `❌ 此 license 已於 ${data.activeCount}/${data.limit} 部裝置啟用。請先喺其他裝置登出，或聯絡 support@yourapp.com`,
-        'error'
-      );
-      return;
-    }
-    if (data.reason === 'blacklisted') {
-      setStatus('❌ 此 license 已被停用（退款或取消）', 'error');
-      return;
-    }
-    if (data.reason === 'expired') {
-      setStatus('❌ 此 license 已過期，請續訂', 'error');
-      return;
-    }
-    setStatus('❌ License key 無效', 'error');
-    return;
-  }
+      // If server says invalid (expired / blacklisted / limit) → clear local pro record
+      if (!data.valid) {
+        console.warn('[license] revalidate invalid:', data.reason);
+        if (['expired', 'blacklisted', 'activation_limit_exceeded'].includes(data.reason)) {
+          localStorage.removeItem(PRO_KEY);
+          updateQuotaPill();
+        }
+        return;
+      }
 
-  // ✅ 成功 — 儲 pro info（原本邏輯，保留）
-  localStorage.setItem(PRO_KEY, JSON.stringify({
-    active: true,
-    plan: data.plan,
-    validUntil: data.validUntil,
-    email: data.customerEmail,
-    licenseKey,
-    deviceId: getDeviceId(),             // ← NEW
-    activeDevices: data.activeDevices,   // ← NEW (optional，顯示用)
-    deviceLimit: data.deviceLimit,       // ← NEW (optional)
-    lastCheck: new Date().toISOString(),
-  }));
-      // v6: server now returns plan (pro/max) — keep local record in sync
+      // Valid — sync local record with server
       if (data.plan) rec.plan = data.plan;
-      rec.validUntil = data.validUntil || rec.validUntil;
+      rec.validUntil    = data.validUntil    || rec.validUntil;
+      rec.activeDevices = data.activeDevices || rec.activeDevices;
+      rec.deviceLimit   = data.deviceLimit   || rec.deviceLimit;
       rec.lastCheck = new Date().toISOString();
       localStorage.setItem(PRO_KEY, JSON.stringify(rec));
+      updateQuotaPill();
     } catch (e) {
       console.warn('[license] revalidate failed, staying optimistic', e);
     }
   }
 
+  // ============================================================
+  // License activation (user pastes license key)
+  // ============================================================
+  async function activateLicense(licenseKey) {
+    try {
+      const res = await fetch('/.netlify/functions/verify-license', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          licenseKey,
+          deviceId: getDeviceId()
+        })
+      });
+      const data = await res.json();
+
+      if (!data.valid) {
+        if (data.reason === 'activation_limit_exceeded') {
+          setStatusText(
+            `❌ 此 license 已於 ${data.activeCount}/${data.limit} 部裝置啟用。請先喺其他裝置登出，或聯絡 support。`,
+            'error'
+          );
+          trackEvent('License Activation Failed', { reason: 'limit_exceeded' });
+          return false;
+        }
+        if (data.reason === 'blacklisted') {
+          setStatusText('❌ 此 license 已被停用（退款或取消）', 'error');
+          return false;
+        }
+        if (data.reason === 'expired') {
+          setStatusText('❌ 此 license 已過期，請續訂', 'error');
+          return false;
+        }
+        setStatusText(t('statusLicenseInvalid') || '❌ License key 無效', 'error');
+        return false;
+      }
+
+      // ✅ Success
+      const plan = (data.plan === 'max') ? 'max' : 'pro';
+      localStorage.setItem(PRO_KEY, JSON.stringify({
+        active: true,
+        plan,
+        validUntil: data.validUntil,
+        email: data.customerEmail,
+        licenseKey,
+        deviceId: getDeviceId(),
+        activeDevices: data.activeDevices,
+        deviceLimit: data.deviceLimit,
+        lastCheck: new Date().toISOString(),
+      }));
+
+      // Fresh start: reset quota counters on successful upgrade
+      const q = loadQuota();
+      q.weekCount = 0;
+      q.monthCount = 0;
+      saveQuota(q);
+
+      updateQuotaPill();
+      closeUpgradeModal();
+      setStatus('statusLicenseActivated', 'success');
+      trackEvent('License Activated', {
+        plan,
+        activeDevices: data.activeDevices,
+        deviceLimit: data.deviceLimit
+      });
+      return true;
+    } catch (e) {
+      console.error('[license]', e);
+      setStatusText(t('statusLicenseError') || 'License verification failed', 'error');
+      return false;
+    }
+  }
+
+  els.haveLicenseBtn?.addEventListener('click', async () => {
+    const key = prompt(t('promptLicenseKey'));
+    if (!key) return;
+    const cleaned = key.trim();
+    if (cleaned.length < 8) {
+      setStatusText(t('statusLicenseInvalid'), 'error');
+      return;
+    }
+    await activateLicense(cleaned);
+  });
+
   function todayStr() {
     const d = new Date();
     return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
   }
-
   function weekStr() {
     const d = new Date();
     const onejan = new Date(d.getFullYear(), 0, 1);
     const wk = Math.ceil((((d - onejan) / 86400000) + onejan.getDay() + 1) / 7);
     return d.getFullYear() + '-W' + String(wk).padStart(2, '0');
   }
-
   function monthStr() {
     const d = new Date();
     return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
   }
 
-  // Soft fingerprint (anti-bypass; combined w/ localStorage + server IP check)
   async function getFingerprint() {
     try {
       const raw = [
@@ -686,15 +662,13 @@ function getDeviceId() {
 
   function loadQuota() {
     let q;
-    try { q = JSON.parse(localStorage.getItem(QUOTA_KEY) || '{}'); }
-    catch { q = {}; }
+    try { q = JSON.parse(localStorage.getItem(QUOTA_KEY) || '{}'); } catch { q = {}; }
     const t_ = todayStr(), w_ = weekStr(), m_ = monthStr();
     if (q.day   !== t_) { q.day = t_;   q.dayCount = 0; }
     if (q.week  !== w_) { q.week = w_;  q.weekCount = 0; }
     if (q.month !== m_) { q.month = m_; q.monthCount = 0; }
     return q;
   }
-
   function saveQuota(q) { localStorage.setItem(QUOTA_KEY, JSON.stringify(q)); }
 
   function incrementQuota() {
@@ -706,7 +680,6 @@ function getDeviceId() {
     updateQuotaPill();
   }
 
-  // Returns { ok, reason } where reason is 'daily'|'weekly'|'monthly'|null
   function checkQuota() {
     const plan = getPlan();
     const L = PLANS[plan];
@@ -716,71 +689,62 @@ function getDeviceId() {
     if (L.monthly !== null && (q.monthCount || 0) >= L.monthly) return { ok: false, reason: 'monthly', plan, limits: L };
     return { ok: true, reason: null, plan, limits: L };
   }
-
   function canRun() { return checkQuota().ok; }
 
   function updateQuotaPill() {
-  if (!els.quotaPill) return;
-  const plan = getPlan();
-  const L = PLANS[plan] || PLANS.anon;
-  const q = loadQuota();
+    if (!els.quotaPill) return;
+    const plan = getPlan();
+    const L = PLANS[plan] || PLANS.anon;
+    const q = loadQuota();
 
-  // ===== Pro/Max premium pill =====
-  if (plan === 'pro' || plan === 'max') {
-    els.quotaPill.className = 'quota-pill pro';
-
-    let used = 0, lim = 0, periodLbl = '';
-    if (plan === 'pro') {
-      used = Number(q.weekCount) || 0;
-      lim = Number(L.weekly) || 10;
-      periodLbl = '/wk';
-    } else {
-      used = Number(q.monthCount) || 0;
-      lim = Number(L.monthly) || 60;
-      periodLbl = '/mo';
+    if (plan === 'pro' || plan === 'max') {
+      els.quotaPill.className = 'quota-pill pro';
+      let used = 0, lim = 0, periodLbl = '';
+      if (plan === 'pro') {
+        used = Number(q.weekCount) || 0;
+        lim = Number(L.weekly) || 10;
+        periodLbl = '/wk';
+      } else {
+        used = Number(q.monthCount) || 0;
+        lim = Number(L.monthly) || 60;
+        periodLbl = '/mo';
+      }
+      const remain = Math.max(0, lim - used);
+      const label = L.label || (plan === 'pro' ? 'Pro' : 'Max');
+      els.quotaPill.innerHTML =
+        `<span class="quota-label">${label}</span> ` +
+        `<span id="quotaCount">${remain}</span>` +
+        `<span id="quotaLimit" style="display:none">${lim}</span>` +
+        `<span class="quota-period">${periodLbl}</span>`;
+      els.quotaPill.title = `${label} · ${remain} runs left ${periodLbl}`;
+      if (remain === 0) els.quotaPill.classList.add('full');
+      else if (remain <= 1) els.quotaPill.classList.add('warn');
+      return;
     }
-    const remain = Math.max(0, lim - used);
-    const label = L.label || (plan === 'pro' ? 'Pro' : 'Max');
 
-    els.quotaPill.innerHTML =
-      `<span class="quota-label">${label}</span> ` +
-      `<span id="quotaCount">${remain}</span>` +
-      `<span id="quotaLimit" style="display:none">${lim}</span>` +
-      `<span class="quota-period">${periodLbl}</span>`;
+    els.quotaPill.className = 'quota-pill';
+    const used = Number(q.dayCount) || 0;
+    const lim = Number(L.daily) || 1;
 
-    els.quotaPill.title = `${label} · ${remain} runs left ${periodLbl}`;
-    if (remain === 0) els.quotaPill.classList.add('full');
-    else if (remain <= 1) els.quotaPill.classList.add('warn');
-    return;
+    if (!els.quotaPill.querySelector('#quotaCount') ||
+        !els.quotaPill.querySelector('#quotaLimit') ||
+        els.quotaPill.querySelector('.quota-period')) {
+      els.quotaPill.innerHTML =
+        `<span id="quotaCount">${used}</span>/<span id="quotaLimit">${lim}</span> ` +
+        `<span class="quota-label" data-i18n="quotaToday">today</span>`;
+      els.quotaCount = document.getElementById('quotaCount');
+      els.quotaLimit = document.getElementById('quotaLimit');
+    } else {
+      if (els.quotaCount) els.quotaCount.textContent = used;
+      if (els.quotaLimit) els.quotaLimit.textContent = lim;
+    }
+
+    if (used >= lim) els.quotaPill.classList.add('full');
+    else if (used >= lim - 1) els.quotaPill.classList.add('warn');
+    const remaining = Math.max(0, lim - used);
+    els.quotaPill.title = `${plan === 'anon' ? 'Free' : 'Starter'} · ${remaining} left today`;
   }
 
-  // ===== Anon / Email (reset DOM if previously premium) =====
-  els.quotaPill.className = 'quota-pill';
-  const used = Number(q.dayCount) || 0;
-  const lim = Number(L.daily) || 1;
-
-  // Rebuild DOM if it was replaced by premium variant
-  if (!els.quotaPill.querySelector('#quotaCount') ||
-      !els.quotaPill.querySelector('#quotaLimit') ||
-      els.quotaPill.querySelector('.quota-period')) {
-    els.quotaPill.innerHTML =
-      `<span id="quotaCount">${used}</span>/<span id="quotaLimit">${lim}</span> ` +
-      `<span class="quota-label" data-i18n="quotaToday">today</span>`;
-    // Re-cache
-    els.quotaCount = document.getElementById('quotaCount');
-    els.quotaLimit = document.getElementById('quotaLimit');
-  } else {
-    if (els.quotaCount) els.quotaCount.textContent = used;
-    if (els.quotaLimit) els.quotaLimit.textContent = lim;
-  }
-
-  if (used >= lim) els.quotaPill.classList.add('full');
-  else if (used >= lim - 1) els.quotaPill.classList.add('warn');
-  const remaining = Math.max(0, lim - used);
-  els.quotaPill.title = `${plan === 'anon' ? 'Free' : 'Starter'} · ${remaining} left today`;
-}
-
-  // Starter tier: email registration unlocks 3/day
   function registerEmail(email) {
     if (!/^[^@]+@[^@]+\.[^@]+$/.test(email)) { setStatusText('Invalid email', 'error'); return false; }
     localStorage.setItem(EMAIL_KEY, email);
@@ -789,34 +753,29 @@ function getDeviceId() {
     setStatusText('Starter unlocked: 3 runs/day ✓', 'success');
     return true;
   }
-  window.registerEmail = registerEmail; // expose for landing/modal buttons
+  window.registerEmail = registerEmail;
 
   function openUpgradeModal() {
-  if (!els.upgradeModal) return;
+    if (!els.upgradeModal) return;
+    const titleEl = document.getElementById('upgradeTitleH3');
+    const subEl = els.upgradeModal.querySelector('.modal-sub');
+    const g = checkQuota();
+    const plan = getPlan();
 
-  // Dynamic title based on user context (方案 B 2026-05-05)
-  const titleEl = document.getElementById('upgradeTitleH3');
-  const subEl = els.upgradeModal.querySelector('.modal-sub');
-  const g = checkQuota();
-  const plan = getPlan();
+    if (!g.ok) {
+      if (titleEl) titleEl.textContent = t('upgradeTitle');
+      if (subEl) subEl.textContent = t('upgradeSub');
+    } else if (plan === 'pro' || plan === 'max') {
+      if (titleEl) titleEl.textContent = t('upgradeTitleManage');
+      if (subEl) subEl.textContent = t('upgradeSubManage');
+    } else {
+      if (titleEl) titleEl.textContent = t('upgradeTitleExplore');
+      if (subEl) subEl.textContent = t('upgradeSubExplore');
+    }
 
-  if (!g.ok) {
-    // Quota exhausted — urgent tone
-    if (titleEl) titleEl.textContent = t('upgradeTitle');
-    if (subEl) subEl.textContent = t('upgradeSub');
-  } else if (plan === 'pro' || plan === 'max') {
-    // Pro/Max browsing — manage context
-    if (titleEl) titleEl.textContent = t('upgradeTitleManage');
-    if (subEl) subEl.textContent = t('upgradeSubManage');
-  } else {
-    // Anon/Starter proactive explore
-    if (titleEl) titleEl.textContent = t('upgradeTitleExplore');
-    if (subEl) subEl.textContent = t('upgradeSubExplore');
+    els.upgradeModal.hidden = false;
+    els.upgradeModal.setAttribute('aria-hidden', 'false');
   }
-
-  els.upgradeModal.hidden = false;
-  els.upgradeModal.setAttribute('aria-hidden', 'false');
-}
 
   function closeUpgradeModal() {
     if (!els.upgradeModal) return;
@@ -829,83 +788,22 @@ function getDeviceId() {
   });
 
   els.quotaPill?.addEventListener('click', () => {
-  // Always open modal — let users upgrade/manage proactively (方案 B 2026-05-05)
-  const g = checkQuota();
-  openUpgradeModal();
-  trackEvent('Quota Pill Clicked', {
-    plan: getPlan(),
-    quotaFull: !g.ok,
-    lang: state.lang,
-  });
-});
-
-    const res = await fetch('/.netlify/functions/verify-license', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      licenseKey,
-      deviceId: getDeviceId()   // ← NEW
-    })
-  });
-
-      const plan = (data.plan === 'max') ? 'max' : 'pro';
-      localStorage.setItem(PRO_KEY, JSON.stringify({
-  active: true,
-  plan,
-  validUntil: data.validUntil,
-  email: data.customerEmail,
-  licenseKey,
-  lastCheck: new Date().toISOString(),
-}));
-
-// ✨ NEW: Reset quota counters on plan upgrade — fresh start
-// User just paid, give them full quota immediately
-const q = loadQuota();
-q.weekCount = 0;
-q.monthCount = 0;
-saveQuota(q);
-
-updateQuotaPill();
-closeUpgradeModal();
-setStatus('statusLicenseActivated', 'success');
-trackEvent('License Activated', { plan });
-      return true;
-    } catch (e) {
-      console.error('[license]', e);
-      setStatusText(t('statusLicenseError'), 'error');
-      return false;
-    }
-  }
-
-  els.haveLicenseBtn?.addEventListener('click', async () => {
-    const key = prompt(t('promptLicenseKey'));
-    if (!key) return;
-    const cleaned = key.trim();
-    if (cleaned.length < 8) {
-      setStatusText(t('statusLicenseInvalid'), 'error');
-      return;
-    }
-    await activateLicense(cleaned);
+    const g = checkQuota();
+    openUpgradeModal();
+    trackEvent('Quota Pill Clicked', {
+      plan: getPlan(),
+      quotaFull: !g.ok,
+      lang: state.lang,
+    });
   });
 
   function loadHistory() {
-    try { return JSON.parse(localStorage.getItem('history') || '[]'); }
-    catch { return []; }
+    try { return JSON.parse(localStorage.getItem('history') || '[]'); } catch { return []; }
   }
-
-  function saveHistory(list) {
-    localStorage.setItem('history', JSON.stringify(list.slice(0, HISTORY_MAX)));
-  }
-
+  function saveHistory(list) { localStorage.setItem('history', JSON.stringify(list.slice(0, HISTORY_MAX))); }
   function addToHistory(payload, artifacts) {
     const list = loadHistory();
-    list.unshift({
-      id: Date.now(),
-      title: (payload.meetingTitle || '').trim() || '(untitled)',
-      at: new Date().toISOString(),
-      payload,
-      artifacts
-    });
+    list.unshift({ id: Date.now(), title: (payload.meetingTitle || '').trim() || '(untitled)', at: new Date().toISOString(), payload, artifacts });
     saveHistory(list);
   }
 
@@ -938,7 +836,6 @@ trackEvent('License Activated', { plan });
     if (els.drawerOverlay) els.drawerOverlay.hidden = false;
     els.historyDrawer.setAttribute('aria-hidden', 'false');
   }
-
   function closeDrawerFn() {
     if (!els.historyDrawer) return;
     els.historyDrawer.hidden = true;
@@ -1015,7 +912,6 @@ trackEvent('License Activated', { plan });
     let res = null;
 
     try {
-      // v6: attach identity for server-side quota
       const fp = await getFingerprint();
       const email = localStorage.getItem(EMAIL_KEY) || '';
       let licenseKey = '';
@@ -1034,7 +930,6 @@ trackEvent('License Activated', { plan });
       let data = null;
       try { data = await res.json(); } catch {}
 
-      // v6: server-authoritative quota exceeded
       if (res.status === 429 && data && data.error === 'quota_exceeded') {
         const q = data.quota || {};
         openUpgradeModal();
@@ -1043,7 +938,6 @@ trackEvent('License Activated', { plan });
           plan: q.plan, reason: q.reason || q.period,
           source: 'server', used: q.used, limit: q.limit
         });
-        // sync local counter with server truth
         const qLocal = loadQuota();
         if (q.plan === 'anon' || q.plan === 'email') qLocal.dayCount   = Math.max(qLocal.dayCount   || 0, q.used);
         else if (q.plan === 'pro')                   qLocal.weekCount  = Math.max(qLocal.weekCount  || 0, q.used);
@@ -1070,7 +964,6 @@ trackEvent('License Activated', { plan });
       localStorage.setItem('lastPayload', JSON.stringify(payload));
       addToHistory(payload, normalized);
 
-      // v6: sync local quota pill with server-authoritative count
       if (data.quota) {
         const qLocal = loadQuota();
         if (data.quota.period === 'daily')   qLocal.dayCount   = data.quota.used;
@@ -1079,7 +972,7 @@ trackEvent('License Activated', { plan });
         saveQuota(qLocal);
         updateQuotaPill();
       } else {
-        incrementQuota(); // fallback if server didn't return quota
+        incrementQuota();
       }
 
       setStatus('statusSuccess', 'success');
@@ -1168,15 +1061,10 @@ trackEvent('License Activated', { plan });
     try {
       const params = new URLSearchParams(window.location.search);
       if (params.get('checkout') === 'success' || params.has('order_id')) {
-        track('Checkout Complete', {
-          plan: 'Pro',
-          source: params.get('source') || 'direct'
-        });
+        track('Checkout Complete', { plan: 'Pro', source: params.get('source') || 'direct' });
         window.history.replaceState({}, '', window.location.pathname);
       }
-    } catch (e) {
-      console.debug('[checkout-detect] failed:', e);
-    }
+    } catch (e) { console.debug('[checkout-detect] failed:', e); }
   })();
 
   loadLocale(state.lang).then(() => {
@@ -1207,22 +1095,18 @@ trackEvent('License Activated', { plan });
   function applyMobileMode() {
     if (isMobileView()) {
       document.body.classList.add('has-mobile-bar', 'tabs-active');
-      // 手機：只顯示 active tab
       if (tabSections.length && !document.querySelector('[data-tab-section].tab-active')) {
         showTab('summary');
       }
     } else {
       document.body.classList.remove('has-mobile-bar', 'tabs-active');
-      // 桌面：清除 tab-active，還原全部顯示
       tabSections.forEach((sec) => sec.classList.remove('tab-active'));
       mobileTabsEl?.querySelectorAll('button').forEach((b) => b.classList.remove('active'));
     }
   }
 
   if (mobileRunBtn) {
-    mobileRunBtn.addEventListener('click', () => {
-      els.form?.requestSubmit();
-    });
+    mobileRunBtn.addEventListener('click', () => { els.form?.requestSubmit(); });
   }
 
   mobileTabsEl?.addEventListener('click', (e) => {
