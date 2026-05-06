@@ -1,13 +1,15 @@
 // ============================================================
-// lemon-webhook.js  |  v3 (2026-05-05)
+// lemon-webhook.js  |  v4 (2026-05-05)
 // ------------------------------------------------------------
 // Handles Lemon Squeezy webhooks:
 //  1. order_created / subscription_created  →  Issue license → license-keys store
 //     (plan detected from variant_id: Pro 1593246 / Max 1613669)
-//  2. subscription_cancelled / expired / refunded / key_disabled
+//  2. subscription_updated  →  Plan change (Pro ↔ Max) + quota reset
+//  3. subscription_cancelled / expired / refunded / key_disabled
 //     →  Blacklist license → license-blacklist store
-//  3. subscription_resumed  →  Un-blacklist
-// Docs: https://docs.lemonsqueezy.com/help/webhooks
+//  4. subscription_resumed  →  Un-blacklist
+//
+//  v4 CHANGE: record now includes `activations: {}` bucket for device binding.
 // ============================================================
 
 const crypto = require('crypto');
@@ -38,7 +40,7 @@ function detectPlan(variantId) {
   const v = String(variantId || '');
   if (v === MAX_VARIANT_ID) return 'max';
   if (v === PRO_VARIANT_ID) return 'pro';
-  return 'pro'; // safe default
+  return 'pro';
 }
 
 exports.handler = async (event) => {
@@ -68,8 +70,6 @@ exports.handler = async (event) => {
   const data = payload?.data;
   const attrs = data?.attributes || {};
 
-  // ---------- Extract key fields ----------
-  // License key candidates (different events put it in different places)
   const licenseKey =
     attrs?.license_key ||
     attrs?.key ||
@@ -78,28 +78,26 @@ exports.handler = async (event) => {
     payload?.meta?.custom_data?.license_key ||
     null;
 
-  // Variant ID (to distinguish Pro vs Max)
   const variantId =
     attrs?.variant_id ||
     attrs?.first_order_item?.variant_id ||
     attrs?.product?.variant_id ||
     null;
 
-  // Customer email
   const customerEmail =
     attrs?.user_email ||
     attrs?.customer_email ||
     attrs?.email ||
     null;
 
-  // Subscription / order info
   const orderId = attrs?.order_id || data?.id || null;
   const status  = attrs?.status || null;
 
-  console.log('[webhook] event=', eventName, 'variant=', variantId, 'plan=', detectPlan(variantId), 'lk=', licenseKey ? '***' + String(licenseKey).slice(-4) : '-');
+  console.log('[webhook] event=', eventName, 'variant=', variantId, 'plan=', detectPlan(variantId),
+              'lk=', licenseKey ? '***' + String(licenseKey).slice(-4) : '-');
 
   // ============================================================
-  // CASE 1: ISSUE LICENSE (order_created, subscription_created, etc.)
+  // CASE 1: ISSUE LICENSE
   // ============================================================
   const ISSUE_EVENTS = new Set([
     'order_created',
@@ -112,7 +110,6 @@ exports.handler = async (event) => {
       const store = blobsStore('license-keys');
       const plan = detectPlan(variantId);
 
-      // validUntil: read from LS if provided, else default +35 days
       let validUntil = attrs?.expires_at || attrs?.renews_at || null;
       if (!validUntil) {
         const d = new Date();
@@ -120,7 +117,7 @@ exports.handler = async (event) => {
         validUntil = d.toISOString();
       }
 
-            const record = {
+      const record = {
         licenseKey,
         plan,
         variantId: String(variantId || ''),
@@ -130,7 +127,7 @@ exports.handler = async (event) => {
         issuedAt: new Date().toISOString(),
         validUntil,
         source: eventName,
-        activations: {}   // ← NEW: device tracking bucket
+        activations: {}   // ← device tracking bucket (v4)
       };
 
       await store.setJSON(licenseKey, record);
@@ -142,7 +139,7 @@ exports.handler = async (event) => {
   }
 
   // ============================================================
-  // CASE 1B: PLAN CHANGED (Pro ↔ Max, upgrade / downgrade)
+  // CASE 1B: PLAN CHANGED (Pro ↔ Max)
   // ============================================================
   if (eventName === 'subscription_updated' && licenseKey) {
     try {
@@ -152,13 +149,14 @@ exports.handler = async (event) => {
       const oldPlan = existing.plan || 'pro';
 
       const updated = {
-        ...existing,
+        ...existing,                       // preserves activations {}
         licenseKey,
         plan: newPlan,
         variantId: String(variantId || ''),
         customerEmail: customerEmail || existing.customerEmail,
         status: status || 'active',
         validUntil: attrs?.renews_at || attrs?.expires_at || existing.validUntil,
+        activations: existing.activations || {},  // explicit safety
         lastPlanChange: {
           from: oldPlan,
           to: newPlan,
@@ -169,11 +167,9 @@ exports.handler = async (event) => {
 
       await store.setJSON(licenseKey, updated);
 
-      // IMPORTANT: Reset quota counter on plan change to avoid carry-over
-      // (e.g., user used 10/10 Pro weekly → upgrade to Max → should get fresh 60/mo)
+      // Reset quota counters on plan change
       try {
         const quotaStore = blobsStore('quota-counters');
-        // Clear all known quota keys for this license
         const keysToDel = [];
         const { blobs } = await quotaStore.list({ prefix: `weekly:lk:${licenseKey}:` });
         for (const b of blobs) keysToDel.push(b.key);
@@ -192,9 +188,8 @@ exports.handler = async (event) => {
     }
   }
 
-
   // ============================================================
-  // CASE 2: BLACKLIST (cancel / expire / refund / disable)
+  // CASE 2: BLACKLIST
   // ============================================================
   const BLACKLIST_EVENTS = new Set([
     'subscription_cancelled',
@@ -224,7 +219,7 @@ exports.handler = async (event) => {
   }
 
   // ============================================================
-  // CASE 3: UN-BLACKLIST (subscription resumed)
+  // CASE 3: UN-BLACKLIST
   // ============================================================
   if (licenseKey && eventName === 'subscription_resumed') {
     try {
