@@ -147,7 +147,7 @@
       <li>History saved locally</li>
       <li class="muted">No email spam, promise</li>
     </ul>
-    <a href="/app/" class="btn btn-ghost btn-card">Register email</a>
+    <a href="/?register=1" class="btn btn-ghost btn-card">Register email</a>
   </div>
 
   <!-- PRO -->
@@ -163,7 +163,7 @@
       <li>Priority AI processing</li>
       <li>Email support</li>
     </ul>
-    <a href="LEMONSQUEEZY_PRO_CHECKOUT_URL" class="btn btn-primary btn-card" data-umami-event="Pricing CTA Clicked" data-umami-event-plan="Pro">Upgrade to Pro</a>
+    <a href="https://aimeetingnote.lemonsqueezy.com/checkout/buy/f50cef81-bc3d-40a2-bbab-8bc850a9af80" target="_blank" rel="noopener" class="btn btn-primary btn-card" data-umami-event="Pricing CTA Clicked" data-umami-event-plan="Pro">Upgrade to Pro</a>
   </div>
 
   <!-- MAX -->
@@ -178,7 +178,7 @@
       <li>Fastest AI processing</li>
       <li>Priority email support</li>
     </ul>
-    <a href="LEMONSQUEEZY_MAX_CHECKOUT_URL" class="btn btn-primary btn-card" data-umami-event="Pricing CTA Clicked" data-umami-event-plan="Max">Upgrade to Max</a>
+    <a href="https://aimeetingnote.lemonsqueezy.com/checkout/buy/9320aecd-8a6a-4609-9d81-f87d63d7c347" target="_blank" rel="noopener" class="btn btn-primary btn-card" data-umami-event="Pricing CTA Clicked" data-umami-event-plan="Max">Upgrade to Max</a>
   </div>
 
 </div>
@@ -237,6 +237,19 @@
   </p>
   <p style="margin-top:8px;">© 2026 Meeting Workspace. All rights reserved.</p>
 </footer>
-
+<script>
+  const CHECKOUT_URLS = {
+    pro: 'https://aimeetingnote.lemonsqueezy.com/checkout/buy/f50cef81-bc3d-40a2-bbab-8bc850a9af80',
+    max: 'https://aimeetingnote.lemonsqueezy.com/checkout/buy/9320aecd-8a6a-4609-9d81-f87d63d7c347',
+  };
+  document.querySelectorAll('[data-plan]').forEach(a => {
+    const plan = a.dataset.plan;
+    if (CHECKOUT_URLS[plan]) {
+      a.href = CHECKOUT_URLS[plan];
+      a.target = '_blank';
+      a.rel = 'noopener';
+    }
+  });
+</script>
 </body>
 </html>
