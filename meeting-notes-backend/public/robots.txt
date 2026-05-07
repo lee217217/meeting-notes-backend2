@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Disallow API and function endpoints
+Disallow: /.netlify/
+Disallow: /api/
+
+# Sitemap
+Sitemap: https://warm-sprinkles-6db29c.netlify.app/sitemap.xml
