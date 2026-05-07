@@ -3,7 +3,7 @@
 // ------------------------------------------------------------
 // Handles Lemon Squeezy webhooks:
 //  1. order_created / subscription_created  →  Issue license → license-keys store
-//     (plan detected from variant_id: Pro 1593246 / Max 1613669)
+//     (plan detected from variant_id: Pro 1015806 / Max 1034942)
 //  2. subscription_updated  →  Plan change (Pro ↔ Max) + quota reset
 //  3. subscription_cancelled / expired / refunded / key_disabled
 //     →  Blacklist license → license-blacklist store
@@ -15,8 +15,8 @@
 const crypto = require('crypto');
 const { getStore } = require('@netlify/blobs');
 
-const PRO_VARIANT_ID = process.env.LEMON_PRO_VARIANT_ID || '1593246';
-const MAX_VARIANT_ID = process.env.LEMON_MAX_VARIANT_ID || '1613669';
+const PRO_VARIANT_ID = process.env.LEMON_PRO_VARIANT_ID || '1015806';
+const MAX_VARIANT_ID = process.env.LEMON_MAX_VARIANT_ID || '1034942';
 
 function blobsStore(name) {
   return getStore({
