@@ -192,13 +192,18 @@
         <a href="#faq" data-i18n="navFaq">FAQ</a>
       </div>
       <div class="nav-cta">
-        <div class="lang-switch-mini">
-          <button type="button" class="lang-mini" data-set-lang="en">EN</button>
-          <button type="button" class="lang-mini" data-set-lang="zh-Hant">繁中</button>
-        </div>
-        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">🌓</button>
-        <a class="btn btn-primary" href="/app/" data-i18n="navLaunch">Launch App →</a>
-      </div>
+  <div class="lang-switch-mini">
+    <button type="button" class="lang-mini" data-set-lang="en">EN</button>
+    <button type="button" class="lang-mini" data-set-lang="zh-Hant">繁中</button>
+  </div>
+  <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">🌓</button>
+
+  <!-- 🆕 Device Manager gear button (auto-hidden when no license) -->
+  <button id="deviceGearBtn" aria-label="Manage devices" title="Manage devices">⚙️</button>
+
+  <a class="btn btn-primary" href="/app/" data-i18n="navLaunch">Launch App →</a>
+</div>
+
     </div>
   </nav>
 
@@ -728,6 +733,7 @@
   });
 })();
 </script>
-
+<link rel="stylesheet" href="/device-manager.css">
+<script src="/device-manager.js" defer></script>
 </body>
 </html>

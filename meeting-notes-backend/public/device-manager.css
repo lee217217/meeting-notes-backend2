@@ -1,0 +1,145 @@
+/* ============================================================
+   device-manager.css  |  v1 (2026-05-07)
+   ============================================================ */
+
+.dm-overlay {
+  position: fixed; inset: 0; z-index: 9999;
+  background: rgba(10, 10, 15, 0.55);
+  backdrop-filter: blur(4px);
+  display: none; align-items: center; justify-content: center;
+  padding: 16px; animation: dm-fade 0.18s ease;
+}
+.dm-overlay.dm-open { display: flex; }
+@keyframes dm-fade { from { opacity: 0; } to { opacity: 1; } }
+
+.dm-modal {
+  width: 100%; max-width: 520px; max-height: 90vh; overflow: auto;
+  background: var(--bg-card, #fff); color: var(--text, #0a0a0b);
+  border-radius: 16px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: dm-pop 0.2s ease;
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+@keyframes dm-pop { from { transform: translateY(12px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+.dm-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 22px 8px;
+}
+.dm-title { margin: 0; font-size: 18px; font-weight: 700; letter-spacing: -0.01em; }
+.dm-close {
+  border: none; background: transparent; color: var(--text-mute, #8a8a95);
+  font-size: 18px; cursor: pointer; padding: 6px 10px; border-radius: 8px;
+  transition: background 0.15s;
+}
+.dm-close:hover { background: var(--bg-soft, #f7f8fa); color: var(--text, #0a0a0b); }
+
+.dm-meta {
+  display: flex; gap: 8px; padding: 4px 22px 18px; flex-wrap: wrap;
+}
+.dm-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--bg-soft, #f7f8fa); border: 1px solid var(--border, rgba(10,10,11,.08));
+  padding: 6px 12px; border-radius: 999px; font-size: 13px; color: var(--text-soft, #4a4a55);
+}
+.dm-chip b { color: var(--text, #0a0a0b); }
+
+.dm-body { padding: 0 18px 18px; display: flex; flex-direction: column; gap: 10px; }
+.dm-loading, .dm-empty {
+  padding: 28px; text-align: center; color: var(--text-mute, #8a8a95); font-size: 14px;
+}
+.dm-error { color: #d64545; }
+
+.dm-device {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px; border: 1px solid var(--border, rgba(10,10,11,.08));
+  border-radius: 12px; background: var(--bg-card, #fff);
+  transition: border-color 0.15s, transform 0.15s;
+}
+.dm-device:hover { border-color: var(--border-strong, rgba(10,10,11,.14)); }
+.dm-device.dm-current {
+  border-color: #5b5bf5;
+  background: linear-gradient(135deg, rgba(91,91,245,0.04), rgba(139,91,245,0.04));
+}
+.dm-device-ico {
+  width: 40px; height: 40px; border-radius: 10px;
+  background: linear-gradient(135deg, #5b5bf5, #8b5bf5); color: #fff;
+  display: grid; place-items: center; font-size: 18px; flex-shrink: 0;
+}
+.dm-device-body { flex: 1; min-width: 0; }
+.dm-device-name {
+  font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px;
+  margin-bottom: 2px;
+}
+.dm-tag {
+  background: linear-gradient(135deg, #5b5bf5, #8b5bf5); color: #fff;
+  font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+  padding: 2px 8px; border-radius: 999px;
+}
+.dm-device-sub {
+  font-size: 12px; color: var(--text-mute, #8a8a95);
+  display: flex; gap: 6px; flex-wrap: wrap;
+}
+.dm-dot { opacity: 0.5; }
+
+.dm-btn {
+  padding: 9px 14px; border-radius: 10px; font-weight: 600; font-size: 13px;
+  border: 1px solid transparent; cursor: pointer;
+  transition: transform 0.1s, background 0.15s, border-color 0.15s;
+}
+.dm-btn:active { transform: scale(0.97); }
+.dm-btn-danger {
+  background: transparent; color: #d64545; border-color: rgba(214, 69, 69, 0.3);
+}
+.dm-btn-danger:hover { background: rgba(214, 69, 69, 0.08); border-color: #d64545; }
+.dm-btn-ghost {
+  background: var(--bg-soft, #f7f8fa); color: var(--text, #0a0a0b);
+  border-color: var(--border, rgba(10,10,11,.08));
+}
+.dm-btn-ghost:hover { background: var(--bg-card, #fff); }
+
+/* Confirm view */
+.dm-confirm { padding: 8px 4px; }
+.dm-confirm h4 { margin: 0 0 8px; font-size: 16px; font-weight: 700; }
+.dm-confirm p { color: var(--text-soft, #4a4a55); font-size: 14px; margin: 0 0 12px; line-height: 1.5; }
+.dm-warn {
+  background: rgba(239, 180, 0, 0.12); border: 1px solid rgba(239, 180, 0, 0.3);
+  padding: 10px 12px; border-radius: 10px; color: #8a6a00;
+  font-size: 13px !important;
+}
+.dm-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 12px; }
+
+/* Toast */
+.dm-toast {
+  position: absolute; bottom: 14px; left: 14px; right: 14px;
+  padding: 10px 14px; border-radius: 10px; font-size: 13px; font-weight: 600;
+  animation: dm-slide 0.2s ease;
+}
+@keyframes dm-slide { from { transform: translateY(8px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.dm-toast-success { background: rgba(16, 185, 129, 0.12); color: #047857; border: 1px solid rgba(16, 185, 129, 0.3); }
+.dm-toast-error   { background: rgba(214, 69, 69, 0.12);  color: #a12020; border: 1px solid rgba(214, 69, 69, 0.3); }
+
+/* Dark mode */
+[data-theme="dark"] .dm-modal,
+html[data-theme="dark"] .dm-modal { background: #15151c; color: #f5f5f7; }
+[data-theme="dark"] .dm-chip,
+[data-theme="dark"] .dm-btn-ghost { background: #111116; border-color: rgba(255,255,255,0.08); color: #f5f5f7; }
+[data-theme="dark"] .dm-device { background: #15151c; border-color: rgba(255,255,255,0.08); }
+[data-theme="dark"] .dm-device.dm-current {
+  background: linear-gradient(135deg, rgba(91,91,245,0.1), rgba(139,91,245,0.1));
+}
+[data-theme="dark"] .dm-close:hover { background: #111116; color: #f5f5f7; }
+
+/* Gear icon button (optional styling) */
+#deviceGearBtn {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: var(--bg-soft, #f7f8fa); border: 1px solid var(--border, rgba(10,10,11,.08));
+  cursor: pointer; display: grid; place-items: center; color: var(--text, #0a0a0b);
+  font-size: 16px; transition: background 0.15s, transform 0.1s;
+}
+#deviceGearBtn:hover { background: var(--bg-card, #fff); }
+#deviceGearBtn:active { transform: scale(0.95); }
+
+@media (max-width: 520px) {
+  .dm-device { flex-wrap: wrap; }
+  .dm-device .dm-btn { width: 100%; order: 3; }
+}
