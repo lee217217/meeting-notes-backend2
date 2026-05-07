@@ -2,97 +2,197 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Terms of Service | AI Meeting Notes</title>
-<meta name="description" content="Terms of Service for AI Meeting Notes.">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Terms of Service / 服務條款 | Meeting Workspace</title>
+<meta name="description" content="Terms of Service for Meeting Workspace.">
 <meta name="robots" content="index, follow">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <style>
-  :root { --brand:#16a34a; --bg:#ffffff; --text:#111827; --muted:#6b7280; --border:#e5e7eb; }
-  @media (prefers-color-scheme: dark) {
-    :root { --bg:#0f172a; --text:#e5e7eb; --muted:#94a3b8; --border:#1e293b; }
-  }
+  :root { --brand:#5b5bf5; --brand2:#8b5bf5; --bg:#ffffff; --text:#0a0a0b; --muted:#4a4a55; --border:#e5e7eb; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#0b0b0f; --text:#f5f5f7; --muted:#c0c0cc; --border:#1e293b; } }
   * { box-sizing:border-box; }
-  body { font-family: system-ui,-apple-system,"Segoe UI",sans-serif;
-         background: var(--bg); color: var(--text); line-height: 1.7;
-         max-width: 760px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
-  header { border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 2rem; }
-  h1 { font-size: clamp(1.5rem, 4vw, 2rem); margin: 0 0 0.25rem; }
-  h2 { margin-top: 2rem; font-size: 1.15rem; color: var(--brand); }
-  .meta { color: var(--muted); font-size: 0.9rem; }
-  a { color: var(--brand); }
-  ul, ol { padding-left: 1.25rem; }
-  .back { display: inline-block; margin-bottom: 1rem; color: var(--brand); text-decoration: none; }
+  body { font-family:'Inter',system-ui,-apple-system,sans-serif; background:var(--bg); color:var(--text);
+         line-height:1.7; max-width:760px; margin:0 auto; padding:2rem 1.25rem 4rem; }
+  header { border-bottom:1px solid var(--border); padding-bottom:1rem; margin-bottom:1.5rem; }
+  h1 { font-size:clamp(1.5rem,4vw,2rem); margin:0 0 0.25rem; letter-spacing:-0.02em; }
+  h2 { margin-top:2rem; font-size:1.15rem;
+       background:linear-gradient(135deg,var(--brand),var(--brand2)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .meta { color:var(--muted); font-size:0.9rem; }
+  a { color:var(--brand); }
+  ul, ol { padding-left:1.25rem; }
+  .back { display:inline-block; margin-bottom:1rem; color:var(--brand); text-decoration:none; }
+  .lang-toggle { display:flex; gap:0.5rem; margin-bottom:1.5rem; }
+  .lang-btn { padding:0.4rem 0.9rem; border-radius:999px; border:1px solid var(--border); background:transparent;
+              color:var(--muted); cursor:pointer; font-weight:600; font-size:0.85rem; }
+  .lang-btn.active { background:linear-gradient(135deg,var(--brand),var(--brand2)); color:white; border-color:transparent; }
+  .lang-section { display:none; }
+  .lang-section.active { display:block; }
 </style>
 </head>
 <body>
-<a href="/" class="back">← Back to home</a>
+<a href="/" class="back">← Back to home / 返回首頁</a>
+
+<div class="lang-toggle">
+  <button class="lang-btn active" data-lang="en">English</button>
+  <button class="lang-btn" data-lang="zh">繁體中文</button>
+</div>
+
+<!-- ============ ENGLISH ============ -->
+<section class="lang-section active" data-section="en">
 <header>
   <h1>Terms of Service</h1>
   <p class="meta">Last updated: 7 May 2026</p>
 </header>
 
-<p>These Terms of Service ("Terms") govern your use of AI Meeting Notes (the "Service"). By using the Service, you agree to these Terms.</p>
+<p>These Terms govern your use of Meeting Workspace (the "Service"). By using the Service, you agree to these Terms.</p>
 
 <h2>1. Who we are</h2>
-<p>AI Meeting Notes is operated by <strong>[OWNER_NAME]</strong>, based in Hong Kong SAR. Contact: <a href="mailto:support@aimeetingnotes.com">support@aimeetingnotes.com</a>.</p>
+<p>Meeting Workspace is operated by <strong>[OWNER_NAME]</strong>, based in Hong Kong SAR. Contact: <a href="mailto:support@meetingworkspace.app">support@meetingworkspace.app</a>.</p>
 
 <h2>2. Service description</h2>
-<p>AI Meeting Notes uses artificial intelligence to generate summaries, decisions lists, action items, and follow-up emails from meeting transcripts provided by you. The Service is fully self-serve and web-based. We do NOT offer 1:1 services, custom development, or bespoke consulting.</p>
+<p>Meeting Workspace uses AI to generate summaries, decisions, action items, and follow-up emails from meeting transcripts you provide. The Service is fully self-serve and web-based. We do NOT offer 1:1 services, custom development, or bespoke consulting.</p>
 
 <h2>3. Subscription tiers</h2>
 <ul>
-  <li><strong>Free:</strong> 1 run per day, no signup required.</li>
+  <li><strong>Free:</strong> 1 run per day, no signup.</li>
   <li><strong>Starter:</strong> 3 runs per day, free after email registration.</li>
-  <li><strong>Pro — USD $19/month:</strong> 10 runs per week. Activatable on up to 2 devices.</li>
-  <li><strong>Max — USD $29/month:</strong> 60 runs per month. Activatable on up to 5 devices.</li>
+  <li><strong>Pro — USD $19/month:</strong> 10 runs per week. Up to 2 devices.</li>
+  <li><strong>Max — USD $29/month:</strong> 60 runs per month. Up to 5 devices.</li>
 </ul>
 
 <h2>4. Payments</h2>
-<p>Paid subscriptions are processed by Lemon Squeezy (Merchant of Record). All prices are in USD. You agree to Lemon Squeezy's <a href="https://www.lemonsqueezy.com/terms" target="_blank" rel="noopener">Terms of Service</a> in addition to these Terms.</p>
+<p>Processed by Lemon Squeezy (Merchant of Record). All prices in USD. You also agree to Lemon Squeezy's <a href="https://www.lemonsqueezy.com/terms" target="_blank" rel="noopener">Terms</a>.</p>
 
 <h2>5. Refund policy</h2>
-<p>We offer a <strong>14-day money-back guarantee</strong> on initial subscription purchases. To request a refund, email <a href="mailto:support@aimeetingnotes.com">support@aimeetingnotes.com</a> within 14 days of purchase. Renewals are non-refundable but you may cancel at any time to prevent future charges.</p>
+<p><strong>14-day money-back guarantee</strong> on initial purchase. Email <a href="mailto:support@meetingworkspace.app">support@meetingworkspace.app</a> within 14 days. Renewals are non-refundable; you may cancel anytime to prevent future charges.</p>
 
 <h2>6. Cancellation</h2>
-<p>You may cancel your subscription anytime via your Lemon Squeezy customer portal. Upon cancellation, you retain access until the end of the current billing period.</p>
+<p>Cancel anytime via your Lemon Squeezy customer portal. You retain access until the end of the current billing period.</p>
 
 <h2>7. Acceptable use</h2>
 <p>You agree NOT to:</p>
 <ul>
   <li>Input illegal, harmful, hateful, sexually explicit, or rights-infringing content.</li>
-  <li>Attempt to reverse-engineer, scrape, or abuse the Service or its APIs.</li>
+  <li>Reverse-engineer, scrape, or abuse the Service or APIs.</li>
   <li>Share, resell, or sublicense your license key or device slots.</li>
-  <li>Use the Service to generate content that violates applicable laws.</li>
+  <li>Generate content violating applicable laws.</li>
 </ul>
-<p>Violation may result in immediate account termination without refund.</p>
+<p>Violation may result in immediate termination without refund.</p>
 
 <h2>8. AI output disclaimer</h2>
-<p>AI-generated content may contain inaccuracies. You are solely responsible for reviewing output before acting on it. We do NOT guarantee factual accuracy of generated summaries.</p>
+<p>AI output may contain inaccuracies. You are solely responsible for reviewing output before acting on it. We do NOT guarantee factual accuracy.</p>
 
 <h2>9. Intellectual property</h2>
 <ul>
-  <li>Input you provide remains YOUR property.</li>
-  <li>AI-generated output is provided to you under a perpetual, worldwide, royalty-free licence for any lawful use.</li>
+  <li>Input remains YOUR property.</li>
+  <li>AI-generated output is licensed to you under a perpetual, worldwide, royalty-free licence for any lawful use.</li>
   <li>The Service's code, design, and brand are owned by us.</li>
 </ul>
 
 <h2>10. Service availability</h2>
-<p>The Service is provided "AS IS". We target 99% uptime but do NOT guarantee uninterrupted availability. We may modify, suspend, or discontinue features at any time.</p>
+<p>Provided "AS IS". Target 99% uptime but no guarantee of uninterrupted availability.</p>
 
 <h2>11. Limitation of liability</h2>
-<p>To the maximum extent permitted by law, our total liability is limited to the amount you paid us in the 12 months preceding the claim. We are not liable for indirect, incidental, or consequential damages.</p>
+<p>Our total liability is limited to the amount you paid us in the 12 months preceding the claim. Not liable for indirect or consequential damages.</p>
 
 <h2>12. Termination</h2>
-<p>We may suspend or terminate your access if you breach these Terms. You may stop using the Service at any time.</p>
+<p>We may suspend or terminate your access for breach. You may stop using anytime.</p>
 
 <h2>13. Governing law</h2>
-<p>These Terms are governed by the laws of Hong Kong SAR. Disputes shall be resolved in Hong Kong courts.</p>
+<p>Governed by the laws of Hong Kong SAR. Disputes resolved in Hong Kong courts.</p>
 
 <h2>14. Changes</h2>
-<p>We may update these Terms. Material changes will be notified via email (to paid users) and/or a banner on the site. Continued use constitutes acceptance.</p>
+<p>We may update these Terms. Material changes notified via email (paid users) and/or site banner.</p>
 
 <h2>15. Contact</h2>
-<p>Questions? <a href="mailto:support@aimeetingnotes.com">support@aimeetingnotes.com</a>.</p>
+<p><a href="mailto:support@meetingworkspace.app">support@meetingworkspace.app</a></p>
+</section>
 
+<!-- ============ 繁體中文 ============ -->
+<section class="lang-section" data-section="zh" lang="zh-Hant">
+<header>
+  <h1>服務條款</h1>
+  <p class="meta">最後更新：2026 年 5 月 7 日</p>
+</header>
+
+<p>本服務條款規範你使用 Meeting Workspace（「本服務」）。使用本服務即表示你同意本條款。</p>
+
+<h2>1. 關於我們</h2>
+<p>Meeting Workspace 由 <strong>[OWNER_NAME]</strong> 經營，地點為香港特別行政區。聯絡：<a href="mailto:support@meetingworkspace.app">support@meetingworkspace.app</a>。</p>
+
+<h2>2. 服務描述</h2>
+<p>Meeting Workspace 使用人工智能從你提供的會議紀錄生成總結、決議、行動項目及跟進電郵。本服務為全自助網頁應用，不提供 1 對 1 服務、客製開發或顧問諮詢。</p>
+
+<h2>3. 訂閱方案</h2>
+<ul>
+  <li><strong>Free：</strong>每日 1 次，毋須註冊。</li>
+  <li><strong>Starter：</strong>每日 3 次，登記電郵後免費使用。</li>
+  <li><strong>Pro — 每月 USD $19：</strong>每週 10 次。最多 2 部裝置。</li>
+  <li><strong>Max — 每月 USD $29：</strong>每月 60 次。最多 5 部裝置。</li>
+</ul>
+
+<h2>4. 付款</h2>
+<p>由 Lemon Squeezy（交易處理商）處理。所有價格以美元計算。你同時需同意 Lemon Squeezy 的 <a href="https://www.lemonsqueezy.com/terms" target="_blank" rel="noopener">條款</a>。</p>
+
+<h2>5. 退款政策</h2>
+<p>首次訂閱享有 <strong>14 日退款保證</strong>。請喺 14 日內電郵 <a href="mailto:support@meetingworkspace.app">support@meetingworkspace.app</a>。續訂不設退款，你可隨時取消以停止未來扣費。</p>
+
+<h2>6. 取消</h2>
+<p>可隨時透過 Lemon Squeezy 客戶專區取消。取消後仍可使用直至當前計費週期結束。</p>
+
+<h2>7. 合理使用</h2>
+<p>你同意不會：</p>
+<ul>
+  <li>輸入違法、有害、仇恨、色情或侵權內容。</li>
+  <li>逆向工程、抓取或濫用本服務或 API。</li>
+  <li>分享、轉售或授權你的授權碼或裝置名額。</li>
+  <li>生成違反適用法律的內容。</li>
+</ul>
+<p>違反者可被即時終止帳戶並不獲退款。</p>
+
+<h2>8. AI 生成免責聲明</h2>
+<p>AI 生成內容可能有誤，你須自行檢查後才採取行動。我們不保證事實準確性。</p>
+
+<h2>9. 智慧財產權</h2>
+<ul>
+  <li>你的輸入內容仍屬於你。</li>
+  <li>AI 生成內容以永久、全球、免版稅方式授權予你作任何合法用途。</li>
+  <li>本服務的程式碼、設計及品牌屬我們擁有。</li>
+</ul>
+
+<h2>10. 服務可用性</h2>
+<p>本服務以「現狀」提供，目標 99% 正常運作時間，但不保證不中斷。</p>
+
+<h2>11. 責任限制</h2>
+<p>我們的總責任以索償前 12 個月你向我們支付的款項為限。不對間接或衍生性損害負責。</p>
+
+<h2>12. 終止</h2>
+<p>違反條款我們可即時終止你的存取權，你亦可隨時停止使用。</p>
+
+<h2>13. 適用法律</h2>
+<p>適用香港特別行政區法律。爭議由香港法院管轄。</p>
+
+<h2>14. 條款修訂</h2>
+<p>我們可能修訂本條款。重大變更會透過電郵（付費用戶）或網站橫額通知。</p>
+
+<h2>15. 聯絡</h2>
+<p><a href="mailto:support@meetingworkspace.app">support@meetingworkspace.app</a></p>
+</section>
+
+<script>
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const lang = btn.dataset.lang;
+      document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
+      document.querySelectorAll('.lang-section').forEach(s => s.classList.toggle('active', s.dataset.section === lang));
+      document.documentElement.setAttribute('lang', lang === 'zh' ? 'zh-Hant' : 'en');
+      try { localStorage.setItem('legal_lang', lang); } catch(e){}
+    });
+  });
+  try {
+    const saved = localStorage.getItem('legal_lang');
+    if (saved === 'zh') document.querySelector('.lang-btn[data-lang="zh"]')?.click();
+  } catch(e){}
+</script>
 </body>
 </html>

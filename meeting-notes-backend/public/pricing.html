@@ -3,258 +3,240 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Pricing — AI Meeting Notes</title>
-<meta name="description" content="Simple pricing for AI Meeting Notes. Free forever tier, Pro at $19/mo, Max at $29/mo. 14-day money-back guarantee.">
+<title>Pricing — Meeting Workspace</title>
+<meta name="description" content="Simple pricing. Free 1/day, Pro $19/mo (10/week), Max $29/mo (60/month). 14-day money-back guarantee.">
 <meta name="robots" content="index, follow">
-
-<!-- Open Graph -->
 <meta property="og:type" content="website">
-<meta property="og:title" content="Pricing — AI Meeting Notes">
-<meta property="og:description" content="Free 1/day, Pro $19/mo (10/week), Max $29/mo (60/month). 14-day refund guarantee.">
+<meta property="og:title" content="Pricing — Meeting Workspace">
+<meta property="og:description" content="Free 1/day, Pro $19/mo, Max $29/mo. 14-day refund guarantee.">
 <meta property="og:url" content="https://warm-sprinkles-6db29c.netlify.app/pricing.html">
-
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 
 <style>
   :root {
-    --brand: #16a34a; --brand-dark: #15803d;
-    --bg: #f9fafb; --card: #ffffff; --text: #111827;
-    --muted: #6b7280; --border: #e5e7eb; --accent: #eab308;
+    --brand:#5b5bf5; --brand2:#8b5bf5;
+    --bg:#ffffff; --bg-soft:#f7f8fa; --card:#ffffff;
+    --text:#0a0a0b; --muted:#4a4a55; --mute2:#8a8a95;
+    --border:rgba(10,10,11,.08); --border-strong:rgba(10,10,11,.14);
+    --shadow-sm:0 1px 3px rgba(10,10,11,.06);
+    --shadow-md:0 8px 24px rgba(10,10,11,.08);
+    --shadow-lg:0 20px 60px rgba(10,10,11,.12);
+  }
+  [data-theme="dark"], html[data-theme="dark"] {
+    --bg:#0b0b0f; --bg-soft:#111116; --card:#15151c;
+    --text:#f5f5f7; --muted:#c0c0cc; --mute2:#7a7a88;
+    --border:rgba(255,255,255,.08); --border-strong:rgba(255,255,255,.16);
   }
   @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #0f172a; --card: #1e293b; --text: #e5e7eb;
-      --muted: #94a3b8; --border: #334155;
+    :root:not([data-theme="light"]) {
+      --bg:#0b0b0f; --bg-soft:#111116; --card:#15151c;
+      --text:#f5f5f7; --muted:#c0c0cc; --mute2:#7a7a88;
+      --border:rgba(255,255,255,.08); --border-strong:rgba(255,255,255,.16);
     }
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-    background: var(--bg); color: var(--text); line-height: 1.6;
-    padding: 2rem 1rem 4rem;
-  }
-  .container { max-width: 1200px; margin: 0 auto; }
-  .back { color: var(--brand); text-decoration: none; display: inline-block; margin-bottom: 2rem; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:'Inter',system-ui,-apple-system,sans-serif; background:var(--bg); color:var(--text); line-height:1.6; }
+  a { color:inherit; text-decoration:none; }
 
-  header.hero { text-align: center; margin-bottom: 3rem; }
-  header.hero h1 { font-size: clamp(2rem, 5vw, 2.75rem); margin-bottom: 0.75rem; }
-  header.hero p { color: var(--muted); font-size: 1.125rem; max-width: 600px; margin: 0 auto; }
+  /* Nav matches landing */
+  .nav { position:sticky; top:0; z-index:50; backdrop-filter:saturate(180%) blur(12px); background:color-mix(in srgb, var(--bg) 85%, transparent); border-bottom:1px solid var(--border); }
+  .nav-inner { max-width:1200px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; padding:14px 24px; }
+  .brand { display:flex; align-items:center; gap:10px; font-weight:700; font-size:16px; }
+  .brand-mark { width:28px; height:28px; border-radius:8px; background:linear-gradient(135deg,var(--brand),var(--brand2)); display:grid; place-items:center; color:#fff; font-size:14px; box-shadow:var(--shadow-sm); font-weight:800;}
+  .nav-links { display:flex; gap:28px; align-items:center; }
+  .nav-links a { color:var(--muted); font-size:14px; font-weight:500; }
+  .nav-links a:hover { color:var(--text); }
+  .nav-links a.active { color:var(--text); }
+  .btn { display:inline-flex; align-items:center; gap:8px; padding:11px 20px; border-radius:10px; font-weight:600; font-size:14px; cursor:pointer; border:1px solid transparent; transition:transform .15s, box-shadow .15s; }
+  .btn:active { transform:scale(0.98); }
+  .btn-primary { background:linear-gradient(135deg,var(--brand),var(--brand2)); color:#fff; box-shadow:var(--shadow-md); }
+  .btn-primary:hover { box-shadow:var(--shadow-lg); }
+  .btn-ghost { background:var(--card); color:var(--text); border-color:var(--border-strong); }
+  @media (max-width:768px) { .nav-links { display:none; } }
 
-  .badge-guarantee {
-    display: inline-flex; align-items: center; gap: 0.4rem;
-    background: rgba(22, 163, 74, 0.1); color: var(--brand);
-    padding: 0.4rem 0.9rem; border-radius: 999px;
-    font-size: 0.875rem; font-weight: 600; margin-top: 1rem;
-  }
+  /* Hero */
+  .container { max-width:1200px; margin:0 auto; padding:0 24px; }
+  .hero { text-align:center; padding:80px 24px 40px; }
+  .hero h1 { font-size:clamp(36px,5vw,52px); font-weight:800; letter-spacing:-0.03em; line-height:1.1; margin-bottom:16px; }
+  .grad { background:linear-gradient(135deg,var(--brand),var(--brand2)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .hero p { color:var(--muted); font-size:18px; max-width:640px; margin:0 auto 20px; }
+  .badge { display:inline-flex; align-items:center; gap:8px; background:color-mix(in srgb, var(--brand) 10%, transparent); color:var(--brand); padding:7px 16px; border-radius:999px; font-size:14px; font-weight:600; }
 
-  .grid {
-    display: grid; gap: 1.25rem; margin-bottom: 4rem;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  }
-
-  .card {
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: 16px; padding: 1.75rem 1.5rem;
-    display: flex; flex-direction: column;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    position: relative;
-  }
-  .card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
-  .card.popular {
-    border-color: var(--brand); border-width: 2px;
-    box-shadow: 0 4px 20px rgba(22, 163, 74, 0.15);
-  }
-  .popular-tag {
-    position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
-    background: var(--brand); color: white;
-    font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
-    padding: 0.3rem 0.75rem; border-radius: 999px; letter-spacing: 0.03em;
-  }
-
-  .tier-name {
-    font-size: 0.875rem; font-weight: 700; color: var(--brand);
-    text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;
-  }
-  .price { font-size: 2.25rem; font-weight: 800; margin-bottom: 0.25rem; }
-  .price .unit { font-size: 0.9rem; color: var(--muted); font-weight: 400; }
-  .tier-desc { color: var(--muted); font-size: 0.95rem; margin-bottom: 1.25rem; min-height: 2.5em; }
-
-  .features { list-style: none; margin-bottom: 1.5rem; flex: 1; }
-  .features li {
-    padding: 0.45rem 0; display: flex; align-items: flex-start;
-    gap: 0.55rem; font-size: 0.95rem;
-  }
-  .features li::before {
-    content: "✓"; color: var(--brand); font-weight: 700; flex-shrink: 0;
-  }
-  .features li.muted { color: var(--muted); }
-  .features li.muted::before { content: "—"; color: var(--muted); }
-
-  .btn {
-    display: block; text-align: center; width: 100%;
-    padding: 0.85rem 1rem; border-radius: 10px;
-    font-weight: 700; font-size: 0.95rem;
-    text-decoration: none; cursor: pointer; border: none;
-    transition: background 0.15s ease, transform 0.1s ease;
-  }
-  .btn:active { transform: scale(0.98); }
-  .btn-primary { background: var(--brand); color: white; }
-  .btn-primary:hover { background: var(--brand-dark); }
-  .btn-secondary { background: transparent; color: var(--text); border: 1px solid var(--border); }
-  .btn-secondary:hover { background: rgba(0,0,0,0.04); }
+  /* Grid */
+  .grid { display:grid; gap:20px; margin:40px 0 64px; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); max-width:1200px; margin-left:auto; margin-right:auto; padding:0 24px; }
+  .card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:28px 24px; position:relative; display:flex; flex-direction:column; transition:transform 0.2s, box-shadow 0.2s; }
+  .card:hover { transform:translateY(-4px); box-shadow:var(--shadow-md); }
+  .card.popular { border:2px solid var(--brand); box-shadow:0 4px 20px rgba(91,91,245,0.18); }
+  .pop-tag { position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:linear-gradient(135deg,var(--brand),var(--brand2)); color:#fff; font-size:12px; font-weight:700; padding:5px 12px; border-radius:999px; letter-spacing:0.03em; text-transform:uppercase; }
+  .tier { font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--brand); margin-bottom:8px; }
+  .price { font-size:36px; font-weight:800; letter-spacing:-0.02em; margin-bottom:4px; }
+  .price .unit { font-size:14px; color:var(--mute2); font-weight:400; }
+  .desc { color:var(--muted); font-size:14px; margin-bottom:20px; min-height:2.5em; }
+  .features { list-style:none; margin-bottom:24px; flex:1; }
+  .features li { padding:7px 0; display:flex; gap:10px; font-size:14px; align-items:flex-start; }
+  .features li::before { content:"✓"; color:var(--brand); font-weight:700; }
+  .features li.muted { color:var(--mute2); }
+  .features li.muted::before { content:"—"; color:var(--mute2); }
+  .btn-card { width:100%; justify-content:center; padding:12px; }
 
   /* FAQ */
-  .faq { max-width: 720px; margin: 0 auto; }
-  .faq h2 { text-align: center; font-size: 1.75rem; margin-bottom: 1.5rem; }
-  .faq details {
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: 0.75rem;
-  }
-  .faq summary {
-    font-weight: 600; cursor: pointer; list-style: none;
-    display: flex; justify-content: space-between; align-items: center;
-  }
-  .faq summary::after { content: "+"; color: var(--brand); font-size: 1.5rem; }
-  .faq details[open] summary::after { content: "−"; }
-  .faq details p { color: var(--muted); margin-top: 0.75rem; line-height: 1.6; }
+  .faq { max-width:720px; margin:0 auto 60px; padding:0 24px; }
+  .faq h2 { text-align:center; font-size:32px; font-weight:800; letter-spacing:-0.02em; margin-bottom:28px; }
+  .faq details { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:18px 22px; margin-bottom:10px; }
+  .faq summary { font-weight:600; cursor:pointer; list-style:none; display:flex; justify-content:space-between; align-items:center; font-size:15px; }
+  .faq summary::after { content:"+"; color:var(--brand); font-size:22px; font-weight:400; }
+  .faq details[open] summary::after { content:"−"; }
+  .faq details p { color:var(--muted); margin-top:12px; font-size:14.5px; line-height:1.7; }
 
-  footer.page-footer {
-    text-align: center; color: var(--muted); margin-top: 4rem;
-    padding-top: 2rem; border-top: 1px solid var(--border); font-size: 0.875rem;
-  }
-  footer.page-footer a { color: var(--muted); margin: 0 0.5rem; }
+  /* Footer */
+  footer { border-top:1px solid var(--border); padding:40px 24px; background:var(--bg-soft); text-align:center; color:var(--mute2); font-size:13px; }
+  footer a { color:var(--muted); margin:0 10px; }
+  footer a:hover { color:var(--text); }
 </style>
 </head>
 <body>
-<div class="container">
-  <a href="/" class="back">← Back to app</a>
 
-  <header class="hero">
-    <h1>Simple, honest pricing</h1>
-    <p>Start free. Upgrade only when you actually use it. No credit card required to try.</p>
-    <div class="badge-guarantee">🛡️ 14-day money-back guarantee</div>
-  </header>
-
-  <div class="grid">
-
-    <!-- FREE -->
-    <div class="card">
-      <div class="tier-name">Free</div>
-      <div class="price">$0 <span class="unit">forever</span></div>
-      <p class="tier-desc">Try it out, no signup.</p>
-      <ul class="features">
-        <li>1 run per day</li>
-        <li>AI summary &amp; decisions</li>
-        <li>Action items with owners</li>
-        <li>Follow-up email draft</li>
-        <li>Markdown export</li>
-        <li class="muted">No email required</li>
-      </ul>
-      <a href="/" class="btn btn-secondary">Start free</a>
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="brand" href="/">
+      <span class="brand-mark">M</span>
+      <span>Meeting Workspace</span>
+    </a>
+    <div class="nav-links">
+      <a href="/#features">Features</a>
+      <a href="/#how">How it works</a>
+      <a href="/pricing.html" class="active">Pricing</a>
+      <a href="/#faq">FAQ</a>
     </div>
+    <a class="btn btn-primary" href="/app/">Launch App →</a>
+  </div>
+</nav>
 
-    <!-- STARTER -->
-    <div class="card">
-      <div class="tier-name">Starter</div>
-      <div class="price">$0 <span class="unit">email required</span></div>
-      <p class="tier-desc">Triple your free quota — just register.</p>
-      <ul class="features">
-        <li><strong>3 runs per day</strong></li>
-        <li>Everything in Free</li>
-        <li>History saved locally</li>
-        <li class="muted">No email spam, promise</li>
-      </ul>
-      <a href="/" class="btn btn-secondary">Register email</a>
-    </div>
+<header class="hero">
+  <h1>Simple, <span class="grad">honest pricing</span></h1>
+  <p>Start free. Upgrade only when you actually use it. No credit card required to try.</p>
+  <div class="badge">🛡️ 14-day money-back guarantee</div>
+</header>
 
-    <!-- PRO (popular) -->
-    <div class="card popular">
-      <div class="popular-tag">⭐ Most popular</div>
-      <div class="tier-name">Pro</div>
-      <div class="price">$19 <span class="unit">/month</span></div>
-      <p class="tier-desc">For professionals running weekly team meetings.</p>
-      <ul class="features">
-        <li><strong>10 runs per week</strong></li>
-        <li>Everything in Starter</li>
-        <li>Activate on 2 devices</li>
-        <li>Priority AI processing</li>
-        <li>Email support</li>
-      </ul>
-      <a href="LEMONSQUEEZY_PRO_CHECKOUT_URL" class="btn btn-primary" data-umami-event="Pricing CTA Clicked" data-umami-event-plan="Pro">Upgrade to Pro</a>
-    </div>
+<div class="grid">
 
-    <!-- MAX -->
-    <div class="card">
-      <div class="tier-name">Max</div>
-      <div class="price">$29 <span class="unit">/month</span></div>
-      <p class="tier-desc">For power users &amp; consultants who meet daily.</p>
-      <ul class="features">
-        <li><strong>60 runs per month</strong></li>
-        <li>Everything in Pro</li>
-        <li>Activate on 5 devices</li>
-        <li>Fastest AI processing</li>
-        <li>Priority email support</li>
-      </ul>
-      <a href="LEMONSQUEEZY_MAX_CHECKOUT_URL" class="btn btn-primary" data-umami-event="Pricing CTA Clicked" data-umami-event-plan="Max">Upgrade to Max</a>
-    </div>
-
+  <!-- FREE -->
+  <div class="card">
+    <div class="tier">Free</div>
+    <div class="price">$0 <span class="unit">forever</span></div>
+    <p class="desc">Try it out — no signup.</p>
+    <ul class="features">
+      <li>1 run per day</li>
+      <li>AI summary &amp; decisions</li>
+      <li>Action items with owners</li>
+      <li>Follow-up email draft</li>
+      <li>Markdown export</li>
+      <li class="muted">No email required</li>
+    </ul>
+    <a href="/app/" class="btn btn-ghost btn-card">Start free</a>
   </div>
 
-  <!-- FAQ -->
-  <section class="faq">
-    <h2>Frequently asked questions</h2>
+  <!-- STARTER -->
+  <div class="card">
+    <div class="tier">Starter</div>
+    <div class="price">$0 <span class="unit">email required</span></div>
+    <p class="desc">Triple the free quota — just register.</p>
+    <ul class="features">
+      <li><strong>3 runs per day</strong></li>
+      <li>Everything in Free</li>
+      <li>History saved locally</li>
+      <li class="muted">No email spam, promise</li>
+    </ul>
+    <a href="/app/" class="btn btn-ghost btn-card">Register email</a>
+  </div>
 
-    <details>
-      <summary>Can I cancel anytime?</summary>
-      <p>Yes. Cancel anytime via your Lemon Squeezy customer portal. You keep access until the end of the current billing period.</p>
-    </details>
+  <!-- PRO -->
+  <div class="card popular">
+    <div class="pop-tag">⭐ Most Popular</div>
+    <div class="tier">Pro</div>
+    <div class="price">$19 <span class="unit">/month</span></div>
+    <p class="desc">For professionals running weekly team syncs.</p>
+    <ul class="features">
+      <li><strong>10 runs per week</strong></li>
+      <li>Everything in Starter</li>
+      <li>Activate on 2 devices</li>
+      <li>Priority AI processing</li>
+      <li>Email support</li>
+    </ul>
+    <a href="LEMONSQUEEZY_PRO_CHECKOUT_URL" class="btn btn-primary btn-card" data-umami-event="Pricing CTA Clicked" data-umami-event-plan="Pro">Upgrade to Pro</a>
+  </div>
 
-    <details>
-      <summary>What's your refund policy?</summary>
-      <p>14-day money-back guarantee on your initial subscription. Just email support@aimeetingnotes.com within 14 days and we'll refund, no questions asked.</p>
-    </details>
+  <!-- MAX -->
+  <div class="card">
+    <div class="tier">Max</div>
+    <div class="price">$29 <span class="unit">/month</span></div>
+    <p class="desc">For power users &amp; consultants meeting daily.</p>
+    <ul class="features">
+      <li><strong>60 runs per month</strong></li>
+      <li>Everything in Pro</li>
+      <li>Activate on 5 devices</li>
+      <li>Fastest AI processing</li>
+      <li>Priority email support</li>
+    </ul>
+    <a href="LEMONSQUEEZY_MAX_CHECKOUT_URL" class="btn btn-primary btn-card" data-umami-event="Pricing CTA Clicked" data-umami-event-plan="Max">Upgrade to Max</a>
+  </div>
 
-    <details>
-      <summary>What happens if I hit my quota?</summary>
-      <p>You'll see a friendly upgrade prompt. Your usage resets automatically — daily for Free/Starter, weekly for Pro, monthly for Max.</p>
-    </details>
-
-    <details>
-      <summary>Can I use one license on multiple devices?</summary>
-      <p>Yes. Pro supports 2 active devices, Max supports 5. You can deactivate and move between devices anytime.</p>
-    </details>
-
-    <details>
-      <summary>Is my meeting data stored?</summary>
-      <p>No. Meeting notes are processed in real-time and never written to our database. Only your email (if registered) and license key are stored. See our <a href="/privacy.html">Privacy Policy</a>.</p>
-    </details>
-
-    <details>
-      <summary>Which AI model is used?</summary>
-      <p>We use best-in-class models (Perplexity / OpenAI) selected per task through our 5-agent orchestration: Coordinator → Summarizer → Action Item Agent → Email Agent → QA Review.</p>
-    </details>
-
-    <details>
-      <summary>Do you offer team or enterprise plans?</summary>
-      <p>Not yet — we're focused on individual plans first. If you need 10+ seats, email support@aimeetingnotes.com and we'll figure something out.</p>
-    </details>
-
-    <details>
-      <summary>What languages are supported?</summary>
-      <p>Input can be any language. Output is optimised for English and Traditional Chinese (繁體中文). More languages coming soon.</p>
-    </details>
-
-  </section>
-
-  <footer class="page-footer">
-    <p>
-      <a href="/">Home</a> ·
-      <a href="/privacy.html">Privacy</a> ·
-      <a href="/terms.html">Terms</a> ·
-      <a href="mailto:support@aimeetingnotes.com">Support</a>
-    </p>
-    <p style="margin-top: 0.5rem;">© 2026 AI Meeting Notes. All rights reserved.</p>
-  </footer>
 </div>
+
+<section class="faq">
+  <h2>Frequently asked questions</h2>
+
+  <details>
+    <summary>Can I cancel anytime?</summary>
+    <p>Yes. Cancel anytime via your Lemon Squeezy customer portal. You keep access until the end of the current billing period.</p>
+  </details>
+
+  <details>
+    <summary>What's your refund policy?</summary>
+    <p>14-day money-back guarantee on your initial subscription. Email support@meetingworkspace.app within 14 days and we'll refund, no questions asked.</p>
+  </details>
+
+  <details>
+    <summary>What happens if I hit my quota?</summary>
+    <p>You'll see a friendly upgrade prompt. Your usage resets automatically — daily for Free/Starter, weekly for Pro, monthly for Max.</p>
+  </details>
+
+  <details>
+    <summary>Can I use one license on multiple devices?</summary>
+    <p>Yes. Pro supports 2 active devices, Max supports 5. You can deactivate and move between devices anytime.</p>
+  </details>
+
+  <details>
+    <summary>Is my meeting data stored?</summary>
+    <p>No. Meeting notes are processed in real-time and never written to our database. Only your email (if registered) and license key are stored. See our <a href="/privacy.html">Privacy Policy</a>.</p>
+  </details>
+
+  <details>
+    <summary>Which AI model is used?</summary>
+    <p>Best-in-class models (Perplexity / OpenAI) selected per task through our 5-agent orchestration: Coordinator → Summarizer → Action Item Agent → Email Agent → QA Review.</p>
+  </details>
+
+  <details>
+    <summary>Do you offer team or enterprise plans?</summary>
+    <p>Not yet — individual plans first. Need 10+ seats? Email support@meetingworkspace.app and we'll figure something out.</p>
+  </details>
+
+  <details>
+    <summary>What languages are supported?</summary>
+    <p>Input: any language. Output: optimised for English and Traditional Chinese (繁體中文). More coming soon.</p>
+  </details>
+</section>
+
+<footer>
+  <p>
+    <a href="/">Home</a> ·
+    <a href="/pricing.html">Pricing</a> ·
+    <a href="/privacy.html">Privacy</a> ·
+    <a href="/terms.html">Terms</a> ·
+    <a href="mailto:support@meetingworkspace.app">Support</a>
+  </p>
+  <p style="margin-top:8px;">© 2026 Meeting Workspace. All rights reserved.</p>
+</footer>
+
 </body>
 </html>

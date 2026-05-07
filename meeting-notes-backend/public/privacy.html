@@ -2,48 +2,61 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Privacy Policy | AI Meeting Notes</title>
-<meta name="description" content="Privacy Policy for AI Meeting Notes — how we collect, use, and protect your data.">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Privacy Policy / 私隱政策 | Meeting Workspace</title>
+<meta name="description" content="Privacy Policy for Meeting Workspace — how we collect, use and protect your data.">
 <meta name="robots" content="index, follow">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <style>
-  :root { --brand:#16a34a; --bg:#ffffff; --text:#111827; --muted:#6b7280; --border:#e5e7eb; }
-  @media (prefers-color-scheme: dark) {
-    :root { --bg:#0f172a; --text:#e5e7eb; --muted:#94a3b8; --border:#1e293b; }
-  }
+  :root { --brand:#5b5bf5; --brand2:#8b5bf5; --bg:#ffffff; --text:#0a0a0b; --muted:#4a4a55; --border:#e5e7eb; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#0b0b0f; --text:#f5f5f7; --muted:#c0c0cc; --border:#1e293b; } }
   * { box-sizing:border-box; }
-  body { font-family: system-ui,-apple-system,"Segoe UI",sans-serif;
-         background: var(--bg); color: var(--text); line-height: 1.7;
-         max-width: 760px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
-  header { border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 2rem; }
-  h1 { font-size: clamp(1.5rem, 4vw, 2rem); margin: 0 0 0.25rem; }
-  h2 { margin-top: 2rem; font-size: 1.15rem; color: var(--brand); }
-  .meta { color: var(--muted); font-size: 0.9rem; }
-  a { color: var(--brand); }
-  ul { padding-left: 1.25rem; }
-  .back { display: inline-block; margin-bottom: 1rem; color: var(--brand); text-decoration: none; }
+  body { font-family:'Inter',system-ui,-apple-system,sans-serif; background:var(--bg); color:var(--text);
+         line-height:1.7; max-width:760px; margin:0 auto; padding:2rem 1.25rem 4rem; }
+  header { border-bottom:1px solid var(--border); padding-bottom:1rem; margin-bottom:1.5rem; }
+  h1 { font-size:clamp(1.5rem,4vw,2rem); margin:0 0 0.25rem; letter-spacing:-0.02em; }
+  h2 { margin-top:2rem; font-size:1.15rem;
+       background:linear-gradient(135deg,var(--brand),var(--brand2)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .meta { color:var(--muted); font-size:0.9rem; }
+  a { color:var(--brand); }
+  ul { padding-left:1.25rem; }
+  .back { display:inline-block; margin-bottom:1rem; color:var(--brand); text-decoration:none; }
+  .lang-toggle { display:flex; gap:0.5rem; margin-bottom:1.5rem; }
+  .lang-btn { padding:0.4rem 0.9rem; border-radius:999px; border:1px solid var(--border); background:transparent;
+              color:var(--muted); cursor:pointer; font-weight:600; font-size:0.85rem; }
+  .lang-btn.active { background:linear-gradient(135deg,var(--brand),var(--brand2)); color:white; border-color:transparent; }
+  .lang-section { display:none; }
+  .lang-section.active { display:block; }
 </style>
 </head>
 <body>
-<a href="/" class="back">← Back to home</a>
+<a href="/" class="back">← Back to home / 返回首頁</a>
+
+<div class="lang-toggle">
+  <button class="lang-btn active" data-lang="en">English</button>
+  <button class="lang-btn" data-lang="zh">繁體中文</button>
+</div>
+
+<!-- ============ ENGLISH ============ -->
+<section class="lang-section active" data-section="en">
 <header>
   <h1>Privacy Policy</h1>
   <p class="meta">Last updated: 7 May 2026</p>
 </header>
 
-<p>This Privacy Policy describes how AI Meeting Notes (the "Service", "we", "us") collects, uses, and protects information when you use our website and services.</p>
+<p>This Privacy Policy describes how Meeting Workspace (the "Service", "we", "us") collects, uses, and protects information when you use our website and services.</p>
 
 <h2>1. Who we are</h2>
-<p>AI Meeting Notes is operated by <strong>[OWNER_NAME]</strong>, an independent software developer based in Hong Kong SAR. For privacy-related inquiries, contact: <a href="mailto:support@aimeetingnotes.com">support@aimeetingnotes.com</a>.</p>
+<p>Meeting Workspace is operated by <strong>[OWNER_NAME]</strong>, an independent software developer based in Hong Kong SAR. Contact: <a href="mailto:support@meetingworkspace.app">support@meetingworkspace.app</a>.</p>
 
 <h2>2. Information we collect</h2>
 <ul>
-  <li><strong>Meeting notes you input:</strong> text you paste or type into the app. Processed in real-time and not stored on our servers beyond the processing window.</li>
-  <li><strong>Email address:</strong> optional — only if you sign up for the Starter tier or purchase a Pro/Max subscription.</li>
-  <li><strong>License key &amp; device identifier:</strong> stored locally in your browser (localStorage) and sent to our server for license verification and device-binding enforcement.</li>
+  <li><strong>Meeting notes you input:</strong> processed in real-time, not stored on our servers beyond the processing window.</li>
+  <li><strong>Email address:</strong> optional, only if you sign up for the Starter tier or purchase a Pro/Max subscription.</li>
+  <li><strong>License key &amp; device identifier:</strong> stored locally (localStorage) and sent to our server for license verification and device-binding.</li>
   <li><strong>Usage quotas:</strong> run counters stored locally and mirrored on our server to enforce plan limits.</li>
-  <li><strong>Analytics:</strong> anonymised page views and button events via Umami (a privacy-friendly, cookie-free analytics tool). No IP addresses or personal identifiers are stored.</li>
-  <li><strong>Payment data:</strong> processed entirely by Lemon Squeezy. We do NOT see or store your credit card, bank, or billing address.</li>
+  <li><strong>Analytics:</strong> anonymised page views and events via Umami (cookie-free, no personal identifiers).</li>
+  <li><strong>Payment data:</strong> processed entirely by Lemon Squeezy. We never see or store your card details.</li>
 </ul>
 
 <h2>3. How we use information</h2>
@@ -57,39 +70,123 @@
 <h2>4. How we protect data</h2>
 <ul>
   <li>All traffic uses HTTPS/TLS encryption.</li>
-  <li>Meeting notes are NOT written to any persistent database — they are sent to the AI provider for processing, then discarded.</li>
+  <li>Meeting notes are never written to a persistent database.</li>
   <li>Access to production infrastructure is restricted and MFA-protected.</li>
 </ul>
 
 <h2>5. Third-party services</h2>
 <ul>
-  <li><strong>AI processing:</strong> Perplexity AI / OpenAI (depending on plan). Governed by their respective privacy policies.</li>
-  <li><strong>Payments:</strong> Lemon Squeezy (Merchant of Record). See <a href="https://www.lemonsqueezy.com/privacy" target="_blank" rel="noopener">their privacy policy</a>.</li>
+  <li><strong>AI processing:</strong> Perplexity AI / OpenAI — governed by their privacy policies.</li>
+  <li><strong>Payments:</strong> Lemon Squeezy (Merchant of Record). <a href="https://www.lemonsqueezy.com/privacy" target="_blank" rel="noopener">Their policy</a>.</li>
   <li><strong>Hosting:</strong> Netlify.</li>
-  <li><strong>Analytics:</strong> Umami (self-hosted / EU region, no cookies, no personal data).</li>
+  <li><strong>Analytics:</strong> Umami (cookie-free).</li>
 </ul>
 
 <h2>6. Cookies</h2>
-<p>We do NOT use tracking cookies. We only use browser localStorage to remember your language, theme, usage quota, and license key.</p>
+<p>We do NOT use tracking cookies. We only use browser localStorage for language, theme, quota, and license key.</p>
 
 <h2>7. Data retention</h2>
 <ul>
-  <li><strong>Meeting notes:</strong> never stored server-side.</li>
-  <li><strong>Email / license key:</strong> kept for as long as your subscription is active, plus 12 months for tax/accounting purposes, then deleted.</li>
-  <li><strong>Analytics:</strong> aggregated, retained up to 24 months.</li>
+  <li>Meeting notes: never stored server-side.</li>
+  <li>Email / license key: kept while subscription is active + 12 months for tax/accounting, then deleted.</li>
+  <li>Analytics: aggregated, up to 24 months.</li>
 </ul>
 
 <h2>8. Your rights (GDPR / CCPA)</h2>
-<p>You have the right to access, correct, delete, or port your personal data. To exercise these rights, email <a href="mailto:support@aimeetingnotes.com">support@aimeetingnotes.com</a>. We respond within 30 days.</p>
+<p>You have the right to access, correct, delete, or port your personal data. Email <a href="mailto:support@meetingworkspace.app">support@meetingworkspace.app</a>. We respond within 30 days.</p>
 
 <h2>9. Children</h2>
-<p>The Service is not directed to children under 13. We do not knowingly collect data from children.</p>
+<p>The Service is not directed to children under 13.</p>
 
 <h2>10. Changes</h2>
-<p>We may update this Policy from time to time. Material changes will be notified via email (to subscribed users) and/or a banner on the site.</p>
+<p>We may update this Policy. Material changes will be notified via email (to subscribed users) and/or a banner on the site.</p>
 
 <h2>11. Contact</h2>
-<p>Questions? Email <a href="mailto:support@aimeetingnotes.com">support@aimeetingnotes.com</a>.</p>
+<p><a href="mailto:support@meetingworkspace.app">support@meetingworkspace.app</a></p>
+</section>
 
+<!-- ============ 繁體中文 ============ -->
+<section class="lang-section" data-section="zh" lang="zh-Hant">
+<header>
+  <h1>私隱政策</h1>
+  <p class="meta">最後更新：2026 年 5 月 7 日</p>
+</header>
+
+<p>本私隱政策描述 Meeting Workspace（「本服務」、「我們」）在你使用本網站及服務時，如何收集、使用及保護你的資料。</p>
+
+<h2>1. 關於我們</h2>
+<p>Meeting Workspace 由 <strong>[OWNER_NAME]</strong> 經營，為香港特別行政區的獨立軟件開發者。聯絡：<a href="mailto:support@meetingworkspace.app">support@meetingworkspace.app</a>。</p>
+
+<h2>2. 我們收集的資料</h2>
+<ul>
+  <li><strong>你輸入的會議紀錄：</strong>以即時方式處理，處理完成後不會儲存在伺服器。</li>
+  <li><strong>電郵地址：</strong>只有在註冊 Starter 方案或購買 Pro/Max 時才需要。</li>
+  <li><strong>授權碼及裝置識別碼：</strong>儲存喺你瀏覽器的 localStorage，並傳送至我們伺服器以驗證授權及裝置綁定。</li>
+  <li><strong>用量記錄：</strong>次數計算儲存喺本地，並喺伺服器同步以執行方案限制。</li>
+  <li><strong>分析數據：</strong>透過 Umami 收集匿名頁面瀏覽及事件（不使用 cookie、無個人識別）。</li>
+  <li><strong>付款資料：</strong>全部由 Lemon Squeezy 處理，我們從唔會看到或儲存你的信用卡資料。</li>
+</ul>
+
+<h2>3. 我們如何使用資料</h2>
+<ul>
+  <li>提供 AI 會議總結服務。</li>
+  <li>執行訂閱限制，防止濫用。</li>
+  <li>發送服務相關更新（只發給已訂閱用戶）。</li>
+  <li>透過匿名匯總分析改善產品。</li>
+</ul>
+
+<h2>4. 我們如何保護資料</h2>
+<ul>
+  <li>所有傳輸均使用 HTTPS / TLS 加密。</li>
+  <li>會議紀錄從唔會寫入任何持久資料庫。</li>
+  <li>生產環境存取受限制，並啟用 MFA。</li>
+</ul>
+
+<h2>5. 第三方服務</h2>
+<ul>
+  <li><strong>AI 處理：</strong>Perplexity AI / OpenAI，遵從其各自私隱政策。</li>
+  <li><strong>付款處理：</strong>Lemon Squeezy（交易處理商）。<a href="https://www.lemonsqueezy.com/privacy" target="_blank" rel="noopener">其政策</a>。</li>
+  <li><strong>主機：</strong>Netlify。</li>
+  <li><strong>分析：</strong>Umami（不使用 cookie）。</li>
+</ul>
+
+<h2>6. Cookie</h2>
+<p>我們唔用追蹤 cookie。只使用瀏覽器 localStorage 儲存語言、主題、用量及授權碼。</p>
+
+<h2>7. 資料保留期</h2>
+<ul>
+  <li>會議紀錄：從唔儲存喺伺服器。</li>
+  <li>電郵 / 授權碼：訂閱期間 + 12 個月（稅務及會計需要），之後刪除。</li>
+  <li>分析數據：匯總形式，最長 24 個月。</li>
+</ul>
+
+<h2>8. 你的權利（GDPR / CCPA）</h2>
+<p>你有權存取、更正、刪除或轉移你的個人資料。請電郵 <a href="mailto:support@meetingworkspace.app">support@meetingworkspace.app</a>，我們會喺 30 日內回覆。</p>
+
+<h2>9. 兒童</h2>
+<p>本服務唔對 13 歲以下兒童開放。</p>
+
+<h2>10. 政策修訂</h2>
+<p>我們可能會修訂本政策。重大變更會透過電郵（訂閱用戶）或網站橫額通知。</p>
+
+<h2>11. 聯絡</h2>
+<p><a href="mailto:support@meetingworkspace.app">support@meetingworkspace.app</a></p>
+</section>
+
+<script>
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const lang = btn.dataset.lang;
+      document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
+      document.querySelectorAll('.lang-section').forEach(s => s.classList.toggle('active', s.dataset.section === lang));
+      document.documentElement.setAttribute('lang', lang === 'zh' ? 'zh-Hant' : 'en');
+      try { localStorage.setItem('legal_lang', lang); } catch(e){}
+    });
+  });
+  try {
+    const saved = localStorage.getItem('legal_lang');
+    if (saved === 'zh') document.querySelector('.lang-btn[data-lang="zh"]')?.click();
+  } catch(e){}
+</script>
 </body>
 </html>
