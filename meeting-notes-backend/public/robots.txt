@@ -3,4 +3,4 @@ Allow: /
 Disallow: /.netlify/
 Disallow: /api/
 
-Sitemap: https://warm-sprinkles-6db29c.netlify.app/sitemap.xml
+Sitemap: https://meetingworkspaces.com/sitemap.xml
