@@ -1,23 +1,33 @@
 // ============================================================
-// lemon-webhook.js  |  v4 (2026-05-05)
+// lemon-webhook.js  |  v5 (2026-05-08)
 // ------------------------------------------------------------
 // Handles Lemon Squeezy webhooks:
-//  1. order_created / subscription_created  →  Issue license → license-keys store
-//     (plan detected from variant_id: Pro 1015806 / Max 1034942)
+//  1. order_created / subscription_created / license_key_created
+//     → Issue license → license-keys store
+//     → Send welcome email via Resend 🆕
 //  2. subscription_updated  →  Plan change (Pro ↔ Max) + quota reset
 //  3. subscription_cancelled / expired / refunded / key_disabled
 //     →  Blacklist license → license-blacklist store
 //  4. subscription_resumed  →  Un-blacklist
 //
-//  v4 CHANGE: record now includes `activations: {}` bucket for device binding.
+// v5 CHANGES (2026-05-08):
+//   + Resend welcome email on license issuance
+//   + Cleaned up duplicate writes / logs
+//   + Imports & helpers consolidated at top
 // ============================================================
 
 const crypto = require('crypto');
+const { Resend } = require('resend');
 const { getStore } = require('@netlify/blobs');
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const PRO_VARIANT_ID = process.env.LEMON_PRO_VARIANT_ID || '1015806';
 const MAX_VARIANT_ID = process.env.LEMON_MAX_VARIANT_ID || '1034942';
 
+// ------------------------------------------------------------
+// Helpers
+// ------------------------------------------------------------
 function blobsStore(name) {
   return getStore({
     name,
@@ -43,6 +53,24 @@ function detectPlan(variantId) {
   return 'pro';
 }
 
+async function sendWelcomeEmail({ to, licenseKey, plan }) {
+  const planName = plan === 'max' ? 'Max' : 'Pro';
+  const deviceLimit = plan === 'max' ? 5 : 2;
+  const quota = plan === 'max' ? '60 runs per month' : '10 runs per week';
+  const html = buildWelcomeHtml({ licenseKey, planName, deviceLimit, quota });
+
+  return resend.emails.send({
+    from: process.env.RESEND_FROM_EMAIL || 'Meeting Workspace <hello@meetingworkspaces.com>',
+    to,
+    replyTo: process.env.RESEND_REPLY_TO || 'support@meetingworkspaces.com',
+    subject: `🎉 Welcome to Meeting Workspace ${planName}! Your license is ready`,
+    html,
+  });
+}
+
+// ============================================================
+// Handler
+// ============================================================
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method not allowed' };
@@ -97,7 +125,7 @@ exports.handler = async (event) => {
               'lk=', licenseKey ? '***' + String(licenseKey).slice(-4) : '-');
 
   // ============================================================
-  // CASE 1: ISSUE LICENSE
+  // CASE 1: ISSUE LICENSE + SEND WELCOME EMAIL
   // ============================================================
   const ISSUE_EVENTS = new Set([
     'order_created',
@@ -127,11 +155,21 @@ exports.handler = async (event) => {
         issuedAt: new Date().toISOString(),
         validUntil,
         source: eventName,
-        activations: {}   // ← device tracking bucket (v4)
+        activations: {}
       };
 
       await store.setJSON(licenseKey, record);
       console.log('[webhook] ✅ issued license plan=', plan, 'email=', customerEmail);
+
+      // Send welcome email (non-fatal if fails)
+      if (customerEmail) {
+        try {
+          await sendWelcomeEmail({ to: customerEmail, licenseKey, plan });
+          console.log('[webhook] 📧 welcome email sent to', customerEmail);
+        } catch (e) {
+          console.error('[webhook] welcome email failed:', e.message);
+        }
+      }
     } catch (e) {
       console.error('[webhook] issue license failed:', e);
       return { statusCode: 500, body: 'License store error' };
@@ -149,14 +187,14 @@ exports.handler = async (event) => {
       const oldPlan = existing.plan || 'pro';
 
       const updated = {
-        ...existing,                       // preserves activations {}
+        ...existing,
         licenseKey,
         plan: newPlan,
         variantId: String(variantId || ''),
         customerEmail: customerEmail || existing.customerEmail,
         status: status || 'active',
         validUntil: attrs?.renews_at || attrs?.expires_at || existing.validUntil,
-        activations: existing.activations || {},  // explicit safety
+        activations: existing.activations || {},
         lastPlanChange: {
           from: oldPlan,
           to: newPlan,
@@ -233,3 +271,79 @@ exports.handler = async (event) => {
 
   return { statusCode: 200, body: 'ok' };
 };
+
+// ============================================================
+// Welcome Email HTML Template
+// ============================================================
+function buildWelcomeHtml({ licenseKey, planName, deviceLimit, quota }) {
+  return `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; line-height: 1.6; color: #0a0a0b; background: #f7f8fa; margin: 0; padding: 20px; }
+    .container { max-width: 560px; margin: 0 auto; background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,.08); }
+    .header { background: linear-gradient(135deg,#5b5bf5,#8b5bf5); color: #fff; padding: 40px 32px; text-align: center; }
+    .header h1 { margin: 0; font-size: 28px; font-weight: 800; }
+    .header .plan { display: inline-block; background: rgba(255,255,255,.2); padding: 4px 14px; border-radius: 999px; font-size: 13px; font-weight: 600; margin-top: 8px; }
+    .body { padding: 32px; }
+    .body h2 { font-size: 18px; margin: 0 0 12px; }
+    .body p { color: #4a4a55; font-size: 15px; margin: 0 0 16px; }
+    .license-box { background: #f7f8fa; border: 2px dashed #5b5bf5; border-radius: 12px; padding: 20px; text-align: center; margin: 24px 0; }
+    .license-label { font-size: 11px; color: #8a8a95; text-transform: uppercase; letter-spacing: .12em; font-weight: 700; margin-bottom: 8px; }
+    .license-key { font-family: ui-monospace, Menlo, monospace; font-size: 16px; font-weight: 700; color: #5b5bf5; word-break: break-all; }
+    .steps { background: #f7f8fa; border-radius: 12px; padding: 20px 24px; margin: 20px 0; }
+    .step { display: flex; gap: 12px; padding: 10px 0; }
+    .step-num { width: 28px; height: 28px; background: #5b5bf5; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; flex-shrink: 0; }
+    .step-text { font-size: 14px; color: #4a4a55; padding-top: 3px; }
+    .cta { display: block; background: linear-gradient(135deg,#5b5bf5,#8b5bf5); color: #fff; text-decoration: none; text-align: center; padding: 14px 24px; border-radius: 10px; font-weight: 700; margin: 24px 0; }
+    .feature-grid { display: table; width: 100%; margin: 20px 0; }
+    .feature { display: table-cell; padding: 12px; text-align: center; font-size: 13px; color: #4a4a55; }
+    .feature strong { display: block; font-size: 18px; color: #0a0a0b; }
+    .footer { padding: 24px 32px; background: #f7f8fa; font-size: 12px; color: #8a8a95; text-align: center; }
+    .footer a { color: #5b5bf5; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🎉 Welcome to Meeting Workspace</h1>
+      <div class="plan">${planName} Plan</div>
+    </div>
+    <div class="body">
+      <h2>Your license is ready!</h2>
+      <p>Thanks for upgrading to <strong>${planName}</strong>. You're all set to turn every meeting transcript into summaries, action items, and follow-up emails in 15 seconds.</p>
+
+      <div class="license-box">
+        <div class="license-label">🔑 Your License Key</div>
+        <div class="license-key">${licenseKey}</div>
+      </div>
+
+      <div class="feature-grid">
+        <div class="feature"><strong>${quota.split(' ')[0]}</strong>${quota.split(' ').slice(1).join(' ')}</div>
+        <div class="feature"><strong>${deviceLimit}</strong>devices</div>
+        <div class="feature"><strong>⚡</strong>Priority AI</div>
+      </div>
+
+      <h2>Get started in 3 steps</h2>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-text">Open <a href="https://meetingworkspaces.com/app/">meetingworkspaces.com/app</a></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-text">Click the ⚙️ icon, paste your license key above</div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-text">Paste any meeting transcript — your recap is ready in seconds!</div></div>
+      </div>
+
+      <a href="https://meetingworkspaces.com/app/" class="cta">Launch Meeting Workspace →</a>
+
+      <p style="font-size:13px;color:#8a8a95;margin-top:24px;">
+        Need help? Just reply to this email — real human here, Hong Kong time zone.<br>
+        You can manage your devices anytime from the ⚙️ menu.
+      </p>
+    </div>
+    <div class="footer">
+      Meeting Workspace · <a href="https://meetingworkspaces.com">meetingworkspaces.com</a><br>
+      <a href="https://meetingworkspaces.com/privacy.html">Privacy</a> · <a href="https://meetingworkspaces.com/terms.html">Terms</a>
+    </div>
+  </div>
+</body>
+</html>`;
+}
