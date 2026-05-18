@@ -1,10 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Pricing — Meeting Workspace</title>
-<!-- FIX 5a: meta description 統一 monthly equivalent -->
 <meta name="description" content="Simple pricing. Free ~30/mo, Starter ~90/mo, Pro $19/mo (~43 runs), Max $29/mo (60 runs). 14-day money-back guarantee.">
 <meta name="robots" content="index, follow">
 <meta property="og:type" content="website">
@@ -12,6 +11,9 @@
 <meta property="og:description" content="Free, Pro $19/mo, Max $29/mo. 14-day refund guarantee.">
 <meta property="og:url" content="https://meetingworkspaces.com/pricing.html">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+
+<!-- Umami Analytics -->
+<script defer src="https://cloud.umami.is/script.js" data-website-id="4fc9db7b-ea52-49a9-9ff1-629370c132e6"></script>
 
 <style>
   :root {
@@ -28,25 +30,25 @@
     --text:#f5f5f7; --muted:#c0c0cc; --mute2:#7a7a88;
     --border:rgba(255,255,255,.08); --border-strong:rgba(255,255,255,.16);
   }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --bg:#0b0b0f; --bg-soft:#111116; --card:#15151c;
-      --text:#f5f5f7; --muted:#c0c0cc; --mute2:#7a7a88;
-      --border:rgba(255,255,255,.08); --border-strong:rgba(255,255,255,.16);
-    }
-  }
   * { box-sizing:border-box; margin:0; padding:0; }
   body { font-family:'Inter',system-ui,-apple-system,sans-serif; background:var(--bg); color:var(--text); line-height:1.6; }
   a { color:inherit; text-decoration:none; }
 
+  /* Nav matches landing */
   .nav { position:sticky; top:0; z-index:50; backdrop-filter:saturate(180%) blur(12px); background:color-mix(in srgb, var(--bg) 85%, transparent); border-bottom:1px solid var(--border); }
-  .nav-inner { max-width:1200px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; padding:14px 24px; }
+  .nav-inner { max-width:1200px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; padding:14px 24px; gap:12px; }
   .brand { display:flex; align-items:center; gap:10px; font-weight:700; font-size:16px; }
   .brand-mark { width:28px; height:28px; border-radius:8px; background:linear-gradient(135deg,var(--brand),var(--brand2)); display:grid; place-items:center; color:#fff; font-size:14px; box-shadow:var(--shadow-sm); font-weight:800;}
   .nav-links { display:flex; gap:28px; align-items:center; }
   .nav-links a { color:var(--muted); font-size:14px; font-weight:500; }
   .nav-links a:hover { color:var(--text); }
   .nav-links a.active { color:var(--text); }
+  .nav-cta { display:flex; gap:10px; align-items:center; }
+  .lang-switch-mini { display:flex; gap:4px; }
+  .lang-mini { padding:6px 10px; font-size:12px; font-weight:600; background:var(--bg-soft); border:1px solid var(--border); border-radius:8px; cursor:pointer; color:var(--text); }
+  .lang-mini.active { background:var(--text); color:var(--bg); border-color:var(--text); }
+  .theme-toggle { width:36px; height:36px; border-radius:10px; background:var(--bg-soft); border:1px solid var(--border); cursor:pointer; display:grid; place-items:center; color:var(--text); font-size:16px; }
+
   .btn { display:inline-flex; align-items:center; gap:8px; padding:11px 20px; border-radius:10px; font-weight:600; font-size:14px; cursor:pointer; border:1px solid transparent; transition:transform .15s, box-shadow .15s; }
   .btn:active { transform:scale(0.98); }
   .btn-primary { background:linear-gradient(135deg,var(--brand),var(--brand2)); color:#fff; box-shadow:var(--shadow-md); }
@@ -54,17 +56,17 @@
   .btn-ghost { background:var(--card); color:var(--text); border-color:var(--border-strong); }
   @media (max-width:768px) { .nav-links { display:none; } }
 
+  /* Hero */
   .container { max-width:1200px; margin:0 auto; padding:0 24px; }
   .hero { text-align:center; padding:80px 24px 40px; }
   .hero h1 { font-size:clamp(36px,5vw,52px); font-weight:800; letter-spacing:-0.03em; line-height:1.1; margin-bottom:16px; }
   .grad { background:linear-gradient(135deg,var(--brand),var(--brand2)); -webkit-background-clip:text; background-clip:text; color:transparent; }
   .hero p { color:var(--muted); font-size:18px; max-width:640px; margin:0 auto 20px; }
   .badge { display:inline-flex; align-items:center; gap:8px; background:color-mix(in srgb, var(--brand) 10%, transparent); color:var(--brand); padding:7px 16px; border-radius:999px; font-size:14px; font-weight:600; }
-
-  /* FIX 6: privacy reassurance row under hero */
   .trust-row { display:flex; gap:18px; justify-content:center; flex-wrap:wrap; margin-top:18px; font-size:13px; color:var(--mute2); }
   .trust-row span { display:inline-flex; align-items:center; gap:6px; }
 
+  /* Grid */
   .grid { display:grid; gap:20px; margin:40px 0 64px; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); max-width:1200px; margin-left:auto; margin-right:auto; padding:0 24px; }
   .card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:28px 24px; position:relative; display:flex; flex-direction:column; transition:transform 0.2s, box-shadow 0.2s; }
   .card:hover { transform:translateY(-4px); box-shadow:var(--shadow-md); }
@@ -73,7 +75,6 @@
   .tier { font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--brand); margin-bottom:8px; }
   .price { font-size:36px; font-weight:800; letter-spacing:-0.02em; margin-bottom:4px; }
   .price .unit { font-size:14px; color:var(--mute2); font-weight:400; }
-  /* FIX 5b: 副文案行 (e.g., "≈ 43 runs / month") */
   .price-sub { font-size:12px; color:var(--mute2); margin-bottom:14px; min-height:1em; }
   .desc { color:var(--muted); font-size:14px; margin-bottom:20px; min-height:2.5em; }
   .features { list-style:none; margin-bottom:24px; flex:1; }
@@ -83,6 +84,7 @@
   .features li.muted::before { content:"—"; color:var(--mute2); }
   .btn-card { width:100%; justify-content:center; padding:12px; }
 
+  /* FAQ */
   .faq { max-width:720px; margin:0 auto 60px; padding:0 24px; }
   .faq h2 { text-align:center; font-size:32px; font-weight:800; letter-spacing:-0.02em; margin-bottom:28px; }
   .faq details { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:18px 22px; margin-bottom:10px; }
@@ -105,24 +107,30 @@
       <span>Meeting Workspace</span>
     </a>
     <div class="nav-links">
-      <a href="/#features">Features</a>
-      <a href="/#how">How it works</a>
-      <a href="/pricing.html" class="active">Pricing</a>
-      <a href="/#faq">FAQ</a>
+      <a href="/#features" data-i18n="navFeatures">Features</a>
+      <a href="/#how" data-i18n="navHow">How it works</a>
+      <a href="/pricing.html" class="active" data-i18n="navPricing">Pricing</a>
+      <a href="/#faq" data-i18n="navFaq">FAQ</a>
     </div>
-    <a class="btn btn-primary" href="/app/">Launch App →</a>
+    <div class="nav-cta">
+      <div class="lang-switch-mini">
+        <button type="button" class="lang-mini" data-set-lang="en">EN</button>
+        <button type="button" class="lang-mini" data-set-lang="zh-Hant">繁中</button>
+      </div>
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">🌙</button>
+      <a class="btn btn-primary" href="/app/" data-i18n="navLaunch">Launch App →</a>
+    </div>
   </div>
 </nav>
 
 <header class="hero">
-  <h1>Simple, <span class="grad">honest pricing</span></h1>
-  <p>Start free. Upgrade only when you actually use it. No credit card required to try.</p>
-  <div class="badge">🛡️ 14-day money-back guarantee</div>
-  <!-- FIX 6: privacy reassurance row -->
+  <h1><span data-i18n="heroA">Simple, </span><span class="grad" data-i18n="heroB">honest pricing</span></h1>
+  <p data-i18n="heroSub">Start free. Upgrade only when you actually use it. No credit card required to try.</p>
+  <div class="badge" data-i18n="heroBadge">🛡️ 14-day money-back guarantee</div>
   <div class="trust-row">
-    <span>🔒 Transcripts never stored</span>
-    <span>🚫 Not used for AI training</span>
-    <span>↩️ Cancel anytime</span>
+    <span data-i18n="trust1">🔒 Transcripts never stored</span>
+    <span data-i18n="trust2">🚫 Not used for AI training</span>
+    <span data-i18n="trust3">↩️ Cancel anytime</span>
   </div>
 </header>
 
@@ -130,132 +138,239 @@
 
   <!-- FREE -->
   <div class="card">
-    <div class="tier">Free</div>
-    <div class="price">$0 <span class="unit">forever</span></div>
-    <!-- FIX 5b: 副文案統一 monthly equivalent -->
-    <div class="price-sub">≈ 30 runs / month</div>
-    <p class="desc">Try it out — no signup.</p>
+    <div class="tier" data-i18n="freeTier">Free</div>
+    <div class="price"><span data-i18n="freePrice">$0</span> <span class="unit" data-i18n="freeUnit">forever</span></div>
+    <div class="price-sub" data-i18n="freeSub">≈ 30 runs / month</div>
+    <p class="desc" data-i18n="freeDesc">Try it out — no signup.</p>
     <ul class="features">
-      <li>1 run per day</li>
-      <li>AI summary &amp; decisions</li>
-      <li>Action items with owners</li>
-      <li>Follow-up email draft</li>
-      <li>Markdown export</li>
-      <li class="muted">No email required</li>
+      <li data-i18n="free1">1 run per day</li>
+      <li data-i18n="free2">AI summary &amp; decisions</li>
+      <li data-i18n="free3">Action items with owners</li>
+      <li data-i18n="free4">Follow-up email draft</li>
+      <li data-i18n="free5">Markdown export</li>
+      <li class="muted" data-i18n="free6">No email required</li>
     </ul>
-    <a href="/app/" class="btn btn-ghost btn-card">Start free</a>
+    <a href="/app/" class="btn btn-ghost btn-card" data-i18n="freeCta">Start free</a>
   </div>
 
   <!-- STARTER -->
   <div class="card">
-    <div class="tier">Starter</div>
-    <div class="price">$0 <span class="unit">email required</span></div>
-    <div class="price-sub">≈ 90 runs / month</div>
-    <p class="desc">Triple the free quota — just register.</p>
+    <div class="tier" data-i18n="starterTier">Starter</div>
+    <div class="price"><span data-i18n="starterPrice">$0</span> <span class="unit" data-i18n="starterUnit">email required</span></div>
+    <div class="price-sub" data-i18n="starterSub">≈ 90 runs / month</div>
+    <p class="desc" data-i18n="starterDesc">Triple the free quota — just register.</p>
     <ul class="features">
-      <li><strong>3 runs per day</strong></li>
-      <li>Everything in Free</li>
-      <li>History saved locally</li>
-      <li class="muted">No email spam, promise</li>
+      <li><strong data-i18n="starter1">3 runs per day</strong></li>
+      <li data-i18n="starter2">Everything in Free</li>
+      <li data-i18n="starter3">History saved locally</li>
+      <li class="muted" data-i18n="starter4">No email spam, promise</li>
     </ul>
-    <a href="/?register=1" class="btn btn-ghost btn-card">Register email</a>
+    <a href="/?register=1" class="btn btn-ghost btn-card" data-i18n="starterCta">Register email</a>
   </div>
 
   <!-- PRO -->
   <div class="card popular">
-    <div class="pop-tag">⭐ Most Popular</div>
-    <div class="tier">Pro</div>
-    <div class="price">$19 <span class="unit">/month</span></div>
-    <div class="price-sub">≈ 43 runs / month (10/week)</div>
-    <p class="desc">For professionals running weekly team syncs.</p>
+    <div class="pop-tag" data-i18n="proTag">⭐ Most Popular</div>
+    <div class="tier" data-i18n="proTier">Pro</div>
+    <div class="price"><span data-i18n="proPrice">$19</span> <span class="unit" data-i18n="proUnit">/month</span></div>
+    <div class="price-sub" data-i18n="proSub">≈ 43 runs / month (10/week)</div>
+    <p class="desc" data-i18n="proDesc">For professionals running weekly team syncs.</p>
     <ul class="features">
-      <li><strong>10 runs per week</strong></li>
-      <li>Everything in Starter</li>
-      <li>Activate on 2 devices</li>
-      <li>Priority AI processing</li>
-      <li>Email support</li>
+      <li><strong data-i18n="pro1">10 runs per week</strong></li>
+      <li data-i18n="pro2">Everything in Starter</li>
+      <li data-i18n="pro3">Activate on 2 devices</li>
+      <li data-i18n="pro4">Priority AI processing</li>
+      <li data-i18n="pro5">Email support</li>
     </ul>
-    <a href="https://aimeetingnote.lemonsqueezy.com/checkout/buy/7766e1fc-7035-4578-8d3b-f063132baef8" target="_blank" rel="noopener" class="btn btn-primary btn-card" data-umami-event="Pricing CTA Clicked" data-umami-event-plan="Pro">Upgrade to Pro</a>
+    <a href="https://aimeetingnote.lemonsqueezy.com/checkout/buy/7766e1fc-7035-4578-8d3b-f063132baef8" target="_blank" rel="noopener" class="btn btn-primary btn-card" data-umami-event="Pricing CTA Clicked" data-umami-event-plan="Pro" data-i18n="proCta">Upgrade to Pro</a>
   </div>
 
   <!-- MAX -->
   <div class="card">
-    <div class="tier">Max</div>
-    <div class="price">$29 <span class="unit">/month</span></div>
-    <div class="price-sub">60 runs / month (~2 / day)</div>
-    <p class="desc">For power users &amp; consultants meeting daily.</p>
+    <div class="tier" data-i18n="maxTier">Max</div>
+    <div class="price"><span data-i18n="maxPrice">$29</span> <span class="unit" data-i18n="maxUnit">/month</span></div>
+    <div class="price-sub" data-i18n="maxSub">60 runs / month (~2 / day)</div>
+    <p class="desc" data-i18n="maxDesc">For power users &amp; consultants meeting daily.</p>
     <ul class="features">
-      <li><strong>60 runs per month</strong></li>
-      <li>Everything in Pro</li>
-      <li>Activate on 5 devices</li>
-      <li>Fastest AI processing</li>
-      <li>Priority email support</li>
+      <li><strong data-i18n="max1">60 runs per month</strong></li>
+      <li data-i18n="max2">Everything in Pro</li>
+      <li data-i18n="max3">Activate on 5 devices</li>
+      <li data-i18n="max4">Fastest AI processing</li>
+      <li data-i18n="max5">Priority email support</li>
     </ul>
-    <a href="https://aimeetingnote.lemonsqueezy.com/checkout/buy/43d23d3b-64ca-409d-a8c2-3d4271fc04f6" target="_blank" rel="noopener" class="btn btn-primary btn-card" data-umami-event="Pricing CTA Clicked" data-umami-event-plan="Max">Upgrade to Max</a>
+    <a href="https://aimeetingnote.lemonsqueezy.com/checkout/buy/43d23d3b-64ca-409d-a8c2-3d4271fc04f6" target="_blank" rel="noopener" class="btn btn-primary btn-card" data-umami-event="Pricing CTA Clicked" data-umami-event-plan="Max" data-i18n="maxCta">Upgrade to Max</a>
   </div>
 
 </div>
 
 <section class="faq">
-  <h2>Frequently asked questions</h2>
+  <h2 data-i18n="faqTitle">Frequently asked questions</h2>
 
   <details>
-    <summary>Can I cancel anytime?</summary>
-    <p>Yes. Cancel anytime via your Lemon Squeezy customer portal. You keep access until the end of the current billing period.</p>
+    <summary data-i18n="faqQ1">Can I cancel anytime?</summary>
+    <p data-i18n="faqA1">Yes. Cancel anytime via your Lemon Squeezy customer portal. You keep access until the end of the current billing period.</p>
   </details>
 
   <details>
-    <summary>What's your refund policy?</summary>
-    <p>14-day money-back guarantee on your initial subscription. Email support@meetingworkspaces.com within 14 days and we'll refund, no questions asked.</p>
+    <summary data-i18n="faqQ2">What's your refund policy?</summary>
+    <p data-i18n="faqA2">14-day money-back guarantee on your initial subscription. Email support@meetingworkspaces.com within 14 days and we'll refund, no questions asked.</p>
   </details>
 
   <details>
-    <summary>What happens if I hit my quota?</summary>
-    <p>You'll see a friendly upgrade prompt. Your usage resets automatically — daily for Free/Starter, weekly for Pro, monthly for Max.</p>
+    <summary data-i18n="faqQ3">What happens if I hit my quota?</summary>
+    <p data-i18n="faqA3">You'll see a friendly upgrade prompt. Your usage resets automatically — daily for Free/Starter, weekly for Pro, monthly for Max.</p>
   </details>
 
   <details>
-    <summary>Can I use one license on multiple devices?</summary>
-    <p>Yes. Pro supports 2 active devices, Max supports 5. You can deactivate and move between devices anytime.</p>
-  </details>
-
-  <!-- FIX 8: 加新 FAQ — Zoom/Teams integration honest answer -->
-  <details>
-    <summary>Does it integrate with Zoom, Teams, or Google Meet?</summary>
-    <p>Not via API — and that's intentional. Meeting Workspace works with <strong>any transcript</strong> from Zoom, Microsoft Teams, Google Meet, Otter, Fireflies, or your own notes. Just paste it in — no OAuth, no permissions, no waiting on IT approval.</p>
+    <summary data-i18n="faqQ4">Can I use one license on multiple devices?</summary>
+    <p data-i18n="faqA4">Yes. Pro supports 2 active devices, Max supports 5. You can deactivate and move between devices anytime.</p>
   </details>
 
   <details>
-    <summary>Is my meeting data stored?</summary>
-    <p>No. Meeting transcripts are processed in real-time via Perplexity API and never written to our database. Inputs are not used for AI training. Only your email (if registered) and license key are stored. See our <a href="/privacy.html">Privacy Policy</a>.</p>
+    <summary data-i18n="faqQ5">Does it integrate with Zoom, Teams, or Google Meet?</summary>
+    <p data-i18n="faqA5">Not via API — and that's intentional. Meeting Workspace works with any transcript from Zoom, Teams, Google Meet, Otter, or Fireflies. Just paste it in — no OAuth, no permissions, no waiting on IT approval.</p>
   </details>
 
   <details>
-    <summary>Which AI model is used?</summary>
-    <p>Best-in-class models (Perplexity / OpenAI) selected per task through our 5-agent orchestration: Coordinator → Summarizer → Action Item Agent → Email Agent → QA Review.</p>
+    <summary data-i18n="faqQ6">Is my meeting data stored?</summary>
+    <p data-i18n="faqA6">No. Meeting transcripts are processed in real-time via Perplexity API and never written to our database. Inputs are not used for AI training. Only your email (if registered) and license key are stored. See our <a href="/privacy.html">Privacy Policy</a>.</p>
   </details>
 
   <details>
-    <summary>Do you offer team or enterprise plans?</summary>
-    <p>Not yet — individual plans first. Need 10+ seats? Email support@meetingworkspaces.com and we'll figure something out.</p>
+    <summary data-i18n="faqQ7">Which AI model is used?</summary>
+    <p data-i18n="faqA7">Best-in-class models (Perplexity / OpenAI) selected per task through our 5-agent orchestration: Coordinator → Summarizer → Action Item Agent → Email Agent → QA Review.</p>
   </details>
 
   <details>
-    <summary>What languages are supported?</summary>
-    <p>Input: any language. Output: optimised for English and Traditional Chinese (繁體中文). More coming soon.</p>
+    <summary data-i18n="faqQ8">Do you offer team or enterprise plans?</summary>
+    <p data-i18n="faqA8">Not yet — individual plans first. Need 10+ seats? Email support@meetingworkspaces.com and we'll figure something out.</p>
+  </details>
+
+  <details>
+    <summary data-i18n="faqQ9">What languages are supported?</summary>
+    <p data-i18n="faqA9">Input: any language. Output: optimised for English and Traditional Chinese (繁體中文). More coming soon.</p>
   </details>
 </section>
 
 <footer>
   <p>
-    <a href="/">Home</a> ·
-    <a href="/pricing.html">Pricing</a> ·
-    <a href="/privacy.html">Privacy</a> ·
-    <a href="/terms.html">Terms</a> ·
-    <a href="mailto:support@meetingworkspaces.com">Support</a>
+    <a href="/" data-i18n="footHome">Home</a> ·
+    <a href="/pricing.html" data-i18n="footPricing">Pricing</a> ·
+    <a href="/privacy.html" data-i18n="footPrivacy">Privacy</a> ·
+    <a href="/terms.html" data-i18n="footTerms">Terms</a> ·
+    <a href="mailto:support@meetingworkspaces.com" data-i18n="footSupport">Support</a>
   </p>
-  <p style="margin-top:8px;">© 2026 Meeting Workspace. All rights reserved.</p>
+  <p style="margin-top:8px;" data-i18n="footCopy">© 2026 Meeting Workspace. All rights reserved.</p>
 </footer>
-<!-- FIX: removed broken CHECKOUT_URLS override script (selector mismatch, was no-op) -->
+
+<script>
+// Theme toggle (sync with landing via 'mw-theme' key)
+(function(){
+  const root = document.documentElement;
+  const saved = localStorage.getItem('mw-theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  else if (window.matchMedia('(prefers-color-scheme: dark)').matches) root.setAttribute('data-theme','dark');
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme')==='dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('mw-theme', next);
+  });
+})();
+
+// i18n
+const I18N = {
+  en: {
+    navFeatures:"Features", navHow:"How it works", navPricing:"Pricing", navFaq:"FAQ", navLaunch:"Launch App →",
+    heroA:"Simple, ", heroB:"honest pricing",
+    heroSub:"Start free. Upgrade only when you actually use it. No credit card required to try.",
+    heroBadge:"🛡️ 14-day money-back guarantee",
+    trust1:"🔒 Transcripts never stored", trust2:"🚫 Not used for AI training", trust3:"↩️ Cancel anytime",
+
+    freeTier:"Free", freePrice:"$0", freeUnit:"forever", freeSub:"≈ 30 runs / month", freeDesc:"Try it out — no signup.",
+    free1:"1 run per day", free2:"AI summary & decisions", free3:"Action items with owners", free4:"Follow-up email draft", free5:"Markdown export", free6:"No email required",
+    freeCta:"Start free",
+
+    starterTier:"Starter", starterPrice:"$0", starterUnit:"email required", starterSub:"≈ 90 runs / month", starterDesc:"Triple the free quota — just register.",
+    starter1:"3 runs per day", starter2:"Everything in Free", starter3:"History saved locally", starter4:"No email spam, promise",
+    starterCta:"Register email",
+
+    proTag:"⭐ Most Popular", proTier:"Pro", proPrice:"$19", proUnit:"/month", proSub:"≈ 43 runs / month (10/week)", proDesc:"For professionals running weekly team syncs.",
+    pro1:"10 runs per week", pro2:"Everything in Starter", pro3:"Activate on 2 devices", pro4:"Priority AI processing", pro5:"Email support",
+    proCta:"Upgrade to Pro",
+
+    maxTier:"Max", maxPrice:"$29", maxUnit:"/month", maxSub:"60 runs / month (~2 / day)", maxDesc:"For power users & consultants meeting daily.",
+    max1:"60 runs per month", max2:"Everything in Pro", max3:"Activate on 5 devices", max4:"Fastest AI processing", max5:"Priority email support",
+    maxCta:"Upgrade to Max",
+
+    faqTitle:"Frequently asked questions",
+    faqQ1:"Can I cancel anytime?", faqA1:"Yes. Cancel anytime via your Lemon Squeezy customer portal. You keep access until the end of the current billing period.",
+    faqQ2:"What's your refund policy?", faqA2:"14-day money-back guarantee on your initial subscription. Email support@meetingworkspaces.com within 14 days and we'll refund, no questions asked.",
+    faqQ3:"What happens if I hit my quota?", faqA3:"You'll see a friendly upgrade prompt. Your usage resets automatically — daily for Free/Starter, weekly for Pro, monthly for Max.",
+    faqQ4:"Can I use one license on multiple devices?", faqA4:"Yes. Pro supports 2 active devices, Max supports 5. You can deactivate and move between devices anytime.",
+    faqQ5:"Does it integrate with Zoom, Teams, or Google Meet?", faqA5:"Not via API — and that's intentional. Meeting Workspace works with any transcript from Zoom, Teams, Google Meet, Otter, or Fireflies. Just paste it in — no OAuth, no permissions, no waiting on IT approval.",
+    faqQ6:"Is my meeting data stored?", faqA6:"No. Meeting transcripts are processed in real-time via Perplexity API and never written to our database. Inputs are not used for AI training. Only your email (if registered) and license key are stored.",
+    faqQ7:"Which AI model is used?", faqA7:"Best-in-class models (Perplexity / OpenAI) selected per task through our 5-agent orchestration: Coordinator → Summarizer → Action Item Agent → Email Agent → QA Review.",
+    faqQ8:"Do you offer team or enterprise plans?", faqA8:"Not yet — individual plans first. Need 10+ seats? Email support@meetingworkspaces.com and we'll figure something out.",
+    faqQ9:"What languages are supported?", faqA9:"Input: any language. Output: optimised for English and Traditional Chinese (繁體中文). More coming soon.",
+
+    footHome:"Home", footPricing:"Pricing", footPrivacy:"Privacy", footTerms:"Terms", footSupport:"Support",
+    footCopy:"© 2026 Meeting Workspace. All rights reserved."
+  },
+  "zh-Hant": {
+    navFeatures:"功能", navHow:"運作方式", navPricing:"定價", navFaq:"常見問題", navLaunch:"開啟應用 →",
+    heroA:"簡單、", heroB:"誠實的定價",
+    heroSub:"免費起步。當你真正用得着時先升級。試用無需信用卡。",
+    heroBadge:"🛡️ 14 日退款保證",
+    trust1:"🔒 Transcript 絕不儲存", trust2:"🚫 不用於 AI 訓練", trust3:"↩️ 隨時取消",
+
+    freeTier:"Free", freePrice:"$0", freeUnit:"永久", freeSub:"≈ 每月 30 次", freeDesc:"即試即用 — 毋須註冊。",
+    free1:"每日 1 次", free2:"AI 摘要與決策", free3:"附負責人的行動項目", free4:"跟進 Email 草稿", free5:"Markdown 匯出", free6:"毋須 Email",
+    freeCta:"免費開始",
+
+    starterTier:"Starter", starterPrice:"$0", starterUnit:"須註冊 email", starterSub:"≈ 每月 90 次", starterDesc:"三倍免費配額 — 註冊即用。",
+    starter1:"每日 3 次", starter2:"包含 Free 全部", starter3:"歷史本機儲存", starter4:"絕無垃圾郵件",
+    starterCta:"註冊 email",
+
+    proTag:"⭐ 最受歡迎", proTier:"Pro", proPrice:"$19", proUnit:"/月", proSub:"≈ 每月 43 次（每週 10 次）", proDesc:"為每週開團隊會議的專業人士而設。",
+    pro1:"每週 10 次", pro2:"包含 Starter 全部", pro3:"啟用 2 部裝置", pro4:"優先 AI 處理", pro5:"Email 支援",
+    proCta:"升級至 Pro",
+
+    maxTier:"Max", maxPrice:"$29", maxUnit:"/月", maxSub:"每月 60 次（每日約 2 次）", maxDesc:"為每日開會的進階用戶與顧問而設。",
+    max1:"每月 60 次", max2:"包含 Pro 全部", max3:"啟用 5 部裝置", max4:"最快 AI 處理", max5:"優先 Email 支援",
+    maxCta:"升級至 Max",
+
+    faqTitle:"常見問題",
+    faqQ1:"可以隨時取消嗎？", faqA1:"可以。隨時喺你嘅 Lemon Squeezy customer portal 取消。你會保留到目前計費周期結束。",
+    faqQ2:"退款政策係點？", faqA2:"首次訂閱有 14 日退款保證。14 日內 email support@meetingworkspaces.com，我哋會無條件退款。",
+    faqQ3:"用完配額會點？", faqA3:"你會見到友善嘅升級提示。配額自動重置 — Free/Starter 每日、Pro 每週、Max 每月。",
+    faqQ4:"一個 license 可以喺幾部裝置用嗎？", faqA4:"可以。Pro 支援 2 部裝置，Max 支援 5 部。隨時可停用同切換。",
+    faqQ5:"支援 Zoom / Teams / Google Meet 嗎？", faqA5:"不直接整合 API — 而這是刻意設計。Meeting Workspace 接受任何來源的 transcript：Zoom、Teams、Meet、Otter、Fireflies 都可以。複製貼上即用，毋須 OAuth、毋須 IT 審批。",
+    faqQ6:"我嘅會議資料會被儲存嗎？", faqA6:"唔會。Transcript 透過 Perplexity API 即時處理，絕不寫入我哋嘅資料庫。輸入內容不用於 AI 訓練。只有你嘅 email（如註冊）同 license key 會儲存。",
+    faqQ7:"用咩 AI model？", faqA7:"按任務選用最佳模型（Perplexity / OpenAI），透過 5-agent 編排：Coordinator → Summarizer → Action Item Agent → Email Agent → QA Review。",
+    faqQ8:"有冇 Team 或 Enterprise 方案？", faqA8:"暫時未有 — 先做個人方案。需要 10+ seats？Email support@meetingworkspaces.com，我哋會幫你度。",
+    faqQ9:"支援咩語言？", faqA9:"輸入：任何語言。輸出：英文及繁體中文（最佳化）。更多語言即將推出。",
+
+    footHome:"首頁", footPricing:"定價", footPrivacy:"私隱", footTerms:"條款", footSupport:"支援",
+    footCopy:"© 2026 Meeting Workspace. 版權所有。"
+  }
+};
+
+function applyI18N(lang) {
+  const dict = I18N[lang] || I18N.en;
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const k = el.getAttribute('data-i18n');
+    if (dict[k] !== undefined) el.textContent = dict[k];
+  });
+  document.documentElement.setAttribute('lang', lang === 'zh-Hant' ? 'zh-Hant' : 'en');
+  document.querySelectorAll('.lang-mini').forEach(b => b.classList.toggle('active', b.dataset.setLang === lang));
+  localStorage.setItem('lang', lang);
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-set-lang]');
+  if (b) applyI18N(b.dataset.setLang);
+});
+const savedLang = localStorage.getItem('lang') || (navigator.language.startsWith('zh') ? 'zh-Hant' : 'en');
+applyI18N(savedLang);
+</script>
 </body>
 </html>
