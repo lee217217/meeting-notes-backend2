@@ -4,11 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Pricing — Meeting Workspace</title>
-<meta name="description" content="Simple pricing. Free 1/day, Pro $19/mo (10/week), Max $29/mo (60/month). 14-day money-back guarantee.">
+<!-- FIX 5a: meta description 統一 monthly equivalent -->
+<meta name="description" content="Simple pricing. Free ~30/mo, Starter ~90/mo, Pro $19/mo (~43 runs), Max $29/mo (60 runs). 14-day money-back guarantee.">
 <meta name="robots" content="index, follow">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Pricing — Meeting Workspace">
-<meta property="og:description" content="Free 1/day, Pro $19/mo, Max $29/mo. 14-day refund guarantee.">
+<meta property="og:description" content="Free, Pro $19/mo, Max $29/mo. 14-day refund guarantee.">
 <meta property="og:url" content="https://meetingworkspaces.com/pricing.html">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 
@@ -38,7 +39,6 @@
   body { font-family:'Inter',system-ui,-apple-system,sans-serif; background:var(--bg); color:var(--text); line-height:1.6; }
   a { color:inherit; text-decoration:none; }
 
-  /* Nav matches landing */
   .nav { position:sticky; top:0; z-index:50; backdrop-filter:saturate(180%) blur(12px); background:color-mix(in srgb, var(--bg) 85%, transparent); border-bottom:1px solid var(--border); }
   .nav-inner { max-width:1200px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; padding:14px 24px; }
   .brand { display:flex; align-items:center; gap:10px; font-weight:700; font-size:16px; }
@@ -54,7 +54,6 @@
   .btn-ghost { background:var(--card); color:var(--text); border-color:var(--border-strong); }
   @media (max-width:768px) { .nav-links { display:none; } }
 
-  /* Hero */
   .container { max-width:1200px; margin:0 auto; padding:0 24px; }
   .hero { text-align:center; padding:80px 24px 40px; }
   .hero h1 { font-size:clamp(36px,5vw,52px); font-weight:800; letter-spacing:-0.03em; line-height:1.1; margin-bottom:16px; }
@@ -62,7 +61,10 @@
   .hero p { color:var(--muted); font-size:18px; max-width:640px; margin:0 auto 20px; }
   .badge { display:inline-flex; align-items:center; gap:8px; background:color-mix(in srgb, var(--brand) 10%, transparent); color:var(--brand); padding:7px 16px; border-radius:999px; font-size:14px; font-weight:600; }
 
-  /* Grid */
+  /* FIX 6: privacy reassurance row under hero */
+  .trust-row { display:flex; gap:18px; justify-content:center; flex-wrap:wrap; margin-top:18px; font-size:13px; color:var(--mute2); }
+  .trust-row span { display:inline-flex; align-items:center; gap:6px; }
+
   .grid { display:grid; gap:20px; margin:40px 0 64px; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); max-width:1200px; margin-left:auto; margin-right:auto; padding:0 24px; }
   .card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:28px 24px; position:relative; display:flex; flex-direction:column; transition:transform 0.2s, box-shadow 0.2s; }
   .card:hover { transform:translateY(-4px); box-shadow:var(--shadow-md); }
@@ -71,6 +73,8 @@
   .tier { font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--brand); margin-bottom:8px; }
   .price { font-size:36px; font-weight:800; letter-spacing:-0.02em; margin-bottom:4px; }
   .price .unit { font-size:14px; color:var(--mute2); font-weight:400; }
+  /* FIX 5b: 副文案行 (e.g., "≈ 43 runs / month") */
+  .price-sub { font-size:12px; color:var(--mute2); margin-bottom:14px; min-height:1em; }
   .desc { color:var(--muted); font-size:14px; margin-bottom:20px; min-height:2.5em; }
   .features { list-style:none; margin-bottom:24px; flex:1; }
   .features li { padding:7px 0; display:flex; gap:10px; font-size:14px; align-items:flex-start; }
@@ -79,7 +83,6 @@
   .features li.muted::before { content:"—"; color:var(--mute2); }
   .btn-card { width:100%; justify-content:center; padding:12px; }
 
-  /* FAQ */
   .faq { max-width:720px; margin:0 auto 60px; padding:0 24px; }
   .faq h2 { text-align:center; font-size:32px; font-weight:800; letter-spacing:-0.02em; margin-bottom:28px; }
   .faq details { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:18px 22px; margin-bottom:10px; }
@@ -88,7 +91,6 @@
   .faq details[open] summary::after { content:"−"; }
   .faq details p { color:var(--muted); margin-top:12px; font-size:14.5px; line-height:1.7; }
 
-  /* Footer */
   footer { border-top:1px solid var(--border); padding:40px 24px; background:var(--bg-soft); text-align:center; color:var(--mute2); font-size:13px; }
   footer a { color:var(--muted); margin:0 10px; }
   footer a:hover { color:var(--text); }
@@ -116,6 +118,12 @@
   <h1>Simple, <span class="grad">honest pricing</span></h1>
   <p>Start free. Upgrade only when you actually use it. No credit card required to try.</p>
   <div class="badge">🛡️ 14-day money-back guarantee</div>
+  <!-- FIX 6: privacy reassurance row -->
+  <div class="trust-row">
+    <span>🔒 Transcripts never stored</span>
+    <span>🚫 Not used for AI training</span>
+    <span>↩️ Cancel anytime</span>
+  </div>
 </header>
 
 <div class="grid">
@@ -124,6 +132,8 @@
   <div class="card">
     <div class="tier">Free</div>
     <div class="price">$0 <span class="unit">forever</span></div>
+    <!-- FIX 5b: 副文案統一 monthly equivalent -->
+    <div class="price-sub">≈ 30 runs / month</div>
     <p class="desc">Try it out — no signup.</p>
     <ul class="features">
       <li>1 run per day</li>
@@ -140,6 +150,7 @@
   <div class="card">
     <div class="tier">Starter</div>
     <div class="price">$0 <span class="unit">email required</span></div>
+    <div class="price-sub">≈ 90 runs / month</div>
     <p class="desc">Triple the free quota — just register.</p>
     <ul class="features">
       <li><strong>3 runs per day</strong></li>
@@ -155,6 +166,7 @@
     <div class="pop-tag">⭐ Most Popular</div>
     <div class="tier">Pro</div>
     <div class="price">$19 <span class="unit">/month</span></div>
+    <div class="price-sub">≈ 43 runs / month (10/week)</div>
     <p class="desc">For professionals running weekly team syncs.</p>
     <ul class="features">
       <li><strong>10 runs per week</strong></li>
@@ -170,6 +182,7 @@
   <div class="card">
     <div class="tier">Max</div>
     <div class="price">$29 <span class="unit">/month</span></div>
+    <div class="price-sub">60 runs / month (~2 / day)</div>
     <p class="desc">For power users &amp; consultants meeting daily.</p>
     <ul class="features">
       <li><strong>60 runs per month</strong></li>
@@ -206,9 +219,15 @@
     <p>Yes. Pro supports 2 active devices, Max supports 5. You can deactivate and move between devices anytime.</p>
   </details>
 
+  <!-- FIX 8: 加新 FAQ — Zoom/Teams integration honest answer -->
+  <details>
+    <summary>Does it integrate with Zoom, Teams, or Google Meet?</summary>
+    <p>Not via API — and that's intentional. Meeting Workspace works with <strong>any transcript</strong> from Zoom, Microsoft Teams, Google Meet, Otter, Fireflies, or your own notes. Just paste it in — no OAuth, no permissions, no waiting on IT approval.</p>
+  </details>
+
   <details>
     <summary>Is my meeting data stored?</summary>
-    <p>No. Meeting notes are processed in real-time and never written to our database. Only your email (if registered) and license key are stored. See our <a href="/privacy.html">Privacy Policy</a>.</p>
+    <p>No. Meeting transcripts are processed in real-time via Perplexity API and never written to our database. Inputs are not used for AI training. Only your email (if registered) and license key are stored. See our <a href="/privacy.html">Privacy Policy</a>.</p>
   </details>
 
   <details>
@@ -237,19 +256,6 @@
   </p>
   <p style="margin-top:8px;">© 2026 Meeting Workspace. All rights reserved.</p>
 </footer>
-<script>
-  const CHECKOUT_URLS = {
-    pro: 'https://aimeetingnote.lemonsqueezy.com/checkout/buy/f50cef81-bc3d-40a2-bbab-8bc850a9af80',
-    max: 'https://aimeetingnote.lemonsqueezy.com/checkout/buy/9320aecd-8a6a-4609-9d81-f87d63d7c347',
-  };
-  document.querySelectorAll('[data-plan]').forEach(a => {
-    const plan = a.dataset.plan;
-    if (CHECKOUT_URLS[plan]) {
-      a.href = CHECKOUT_URLS[plan];
-      a.target = '_blank';
-      a.rel = 'noopener';
-    }
-  });
-</script>
+<!-- FIX: removed broken CHECKOUT_URLS override script (selector mismatch, was no-op) -->
 </body>
 </html>
